@@ -39,11 +39,10 @@ Perhaps used on the website and via a card console reader (NFC)
 
     /* RESPONSE */
     {
-        "success": true, // If the check in was succesfull
-        "write": false, // If the card was linked to an account
-        "check_in": false, // If the action was a check in (otherwise check out)
-        "name": "Olle Kaiser", // Full name of the user
-        "timestamp": 1568631728330 
+        "success": true,            /* If the check in was succesfull */
+        "write": false,             /* If the card was linked to an account */
+        "check_in": false,          /* If the action was a check in (otherwise check out) */
+        "name": "Olle Kaiser"       /* Full name of the user */
     }
 ```
 

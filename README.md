@@ -30,10 +30,10 @@ Get information about a project
 Check in or out (toggle)
 Perhaps used on the website and via a card console reader (NFC)
 
-```json
+```javascript
     /* REQUEST */
     {
-        "card" | "user": 98349384 | 12,
+        "card": 87345872345,
         "token": "FA2837376AE6FF6FDC01DA0914F5013C0B2DAB1D"
     }
 

@@ -3,7 +3,7 @@
 ## REST API
 Documentation https://github.com/te4umea2019/Tidsapp-HS/wiki
 
-## Slack / kommandon <required> [optional]
+## Slack / kommandon `<required> [optional]`
 
     /checkin [project name]
         Checking in to presence

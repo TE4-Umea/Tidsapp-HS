@@ -1,51 +1,7 @@
 # Tidsapp av Happy Surfers
 
-## RESTAPI
-
-    POST /api/checkin
-Check in with or without a specified project
-
----
-    POST /api/checkout
-Check out with or without a specified project
-
----
-    POST /api/add
-Add user to a project
-
----
-    DELETE /api/remove
-Remove a person from a project
-
----
-    POST /api/new
-Create a new project
-
----
-    GET /api/project
-Get information about a project
-
----
-    POST /api/check
-Check in or out (toggle)
-Perhaps used on the website and via a card console reader (NFC)
-
-```javascript
-    /* REQUEST */
-    {
-        "card": 87345872345,
-        "token": "FA2837376AE6FF6FDC01DA0914F5013C0B2DAB1D"
-    }
-
-    /* RESPONSE */
-    {
-        "success": true,            /* If the check in was succesfull */
-        "write": false,             /* If the card was linked to an account */
-        "check_in": false,          /* If the action was a check in (otherwise check out) */
-        "name": "Olle Kaiser"       /* Full name of the user */
-    }
-```
-
+## REST API
+Documentation https://github.com/te4umea2019/Tidsapp-HS/wiki
 
 ## Slack / kommandon <required> [optional]
 

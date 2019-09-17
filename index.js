@@ -1,3 +1,9 @@
+/**
+ * Server side by Happy Surfers
+ * Remember to comment your code!
+ * Here we use underscore convention (variable_name, function_name())
+ */
+
 const bp = require("body-parser")
 const express = require("express")
 const http = require("http")
@@ -107,6 +113,8 @@ app.use(bp.urlencoded({
 
 // Create the server and start it on the port in config.json
 var server = http.createServer(app).listen(port)
+console.log(`Happy Surfer's TimeTracker has started on port: ${port}`)
+
 // Bind socket.io to the webserver, (socket.io, REST API and the website are all on the same port)
 var io = require("socket.io")(server)
 
@@ -142,4 +150,10 @@ app.post("/api/check", async (req, res) => {
 
 app.post("/api/login", async (req, res) => {
     res.end("This API call is not implemented yet.")
+})
+
+
+/* Website pages */
+app.get("/", (req, res) => {
+    res.render("index")
 })

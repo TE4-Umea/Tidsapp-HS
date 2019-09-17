@@ -12,6 +12,10 @@ const fs = require("file-system")
 const mysql = require("mysql")
 const crypto = require("crypto")
 
+var API = require("./API")
+    API = new API()
+
+
 const hash = () => {
     return crypto.randomBytes(20).toString('hex').toUpperCase()
 }
@@ -125,31 +129,31 @@ app.set('view engine', 'pug')
 
 /* REST API */
 app.post("/api/checkin", async (req, res) => {
-    res.end("This API call is not implemented yet.")
+    API.checkin(req, res)
 })
 
 app.post("/api/checkout", async (req, res) => {
-    res.end("This API call is not implemented yet.")
+    API.checkout(req, res)
 })
 
 app.post("/api/add", async (req, res) => {
-    res.end("This API call is not implemented yet.")
+    API.add(req, res)
 })
 
-app.delete("/api/remove", async (req, res) => {
-    res.end("This API call is not implemented yet.")
+app.post("/api/remove", async (req, res) => {
+    API.remove(req, res)
 })
 
-app.get("/api/project", async (req, res) => {
-    res.end("This API call is not implemented yet.")
+app.post("/api/project", async (req, res) => {
+    API.project(req, res)
 })
 
 app.post("/api/check", async (req, res) => {
-    res.end("This API call is not implemented yet.")
+    API.check(req, res)
 })
 
 app.post("/api/login", async (req, res) => {
-    res.end("This API call is not implemented yet.")
+    API.login(req, res)
 })
 
 

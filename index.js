@@ -141,6 +141,22 @@ function check_in(user_id, check_in = null, project_name = null) {
 }
 
 /**
+ * Get user from slack request, if they are not registered an account will be created.
+ * @param {*} req Slack request
+ */
+async function get_user_from_slack(req){
+
+}
+
+/**
+ * Get user via their slack user id
+ * @param {*} slack_id
+ */
+async function get_user_from_slack_id(slack_id){
+    
+}
+
+/**
  * Get a user from the database
  * @param {Int} user_id ID of the user
  * @returns {User} User
@@ -195,10 +211,11 @@ app.post("/api/login", async (req, res) => {
 
 app.post("/api/slack/checkin", async (req, res) => {
     var success = verify_slack_request(req)
-    if(success){
-        res.end("Success!!!!!")
-    } else {
-        res.end("REEEEEE")
+    if (success) {
+        var user = get_user_from_slack(req)
+        if(user){
+            res.end("Hello there " + user.username)
+        }
     }
 })
 
@@ -209,27 +226,32 @@ app.get("/", (req, res) => {
 })
 
 function verify_slack_request(req) {
-    var slack_signature = req.headers['x-slack-signature'];
-    var request_body = qs.stringify(req.body, {
-        format: 'RFC1738'
-    });
-    var timestamp = req.headers['x-slack-request-timestamp'];
-    var time = Math.floor(new Date().getTime() / 1000);
-    if (Math.abs(time - timestamp) > 300) {
-        return false
-    }
+    try {
+        var slack_signature = req.headers['x-slack-signature'];
+        var request_body = qs.stringify(req.body, {
+            format: 'RFC1738'
+        });
+        var timestamp = req.headers['x-slack-request-timestamp'];
+        var time = Math.floor(new Date().getTime() / 1000);
+        if (Math.abs(time - timestamp) > 300) {
+            return false
+        }
 
-    var sig_basestring = 'v0:' + timestamp + ':' + request_body;
-    var my_signature = 'v0=' +
-        crypto.createHmac('sha256', config.signing_secret)
-        .update(sig_basestring, 'utf8')
-        .digest('hex');
-    if (crypto.timingSafeEqual(
-            Buffer.from(my_signature, 'utf8'),
-            Buffer.from(slack_signature, 'utf8'))) {
-        return true
-    } else {
-        return false
+        var sig_basestring = 'v0:' + timestamp + ':' + request_body;
+        var my_signature = 'v0=' +
+            crypto.createHmac('sha256', config.signing_secret)
+            .update(sig_basestring, 'utf8')
+            .digest('hex');
+        if (crypto.timingSafeEqual(
+                Buffer.from(my_signature, 'utf8'),
+                Buffer.from(slack_signature, 'utf8'))) {
+            return true
+        } else {
+            return false
+        }
+    } catch (e) {
+        console.log(e) // KEEP
+        log("ERROR: Make sure your config.json:signing_secret is correct!")
     }
 }
 

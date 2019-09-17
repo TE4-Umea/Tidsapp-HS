@@ -228,7 +228,7 @@ app.post("/api/login", async (req, res) => {
 /* WEBHOOK */
 app.post("/webhook", async (req, res) => {
     log("Restarting because of webhook")
-    require("child_process").exec("git pull origin " + config.branch)
+    require("child_process").exec("git pull origin " + config.branch + " && npm i")
 })
 
 /* SLACK API */

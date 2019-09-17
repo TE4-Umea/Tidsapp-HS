@@ -153,7 +153,7 @@ async function get_user_from_slack(req){
  * @param {*} slack_id
  */
 async function get_user_from_slack_id(slack_id){
-    
+
 }
 
 /**
@@ -205,6 +205,12 @@ app.post("/api/check", async (req, res) => {
 
 app.post("/api/login", async (req, res) => {
     API.login(req, res)
+})
+
+
+/* WEBHOOK */
+app.post("/webhook", async(req, res) => {
+    console.log(req)
 })
 
 /* SLACK API */

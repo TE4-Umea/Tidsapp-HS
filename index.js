@@ -241,23 +241,17 @@ app.post("/api/slack/checkin", async (req, res) => {
         if (user) {
             res.end("test")
         } else {
-            res.end(`{
-                "text": "I am a test message http://slack.com",
-                "attachments": [{
-                    "text": "And here’s an attachment!"
-                }]
-            }`)
-            res.end(slack_response("Please register an account and link it before using slash commands", [slack_attachment("https://hs.ygstr.com")]))
+            res.json(slack_response("Please register an account and link it before using slash commands", [slack_attachment("https://hs.ygstr.com")]))
         }
     }
 })
 
 function slack_response(text, attachments = []) {
-    return JSON.stringify({
-        "response_type": "in_channel",
-        "text": text,
-        "attachments": attachments
-    })
+    return {
+        response_type: "in_channel",
+        text: text,
+        attachments: attachments
+    }
 }
 
 function slack_attachment(text, color = "#2bb8ff"){

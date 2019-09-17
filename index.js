@@ -211,7 +211,7 @@ app.post("/api/login", async (req, res) => {
 /* WEBHOOK */
 app.post("/webhook", async(req, res) => {
     console.log("Inomcing hook")
-    require("child_process").exec("git pull")
+    require("child_process").exec("git pull origin dev-server")
 })
 
 /* SLACK API */

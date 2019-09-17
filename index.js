@@ -2,7 +2,7 @@
  * Server side by Happy Surfers
  * Remember to comment your code!
  * Here we use underscore convention (variable_name, function_name())
- * WORKING
+ * 
  */
 
 const expect = require("expect")

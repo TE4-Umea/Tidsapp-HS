@@ -148,7 +148,7 @@ function check_in(user_id, check_in = null, project_name = null) {
  * @param {*} req Slack request
  */
 async function get_user_from_slack(req){
-
+    console.log(req)
 }
 
 /**
@@ -224,7 +224,8 @@ app.post("/api/slack/checkin", async (req, res) => {
     if (success) {
         var user = get_user_from_slack(req)
         if(user){
-            res.end("Hello there " + user.username)
+            res.end("REEE")
+            //res.end("Hello there " + user.username)
         }
     }
 })

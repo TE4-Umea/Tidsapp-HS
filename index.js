@@ -17,8 +17,6 @@ const qs = require("qs")
 var API = require("./API")
 API = new API()
 
-log("HELLOOOOO")
-
 const Tests = require("./Tests")
 const tests = new Tests()
 

@@ -238,7 +238,7 @@ app.post("/api/slack/checkin", async (req, res) => {
     if (success) {
         var user = get_user_from_slack(req)
         if (user) {
-
+            res.end("test")
         } else {
             res.end(slack_response("Please register an account and link it before using slash commands", slack_attachment("https://hs.ygstr.com")))
         }

@@ -13,10 +13,12 @@
 
 
 -- Dumpar databasstruktur för time
+DROP DATABASE IF EXISTS `time`;
 CREATE DATABASE IF NOT EXISTS `time` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `time`;
 
 -- Dumpar struktur för tabell time.checks
+DROP TABLE IF EXISTS `checks`;
 CREATE TABLE IF NOT EXISTS `checks` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID of the check',
   `user` int(11) DEFAULT NULL COMMENT 'ID of the user',
@@ -27,11 +29,10 @@ CREATE TABLE IF NOT EXISTS `checks` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumpar data för tabell time.checks: ~0 rows (ungefär)
-/*!40000 ALTER TABLE `checks` DISABLE KEYS */;
-/*!40000 ALTER TABLE `checks` ENABLE KEYS */;
+-- Dataexport var bortvalt.
 
 -- Dumpar struktur för tabell time.joints
+DROP TABLE IF EXISTS `joints`;
 CREATE TABLE IF NOT EXISTS `joints` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID of the joint',
   `project` text COMMENT 'Name of the project',
@@ -41,22 +42,20 @@ CREATE TABLE IF NOT EXISTS `joints` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumpar data för tabell time.joints: ~0 rows (ungefär)
-/*!40000 ALTER TABLE `joints` DISABLE KEYS */;
-/*!40000 ALTER TABLE `joints` ENABLE KEYS */;
+-- Dataexport var bortvalt.
 
 -- Dumpar struktur för tabell time.projects
+DROP TABLE IF EXISTS `projects`;
 CREATE TABLE IF NOT EXISTS `projects` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID  of the project',
   `name` text COMMENT 'Name of the project',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumpar data för tabell time.projects: ~0 rows (ungefär)
-/*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-/*!40000 ALTER TABLE `projects` ENABLE KEYS */;
+-- Dataexport var bortvalt.
 
 -- Dumpar struktur för tabell time.tokens
+DROP TABLE IF EXISTS `tokens`;
 CREATE TABLE IF NOT EXISTS `tokens` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID of the token',
   `user` int(11) DEFAULT NULL COMMENT 'ID of the user',
@@ -64,11 +63,10 @@ CREATE TABLE IF NOT EXISTS `tokens` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumpar data för tabell time.tokens: ~0 rows (ungefär)
-/*!40000 ALTER TABLE `tokens` DISABLE KEYS */;
-/*!40000 ALTER TABLE `tokens` ENABLE KEYS */;
+-- Dataexport var bortvalt.
 
 -- Dumpar struktur för tabell time.users
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID of the user',
   `username` text COMMENT 'User chosen name',
@@ -78,12 +76,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   `access_token` text COMMENT 'Access token given by slack, used to update user information',
   `admin` tinyint(4) DEFAULT NULL COMMENT 'Boolean(0-1) if the user is an admin or not.',
   `created` bigint(20) DEFAULT NULL COMMENT 'The date the user was created',
+  `slack_id` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumpar data för tabell time.users: ~0 rows (ungefär)
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+-- Dataexport var bortvalt.
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

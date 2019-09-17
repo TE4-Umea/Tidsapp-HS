@@ -194,7 +194,6 @@ app.post("/api/login", async (req, res) => {
 /* SLACK API */
 
 app.post("/api/slack/checkin", async (req, res) => {
-    console.log(req)
     res.end("Success")
 })
 

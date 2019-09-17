@@ -195,6 +195,7 @@ app.post("/api/login", async (req, res) => {
 
 app.post("/api/slack/checkin", async (req, res) => {
     console.log("HOST: " + req.get("host"))
+    console.log("REAL IP: " + req.get("x-real-ip"))
     res.end("Success")
 })
 

@@ -136,6 +136,20 @@ app.use(bp.urlencoded({
 }))
 
 
+function check_in(user_id, check_in = null, project_name = null){
+    
+}
+
+/**
+ * Get a user from the database
+ * @param {Int} user_id ID of the user
+ * @returns {User} User
+ */ 
+async function get_user(user_id){
+    var user = await db.query_one("SELECT * FROM users WHERE id = ?", user_id)
+    return user ? user : false
+}
+
 // Create the server and start it on the port in config.json
 var server = http.createServer(app).listen(port)
 
@@ -149,7 +163,7 @@ app.use(express.static(__dirname + '/cdn'))
 app.set('view engine', 'pug')
 
 /* REST API */
-app.post("/api/checkin", async (req, res) => {
+app.post("/api/checkin", async (req, res) => {    
     API.checkin(req, res)
 })
 
@@ -175,6 +189,12 @@ app.post("/api/check", async (req, res) => {
 
 app.post("/api/login", async (req, res) => {
     API.login(req, res)
+})
+
+/* SLACK API */
+
+app.post("/api/slack/checkin", async (req, res) => {
+    console.log(req)
 })
 
 

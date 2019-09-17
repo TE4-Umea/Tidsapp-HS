@@ -2,6 +2,7 @@
  * Server side by Happy Surfers
  * Remember to comment your code!
  * Here we use underscore convention (variable_name, function_name())
+ * WORKING
  */
 
 const bp = require("body-parser")
@@ -60,6 +61,8 @@ try {
         mysql_host: "localhost",
         mysql_user: "admin",
         mysql_pass: "password",
+        // Github branch
+        branch: "master",
         // Database name
         database: "time",
         // Slack team name of the users who are allowed to sign in
@@ -153,7 +156,7 @@ async function get_user_from_slack(req){
  * @param {*} slack_id
  */
 async function get_user_from_slack_id(slack_id){
-    
+
 }
 
 /**
@@ -205,6 +208,13 @@ app.post("/api/check", async (req, res) => {
 
 app.post("/api/login", async (req, res) => {
     API.login(req, res)
+})
+
+
+/* WEBHOOK */
+app.post("/webhook", async(req, res) => {
+    log("Restarting because of webhook")
+    require("child_process").exec("git pull origin " + config.branch)
 })
 
 /* SLACK API */

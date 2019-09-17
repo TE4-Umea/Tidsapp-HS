@@ -237,24 +237,42 @@ app.post("/api/slack/checkin", async (req, res) => {
     var success = verify_slack_request(req)
     if (success) {
         var user = await get_user_from_slack(req)
-        console.log(user)
         if (user) {
-            res.end("test")
+
         } else {
-            res.json(slack_response("Please register an account and link it before using slash commands", [slack_attachment("https://hs.ygstr.com")]))
+            res.json(new SlackResponse("Please register an account and link it before using slash commands", [new SlackAttachement("https://hs.ygstr.com")]))
         }
     }
 })
 
-function slack_response(text, attachments = []) {
-    return {
-        response_type: "in_channel",
-        text: text,
-        attachments: attachments
+
+class SlackResponse {
+    /**
+     * Create a slack response embed, use red.json() to send this back via the bot
+     * @param {*} text Text you want to submit, optional
+     * @param {*} attachments Array of attachements, optional
+     */
+    constructor(text = "", attachments = []) {
+        this.text = text
+        this.attachments = attachments
     }
 }
 
-function slack_attachment(text, color = "#2bb8ff"){
+class SlackAttachement {
+    constructor(text = "", color = "#0a6cff") {
+        this.text = text
+        this.color = color
+        this.tilte = ""
+        this.title_link = ""
+    }
+}
+
+/**
+ * 
+ * @param {*} text 
+ * @param {*} color 
+ */
+function slack_attachment(text, color = "#2bb8ff") {
     return {
         color: color,
         text: text

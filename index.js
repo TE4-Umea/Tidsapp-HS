@@ -247,11 +247,11 @@ app.post("/api/slack/checkin", async (req, res) => {
 })
 
 function slack_response(text, attachments = []) {
-    return {
+    return JSON.stringify({
         "response_type": "in_channel",
-        "text": JSON.stringify(text),
-        "attachments": JSON.stringify(attachments)
-    }
+        "text": text,
+        "attachments": attachments
+    })
 }
 
 function slack_attachment(text, color = "#2bb8ff"){

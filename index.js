@@ -5,6 +5,7 @@
  * WORKING
  */
 
+const expect = require("expect")
 const bp = require("body-parser")
 const express = require("express")
 const http = require("http")

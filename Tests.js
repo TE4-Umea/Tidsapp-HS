@@ -1,6 +1,6 @@
 class Tests{
     run(){
-        console.log("Running tests!")
+        console.log("Running tests")
     }
 }
 

@@ -61,6 +61,8 @@ try {
         mysql_host: "localhost",
         mysql_user: "admin",
         mysql_pass: "password",
+        // Github branch
+        branch: "master",
         // Database name
         database: "time",
         // Slack team name of the users who are allowed to sign in
@@ -211,8 +213,8 @@ app.post("/api/login", async (req, res) => {
 
 /* WEBHOOK */
 app.post("/webhook", async(req, res) => {
-    console.log("Inomcing hook")
-    require("child_process").exec("git pull origin dev-server")
+    log("Restarting because of webhook")
+    require("child_process").exec("git pull origin " + config.branch)
 })
 
 /* SLACK API */

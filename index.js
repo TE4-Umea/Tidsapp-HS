@@ -11,6 +11,7 @@ const https = require("https")
 const fs = require("file-system")
 const mysql = require("mysql")
 const crypto = require("crypto")
+const qs = require("qs")
 
 var API = require("./API")
 API = new API()
@@ -23,14 +24,14 @@ const tests = new Tests()
  * Use this when a log should stay in the code
  * @param {*} message 
  */
-function log(message){
+function log(message) {
     var date = new Date()
     console.log(`[${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}] ${message}`)
 }
 
-function on_loaded(){
+function on_loaded() {
     var args = process.argv.slice(2)
-    if(args.includes("--test") || args.includes("-t")){
+    if (args.includes("--test") || args.includes("-t")) {
         tests.run()
     }
 
@@ -54,8 +55,7 @@ try {
         // Token for the REST API
         token: hash(),
         // Slack app info
-        client_id: "CLIENT ID",
-        client_secret: "CLIENT SECRET",
+        signing_secret: "*******",
         // mySQL connection information
         mysql_host: "localhost",
         mysql_user: "admin",
@@ -136,16 +136,16 @@ app.use(bp.urlencoded({
 }))
 
 
-function check_in(user_id, check_in = null, project_name = null){
-    
+function check_in(user_id, check_in = null, project_name = null) {
+
 }
 
 /**
  * Get a user from the database
  * @param {Int} user_id ID of the user
  * @returns {User} User
- */ 
-async function get_user(user_id){
+ */
+async function get_user(user_id) {
     var user = await db.query_one("SELECT * FROM users WHERE id = ?", user_id)
     return user ? user : false
 }
@@ -163,7 +163,7 @@ app.use(express.static(__dirname + '/cdn'))
 app.set('view engine', 'pug')
 
 /* REST API */
-app.post("/api/checkin", async (req, res) => {    
+app.post("/api/checkin", async (req, res) => {
     API.checkin(req, res)
 })
 
@@ -194,9 +194,12 @@ app.post("/api/login", async (req, res) => {
 /* SLACK API */
 
 app.post("/api/slack/checkin", async (req, res) => {
-    console.log("HOST: " + req.get("Host"))
-    console.log("REAL IP: " + req.get("x-real-ip"))
-    res.end("Success")
+    var success = verify_slack_request(req)
+    if(success){
+        res.end("Success!!!!!")
+    } else {
+        res.end("REEEEEE")
+    }
 })
 
 
@@ -204,5 +207,30 @@ app.post("/api/slack/checkin", async (req, res) => {
 app.get("/", (req, res) => {
     res.render("index")
 })
+
+function verify_slack_request(req) {
+    var slack_signature = req.headers['x-slack-signature'];
+    var request_body = qs.stringify(req.body, {
+        format: 'RFC1738'
+    });
+    var timestamp = req.headers['x-slack-request-timestamp'];
+    var time = Math.floor(new Date().getTime() / 1000);
+    if (Math.abs(time - timestamp) > 300) {
+        return false
+    }
+
+    var sig_basestring = 'v0:' + timestamp + ':' + request_body;
+    var my_signature = 'v0=' +
+        crypto.createHmac('sha256', config.signing_secret)
+        .update(sig_basestring, 'utf8')
+        .digest('hex');
+    if (crypto.timingSafeEqual(
+            Buffer.from(my_signature, 'utf8'),
+            Buffer.from(slack_signature, 'utf8'))) {
+        return true
+    } else {
+        return false
+    }
+}
 
 on_loaded()

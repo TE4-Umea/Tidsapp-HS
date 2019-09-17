@@ -148,7 +148,15 @@ function check_in(user_id, check_in = null, project_name = null) {
  * @param {*} req Slack request
  */
 async function get_user_from_slack(req){
-    console.log(req)
+    var success = verify_slack_request(req)
+    if(success){
+        var body = req.body
+        console.log("Body:" + body)
+    }
+}
+
+async function create_account(){
+
 }
 
 /**

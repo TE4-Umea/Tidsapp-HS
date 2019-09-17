@@ -1,5 +1,17 @@
 # Tidsapp av Happy Surfers
 
+## Installtion
+
+### Prerequisites
+* NodeJS
+* MySQL
+
+1. Import the database `mysql -u username -p time < database.sql`
+2. Install all NPM dependencies `npm install`
+3. Start it and then stop it `sudo node index.js`
+4. Configure mysql and web-port `config.json`
+5. Done!
+
 ## REST API
 Documentation https://github.com/te4umea2019/Tidsapp-HS/wiki
 

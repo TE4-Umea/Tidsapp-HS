@@ -147,15 +147,21 @@ function check_in(user_id, check_in = null, project_name = null) {
  * Get user from slack request, if they are not registered an account will be created.
  * @param {*} req Slack request
  */
-async function get_user_from_slack(req){
+async function get_user_from_slack(req) {
     var success = verify_slack_request(req)
-    if(success){
+    if (success) {
         var body = req.body
-        console.log("Body:" + body)
+        var slack_id = body.user_id
+        var user = await get_user_from_slack_id(slack_id)
+        if (user) {
+            return user
+        } else {
+            return false
+        }
     }
 }
 
-async function create_account(){
+async function create_account() {
 
 }
 
@@ -163,8 +169,8 @@ async function create_account(){
  * Get user via their slack user id
  * @param {*} slack_id
  */
-async function get_user_from_slack_id(slack_id){
-
+async function get_user_from_slack_id(slack_id) {
+    return false
 }
 
 /**
@@ -220,7 +226,7 @@ app.post("/api/login", async (req, res) => {
 
 
 /* WEBHOOK */
-app.post("/webhook", async(req, res) => {
+app.post("/webhook", async (req, res) => {
     log("Restarting because of webhook")
     require("child_process").exec("git pull origin " + config.branch)
 })
@@ -231,12 +237,28 @@ app.post("/api/slack/checkin", async (req, res) => {
     var success = verify_slack_request(req)
     if (success) {
         var user = get_user_from_slack(req)
-        if(user){
-            res.end("REEE")
-            //res.end("Hello there " + user.username)
+        if (user) {
+
+        } else {
+            res.end(slack_response("Please register an account and link it before using slash commands", slack_attachment("https://hs.ygstr.com")))
         }
     }
 })
+
+function slack_response(text, attachments = []) {
+    return JSON.stringify({
+        "response_type": "in_channel",
+        "text": JSON.stringify(text),
+        "attachments": JSON.stringify(attachments)
+    })
+}
+
+function slack_attachment(text, color = "#2bb8ff"){
+    return {
+        color: color,
+        text: text
+    }
+}
 
 
 /* Website pages */

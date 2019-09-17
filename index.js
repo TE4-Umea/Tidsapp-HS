@@ -18,13 +18,23 @@ API = new API()
 const Tests = require("./Tests")
 const tests = new Tests()
 
+/**
+ * Log message with timestamp
+ * Use this when a log should stay in the code
+ * @param {*} message 
+ */
+function log(message){
+    var date = new Date()
+    console.log(`[${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}] ${message}`)
+}
+
 function on_loaded(){
     var args = process.argv.slice(2)
     if(args.includes("--test") || args.includes("-t")){
         tests.run()
     }
 
-    console.log(`Happy Surfer's TimeTracker has started on port: ${port}`)
+    log(`Happy Surfer's TimeTracker has started on port: ${port}`)
 }
 
 const hash = () => {

@@ -18,7 +18,8 @@
 /**
  * Check in a user from via their user id 
  * @param user_id Int ID of the user(time:users:id)
- * @param check_in Boolean Overwrites and checks in the user if it's true. If this valus is not definied the user will be toggled
+ * @param check_in Boolean Overwrites and checks in the user if it's true. If this valus is
+ * not definied the user will be toggled
  */
 check_in(user_id, check_in = null, project_name = null)
 
@@ -110,46 +111,8 @@ remove_user(user_to_remove, project_name, user)
 login_user(username, password)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```
 -
-
-
-
-
-
-
-
-
-
 
 
 ## REST API

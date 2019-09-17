@@ -1,0 +1,31 @@
+{
+  "name": "tidsapp",
+  "version": "1.0.0",
+  "description": "Documentation https://github.com/te4umea2019/Tidsapp-HS/wiki",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "file-system": "^2.2.2",
+    "http": "0.0.0",
+    "https": "^1.0.0",
+    "mysql": "^2.17.1",
+    "pug": "^2.0.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/te4umea2019/Tidsapp-HS.git"
+  },
+  "author": "",
+  "license": "Apache License 2.0",
+  "bugs": {
+    "url": "https://github.com/te4umea2019/Tidsapp-HS/issues"
+  },
+  "homepage": "https://github.com/te4umea2019/Tidsapp-HS#readme"
+}

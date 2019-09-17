@@ -236,7 +236,7 @@ app.post("/webhook", async (req, res) => {
 app.post("/api/slack/checkin", async (req, res) => {
     var success = verify_slack_request(req)
     if (success) {
-        var user = get_user_from_slack(req)
+        var user = await get_user_from_slack(req)
         console.log(user)
         if (user) {
             res.end("test")

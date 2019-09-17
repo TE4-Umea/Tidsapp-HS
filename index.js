@@ -13,8 +13,19 @@ const mysql = require("mysql")
 const crypto = require("crypto")
 
 var API = require("./API")
-    API = new API()
+API = new API()
 
+const Tests = require("./Tests")
+const tests = new Tests()
+
+function on_loaded(){
+    var args = process.argv.slice(2)
+    if(args.includes("--test") || args.includes("-t")){
+        tests.run()
+    }
+
+    console.log(`Happy Surfer's TimeTracker has started on port: ${port}`)
+}
 
 const hash = () => {
     return crypto.randomBytes(20).toString('hex').toUpperCase()
@@ -36,11 +47,11 @@ try {
         client_id: "CLIENT ID",
         client_secret: "CLIENT SECRET",
         // mySQL connection information
-        mysql_host: "MYSQL URL",
-        mysql_user: "ADMIN",
-        mysql_pass: "PASSWORD",
+        mysql_host: "localhost",
+        mysql_user: "admin",
+        mysql_pass: "password",
         // Database name
-        database: "time_tracker",
+        database: "time",
         // Slack team name of the users who are allowed to sign in
         slack_team: "SLACK TEAM NAME"
     }
@@ -117,7 +128,7 @@ app.use(bp.urlencoded({
 
 // Create the server and start it on the port in config.json
 var server = http.createServer(app).listen(port)
-console.log(`Happy Surfer's TimeTracker has started on port: ${port}`)
+
 
 // Bind socket.io to the webserver, (socket.io, REST API and the website are all on the same port)
 var io = require("socket.io")(server)
@@ -161,3 +172,5 @@ app.post("/api/login", async (req, res) => {
 app.get("/", (req, res) => {
     res.render("index")
 })
+
+on_loaded()

@@ -10,6 +10,7 @@ class Server {
         var args = process.argv.slice(2)
         this.TESTING = (args.includes("--test") || args.includes("-t"))
 
+        this.md5 = require("md5")
         this.bp = require("body-parser")
         this.express = require("express")
         this.http = require("http")
@@ -164,6 +165,8 @@ class Server {
 
     }
 
+    
+
     /**
      * Get user from slack request, if they are not registered an account will be created.
      * @param {*} req Slack request
@@ -182,8 +185,29 @@ class Server {
         }
     }
 
-    async create_account() {
+    /**
+     * Create a new account in the database
+     * @param {*} username Username of the account
+     * @param {*} password Password of the account
+     * @param {*} full_name Full name of the user
+     */
+    async create_user(username, password, full_name) {
+        // Insert into the database
+        await this.db.query("INSERT INTO users (username, name, password) VALUES (?, ?, ?)", [username, full_name, this.md5(password)])
+        var user = this.get_user_from_username(username)
+        if(user){
+            this.log("Account created for " + full_name)
+            return user
+        }
+    }
 
+    async delete_user(username){
+        var user = await this.get_user_from_username(username)
+        if(user){
+            this.db.query("DELETE FROM users WHERE id = ?", user.id)
+            return true
+        }
+        return false
     }
 
     /**
@@ -202,6 +226,11 @@ class Server {
     async get_user(user_id) {
         var user = await db.query_one("SELECT * FROM users WHERE id = ?", user_id)
         return user ? user : false
+    }
+
+    async get_user_from_username(username){
+        var user = await this.db.query_one("SELECT * FROM users WHERE username = ?", username)
+        return user
     }
 
 

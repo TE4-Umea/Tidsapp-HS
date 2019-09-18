@@ -49,6 +49,7 @@ DROP TABLE IF EXISTS `projects`;
 CREATE TABLE IF NOT EXISTS `projects` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID  of the project',
   `name` text COMMENT 'Name of the project',
+  `owner` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -77,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `admin` tinyint(4) DEFAULT NULL COMMENT 'Boolean(0-1) if the user is an admin or not.',
   `created` bigint(20) DEFAULT NULL COMMENT 'The date the user was created',
   `slack_id` text,
+  `slack_domain` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

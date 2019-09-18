@@ -72,15 +72,16 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID of the user',
   `username` text COMMENT 'User chosen name',
   `name` text COMMENT 'Full name of the user ',
-  `avatar` text COMMENT 'Link of the username',
-  `email` text COMMENT 'Email of the user',
-  `access_token` text COMMENT 'Access token given by slack, used to update user information',
-  `admin` tinyint(4) DEFAULT NULL COMMENT 'Boolean(0-1) if the user is an admin or not.',
+  `password` text,
   `created` bigint(20) DEFAULT NULL COMMENT 'The date the user was created',
+  `admin` tinyint(4) DEFAULT NULL COMMENT 'Boolean(0-1) if the user is an admin or not.',
+  `email` text COMMENT 'Email of the user',
+  `avatar` text COMMENT 'Link of the username',
+  `access_token` text COMMENT 'Access token given by slack, used to update user information',
   `slack_id` text,
   `slack_domain` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 -- Dataexport var bortvalt.
 

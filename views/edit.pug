@@ -1,0 +1,28 @@
+head
+    title Edit
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js")
+    script(src="js/main.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/10.0.0/markdown-it.js")
+    |<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/default.min.css"> 
+    |<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+body
+    textarea(name="", oninput="preview(this)" id="text-area" cols="70", rows="20" style="display:inline-block;")
+    div(id="preview" style="") Preview...
+    input(type="text" id="title" placeholder="Title")
+    input(type="password" placeholder="token" id="token")
+    
+    select(id="type")
+        option(value="") Select type
+        option(value="class") Class
+        option(value="function") Function
+        option(value="text") Text
+    br
+    select(id="class")
+        option(value="") Select class (if function)
+    
+    | Pinned
+    input(type="checkbox" id="pinned" name="")
+    select(name="" id="load-page" onchange="load(this)")
+        option(value="") Load page
+    button(onclick="upload()") Upload
+    script(src="js/edit.js")

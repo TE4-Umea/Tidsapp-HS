@@ -1,0 +1,48 @@
+#api-list{
+    display: block;
+    position: relative;
+    margin: 15px;
+    width: 250px;
+    border-radius: 0px;
+    border-right: solid 5px var(--blu);
+    background: rgb(255, 255, 255);
+    overflow: hidden;
+}
+
+.api-page{
+    display: block;
+    width: calc(100% - 20px);
+    cursor: pointer;
+    padding: 5px;
+    left: 0px;
+    position: relative;
+    transition: left .2s;
+    border-radius: 3px;
+    user-select: none;
+    font-family: 'Source Code Pro', monospace;
+}
+
+
+.api-page:hover{
+    left: 5px;
+    color: var(--blu);
+}
+
+.api-page:active{
+    left: 5px;
+    background: rgb(238, 238, 238);
+}
+
+.code{
+    font-family: 'Source Code Pro', monospace;
+}
+
+#api-page-title{
+    display: block;
+    right: 15px;
+    top: 15px;
+    position: absolute;
+    font-size: 20px;
+    font-family: 'Ubuntu';
+
+}

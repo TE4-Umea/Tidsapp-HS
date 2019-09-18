@@ -204,7 +204,7 @@ class Server {
     async delete_user(username){
         var user = await this.get_user_from_username(username)
         if(user){
-            this.db.query("DELETE FROM users WHERE id = ?", user.id)
+            await this.db.query("DELETE FROM users WHERE id = ?", user.id)
             return true
         }
         return false

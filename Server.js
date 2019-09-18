@@ -272,6 +272,14 @@ class Server {
         return true
     }
 
+    async delete_project(project_name, user_id){
+        //var user = await this.db.query_one("SELECT * FROM users WHERE id = ?". user_id)
+        var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
+        if(project.owner == this.user_id){
+            await this.db.query("DELETE FROM projects WHERE id = ?", project_id)
+        }
+    }
+
     async add_user_to_project(user_to_add, project_id, user){
 
     }

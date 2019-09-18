@@ -219,6 +219,11 @@ app.post("/api/login", async (req, res) => {
     API.login(req, res)
 })
 
+/* SOCKET IO */
+io.on("connection", socket => {
+    console.log("User connected!")
+})
+
 
 /* WEBHOOK */
 app.post("/webhook", async (req, res) => {
@@ -277,7 +282,7 @@ function slack_attachment(text, color = "#2bb8ff") {
 
 /* Website pages */
 app.get("/", (req, res) => {
-    res.render("index")
+    res.render("dashboard")
 })
 
 app.get("/signup", (req, res) => {

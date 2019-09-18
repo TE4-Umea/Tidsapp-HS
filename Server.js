@@ -161,11 +161,25 @@ class Server {
     }
 
 
-    check_in(user_id, check_in = null, project_name = null) {
-
+    async check_in(user_id, check_in = null, project_name = null) {
+        var user = this.get_user(user_id)
+        if(user){
+            
+        } else {
+            this.log("User ID not found".red)
+        }
     }
 
-    
+    /**
+     * Check if a user is checked in
+     * @param {*} user_id ID of the user
+     */
+    async is_checked_in(user_id){
+        var last_check_in = await this.db.query_one("SELECT * FROM checks WHERE user = ? ORDER BY date DESC LIMIT 1")
+        if(!last_check_in) return false
+        if(last_check_in.check_in) return true
+        return false
+    }
 
     /**
      * Get user from slack request, if they are not registered an account will be created.

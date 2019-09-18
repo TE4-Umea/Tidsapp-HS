@@ -7,8 +7,7 @@ class Server {
      */
     constructor() {
 
-        var args = process.argv.slice(2)
-        this.TESTING = (args.includes("--test") || args.includes("-t"))
+        this.isInTest = typeof global.it === 'function';
 
         this.md5 = require("md5")
         this.bp = require("body-parser")
@@ -114,7 +113,8 @@ class Server {
 
         /* SOCKET IO */
         this.io.on("connection", socket => {
-            console.log("User connected!")
+
+
         })
 
         /* WEBHOOK */
@@ -148,6 +148,7 @@ class Server {
      * @param {*} message 
      */
     log(message) {
+        if(this.isInTest) return
         var date = new Date()
         console.log(`[${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}] ${message}`)
     }
@@ -174,8 +175,16 @@ class Server {
         if(user){
             if(project_name){
                 var project = await this.get_project(project_name)
-                owns_project = await this.is_joined_in_project(user.id, project.id)
-                if(!owns_project) return false
+                if(project){
+                    var owns_project = await this.is_joined_in_project(user.id, project.id)
+                    if(!owns_project) {
+                        this.log("User isn't apart of the project")
+                        return false
+                    }
+                } else {
+                    return false
+                }
+                
             }
             var last_check = await this.get_last_check(user.id)
             if(check_in === null){
@@ -188,7 +197,7 @@ class Server {
                 await this.insert_check(user.id, check_in, project_name, type)
                 return true
             } else {
-                if(!check_in && project_name != last_check.project){
+                if(check_in && project_name != last_check.project){
                     await this.insert_check(user.id, check_in, project_name, type)
                     return true
                 }
@@ -200,8 +209,8 @@ class Server {
     }
 
     async is_joined_in_project(user_id, project_id){
-        var owns_project = await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])
-        if(owns_project) return true
+        if(await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])) return true
+        if(await this.get_project_from_id(project_id)) return true
         return false
     }
     
@@ -245,8 +254,26 @@ class Server {
      * @param {*} project_name 
      */
     async get_project(project_name){
-        var project = await db.query_one("SELECT * FROM projects WHERE upper(name) = ?", project_name.toUpperCase())
+        var project = await this.db.query_one("SELECT * FROM projects WHERE upper(name) = ?", project_name.toUpperCase())
         return project
+    }
+
+    async get_project_from_id(project_id){
+        var project = await this.db.query_one("SELECT * FROM projects WHERE id = ?", project_id)
+        return project
+    }
+
+    async create_project(project_name, user){
+        if(project_name.length > 20 || project_name < 3){
+            this.log("Project name is too short")
+            return false
+        }
+        await this.db.query("INSERT INTO projects (name, owner) VALUES (?, ?)", [project_name, user.id])
+        return true
+    }
+
+    async add_user_to_project(user_to_add, project_id, user){
+
     }
 
     /**

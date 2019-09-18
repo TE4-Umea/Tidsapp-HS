@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `checks` (
 DROP TABLE IF EXISTS `joints`;
 CREATE TABLE IF NOT EXISTS `joints` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID of the joint',
-  `project` text COMMENT 'Name of the project',
+  `project` int(11) DEFAULT NULL COMMENT 'ID of the project',
   `user` int(11) DEFAULT NULL COMMENT 'ID of the user',
   `work` bigint(20) DEFAULT NULL COMMENT 'Work done in ms (1 hour of work = 3600000)',
   `date` bigint(20) DEFAULT NULL COMMENT 'Date of joining the project',
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `slack_id` text,
   `slack_domain` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
 -- Dataexport var bortvalt.
 

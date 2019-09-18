@@ -51,7 +51,7 @@ class Server {
                 // Slack team name of the users who are allowed to sign in
                 slack_team: "SLACK TEAM NAME"
             }
-            this.fs.writeFileSync("config.json", JSON.stringify(config))
+            this.fs.writeFileSync("config.json", JSON.stringify(this.config))
         }
 
 
@@ -161,24 +161,92 @@ class Server {
     }
 
 
-    async check_in(user_id, check_in = null, project_name = null) {
-        var user = this.get_user(user_id)
+    /**
+     * 
+     * @param {*} user_id 
+     * @param {*} check_in 
+     * @param {*} project_name 
+     * @param {*} type 
+     * @returns Success, if the check in/out was successfull
+     */
+    async check_in(user_id, check_in = null, project_name = null, type = "Slack") {
+        var user = await this.get_user(user_id)
         if(user){
-            
+            if(project_name){
+                var project = await this.get_project(project_name)
+                owns_project = await this.is_joined_in_project(user.id, project.id)
+                if(!owns_project) return false
+            }
+            var last_check = await this.get_last_check(user.id)
+            if(check_in === null){
+                // Toggle checkin
+                await this.insert_check(user.id, !last_check.check_in, project_name, type)
+                return true
+            } 
+            if(check_in != last_check.check_in){
+                // A change, commit the check
+                await this.insert_check(user.id, check_in, project_name, type)
+                return true
+            } else {
+                if(!check_in && project_name != last_check.project){
+                    await this.insert_check(user.id, check_in, project_name, type)
+                    return true
+                }
+            }
         } else {
             this.log("User ID not found".red)
+            return false
         }
     }
 
+    async is_joined_in_project(user_id, project_id){
+        var owns_project = await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])
+        if(owns_project) return true
+        return false
+    }
+    
+    /**
+     * 
+     * @param {*} user_id 
+     * @param {*} check_in 
+     * @param {*} project 
+     * @param {*} type 
+     */
+    async insert_check(user_id, check_in, project, type){
+        var user = await this.get_user(user_id)
+        if(!check_in) project = ""
+        await this.db.query("INSERT INTO checks (user, check_in, project, date, type) VALUES (?, ?, ?, ?, ?)", [user_id, check_in, project, Date.now(), type])
+        this.log(user.name + " checked " + (check_in ? "in" : "out") +  " via " + type)
+    }
     /**
      * Check if a user is checked in
      * @param {*} user_id ID of the user
      */
     async is_checked_in(user_id){
-        var last_check_in = await this.db.query_one("SELECT * FROM checks WHERE user = ? ORDER BY date DESC LIMIT 1")
-        if(!last_check_in) return false
-        if(last_check_in.check_in) return true
-        return false
+        var checked_in = await this.get_last_check(user_id)
+        return checked_in.check_in
+    }
+
+    /**
+     * 
+     * @param {*} user_id 
+     */
+    async get_last_check(user_id){
+        var last_check_in = await this.db.query_one("SELECT * FROM checks WHERE user = ? ORDER BY date DESC LIMIT 1", user_id)
+        if(!last_check_in) return {
+            check_in: false,
+            project: ""
+        }
+        return last_check_in
+    }
+
+    /**
+     * 
+     * @param {*} project_name 
+     */
+    async get_project(project_name){
+        var project = await db.query_one("SELECT * FROM projects WHERE upper(name) = ?", project_name.toUpperCase())
+        return project
     }
 
     /**
@@ -238,7 +306,7 @@ class Server {
      * @returns {User} User
      */
     async get_user(user_id) {
-        var user = await db.query_one("SELECT * FROM users WHERE id = ?", user_id)
+        var user = await this.db.query_one("SELECT * FROM users WHERE id = ?", user_id)
         return user ? user : false
     }
 

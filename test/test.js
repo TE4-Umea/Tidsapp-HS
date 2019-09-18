@@ -39,6 +39,27 @@ describe("MYSQL connection and account managing", () => {
 /* TODO: Test check in, check out*/
 
 
+describe("Check in / out testing", () => {
+    it("Check in user (toggle, no project)", async() => {
+        var user = await server.get_user_from_username(test_username)
+        assert.equal(await server.is_checked_in(user.id), false)
+        var success = await server.check_in(user.id, undefined, undefined, "Test")
+
+        assert.equal(await server.is_checked_in(user.id), true)
+        assert.equal(success, true)
+
+    })
+
+    it("Check in out (toggle, no project)", async() => {
+        var user = await server.get_user_from_username(test_username)
+        assert.equal(await server.is_checked_in(user.id), true)
+        var success = await server.check_in(user.id, undefined, undefined, "Test")
+        assert.equal(success, true)
+        assert.equal(await server.is_checked_in(user.id), false)
+    })
+})
+
+
 describe("Delete user", () => {
     it("Delete user", async () => {
         await server.delete_user(test_username)

@@ -4,8 +4,9 @@
  * Here we use underscore convention (variable_name, function_name())
  * 
  */
+var args = process.argv.slice(2)
+const TESTING = (args.includes("--test") || args.includes("-t"))
 
-const expect = require("expect")
 const bp = require("body-parser")
 const express = require("express")
 const http = require("http")
@@ -14,12 +15,10 @@ const fs = require("file-system")
 const mysql = require("mysql")
 const crypto = require("crypto")
 const qs = require("qs")
+const colors = require("colors")
 
 var API = require("./API")
 API = new API()
-
-const Tests = require("./Tests")
-const tests = new Tests()
 
 /**
  * Log message with timestamp
@@ -32,11 +31,6 @@ function log(message) {
 }
 
 function on_loaded() {
-    var args = process.argv.slice(2)
-    if (args.includes("--test") || args.includes("-t")) {
-        tests.run()
-    }
-
     log(`Happy Surfer's TimeTracker has started on port: ${port}`)
 }
 
@@ -229,7 +223,7 @@ app.post("/api/login", async (req, res) => {
 /* WEBHOOK */
 app.post("/webhook", async (req, res) => {
     log("Restarting because of webhook")
-    require("child_process").exec("git pull origin " + config.branch + " && npm i")
+    require("child_process").exec("git pull origin " + config.branch)
 })
 
 /* SLACK API */
@@ -317,3 +311,25 @@ function verify_slack_request(req) {
 }
 
 on_loaded()
+
+function test(title, code) {
+    if (TESTING) {
+        code({
+            pass: () => {
+                console.log("[√ PASSED]".green + " " + title.white)
+            },
+            fail: () => {
+                console.log("[x FAILED]".red + " " + title.white)
+            }
+        })
+    }
+}
+
+
+/**
+ * Tests goes here
+ */
+
+test("Tests works", t => {
+    t.pass() // t.fail()
+})

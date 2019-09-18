@@ -7,7 +7,7 @@ class Server {
      */
     constructor() {
 
-        this.isInTest = typeof global.it === 'function';
+        this.isInTest = typeof global.it === 'function'
 
         this.md5 = require("md5")
         this.bp = require("body-parser")
@@ -130,7 +130,7 @@ class Server {
             if (success) {
                 var user = await this.get_user_from_slack(req)
                 if (user) {
-
+                    
                 } else {
                     res.json(new this.SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [new this.SlackJSON.SlackAttachement("https://hs.ygstr.com")]))
                 }
@@ -139,7 +139,6 @@ class Server {
 
         this.routes()
         this.on_loaded()
-
     }
 
     /**
@@ -356,21 +355,21 @@ class Server {
 
     verify_slack_request(req) {
         try {
-            var slack_signature = req.headers['x-slack-signature'];
+            var slack_signature = req.headers['x-slack-signature']
             var request_body = qs.stringify(req.body, {
                 format: 'RFC1738'
-            });
-            var timestamp = req.headers['x-slack-request-timestamp'];
-            var time = Math.floor(new Date().getTime() / 1000);
+            })
+            var timestamp = req.headers['x-slack-request-timestamp']
+            var time = Math.floor(new Date().getTime() / 1000)
             if (Math.abs(time - timestamp) > 300) {
                 return false
             }
 
-            var sig_basestring = 'v0:' + timestamp + ':' + request_body;
+            var sig_basestring = 'v0:' + timestamp + ':' + request_body
             var my_signature = 'v0=' +
                 this.crypto.createHmac('sha256', this.config.signing_secret)
                 .update(sig_basestring, 'utf8')
-                .digest('hex');
+                .digest('hex')
             if (this.crypto.timingSafeEqual(
                     Buffer.from(my_signature, 'utf8'),
                     Buffer.from(slack_signature, 'utf8'))) {

@@ -2,8 +2,10 @@
  * Server side by Happy Surfers
  * Remember to comment your code!
  * Here we use underscore convention (variable_name, function_name())
- * WORKING
+ * 
  */
+var args = process.argv.slice(2)
+const TESTING = (args.includes("--test") || args.includes("-t"))
 
 const bp = require("body-parser")
 const express = require("express")
@@ -13,12 +15,10 @@ const fs = require("file-system")
 const mysql = require("mysql")
 const crypto = require("crypto")
 const qs = require("qs")
+const colors = require("colors")
 
 var API = require("./API")
 API = new API()
-
-const Tests = require("./Tests")
-const tests = new Tests()
 
 /**
  * Log message with timestamp
@@ -31,11 +31,6 @@ function log(message) {
 }
 
 function on_loaded() {
-    var args = process.argv.slice(2)
-    if (args.includes("--test") || args.includes("-t")) {
-        tests.run()
-    }
-
     log(`Happy Surfer's TimeTracker has started on port: ${port}`)
 }
 
@@ -147,7 +142,21 @@ function check_in(user_id, check_in = null, project_name = null) {
  * Get user from slack request, if they are not registered an account will be created.
  * @param {*} req Slack request
  */
-async function get_user_from_slack(req){
+async function get_user_from_slack(req) {
+    var success = verify_slack_request(req)
+    if (success) {
+        var body = req.body
+        var slack_id = body.user_id
+        var user = await get_user_from_slack_id(slack_id)
+        if (user) {
+            return user
+        } else {
+            return false
+        }
+    }
+}
+
+async function create_account() {
 
 }
 
@@ -155,8 +164,8 @@ async function get_user_from_slack(req){
  * Get user via their slack user id
  * @param {*} slack_id
  */
-async function get_user_from_slack_id(slack_id){
-
+async function get_user_from_slack_id(slack_id) {
+    return false
 }
 
 /**
@@ -212,7 +221,7 @@ app.post("/api/login", async (req, res) => {
 
 
 /* WEBHOOK */
-app.post("/webhook", async(req, res) => {
+app.post("/webhook", async (req, res) => {
     log("Restarting because of webhook")
     require("child_process").exec("git pull origin " + config.branch)
 })
@@ -222,12 +231,48 @@ app.post("/webhook", async(req, res) => {
 app.post("/api/slack/checkin", async (req, res) => {
     var success = verify_slack_request(req)
     if (success) {
-        var user = get_user_from_slack(req)
-        if(user){
-            res.end("Hello there " + user.username)
+        var user = await get_user_from_slack(req)
+        if (user) {
+
+        } else {
+            res.json(new SlackResponse("Please register an account and link it before using slash commands", [new SlackAttachement("https://hs.ygstr.com")]))
         }
     }
 })
+
+
+class SlackResponse {
+    /**
+     * Create a slack response embed, use red.json() to send this back via the bot
+     * @param {*} text Text you want to submit, optional
+     * @param {*} attachments Array of attachements, optional
+     */
+    constructor(text = "", attachments = []) {
+        this.text = text
+        this.attachments = attachments
+    }
+}
+
+class SlackAttachement {
+    constructor(text = "", color = "#0a6cff") {
+        this.text = text
+        this.color = color
+        this.tilte = ""
+        this.title_link = ""
+    }
+}
+
+/**
+ * 
+ * @param {*} text 
+ * @param {*} color 
+ */
+function slack_attachment(text, color = "#2bb8ff") {
+    return {
+        color: color,
+        text: text
+    }
+}
 
 
 /* Website pages */
@@ -266,3 +311,25 @@ function verify_slack_request(req) {
 }
 
 on_loaded()
+
+function test(title, code) {
+    if (TESTING) {
+        code({
+            pass: () => {
+                console.log("[√ PASSED]".green + " " + title.white)
+            },
+            fail: () => {
+                console.log("[x FAILED]".red + " " + title.white)
+            }
+        })
+    }
+}
+
+
+/**
+ * Tests goes here
+ */
+
+test("Tests works", t => {
+    t.pass() // t.fail()
+})

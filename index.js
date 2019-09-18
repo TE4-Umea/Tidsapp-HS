@@ -280,6 +280,10 @@ app.get("/", (req, res) => {
     res.render("index")
 })
 
+app.get("/signup", (req, res) => {
+    res.render("signup")
+})
+
 function verify_slack_request(req) {
     try {
         var slack_signature = req.headers['x-slack-signature'];
@@ -329,6 +333,12 @@ function test(title, code) {
 /**
  * Tests goes here
  */
+
+test("a test", t => {
+    if(true){
+        t.pass()
+    }
+})
 
 test("Tests works", t => {
     t.pass() // t.fail()

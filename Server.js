@@ -351,6 +351,10 @@ class Server {
         this.app.get("/signup", (req, res) => {
             res.render("signup")
         })
+
+        this.app.get("/api", (req, res) => {
+            res.render("api")
+        })
     }
 
     verify_slack_request(req) {

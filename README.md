@@ -10,7 +10,7 @@
 2. Install all NPM dependencies `npm install`
 3. Start it and then stop it `sudo node index.js`
 4. Configure mysql and web-port `config.json`
-5. Done!
+5. Run tests and make sure everything checks out ```npm test```
 
 ## REST API
 Documentation https://github.com/te4umea2019/Tidsapp-HS/wiki

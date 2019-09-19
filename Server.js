@@ -50,12 +50,14 @@ class Server {
 
         try {
             this.config = JSON.parse(this.fs.readFileSync("config.json"))
+            var updated = false
             for(var key in this.config_templete){
                 if(this.config[key] === undefined){
                     this.config[key] = this.config_templete[key]
+                    updated = true
                     this.log("Updated config.json with the missing option " + key)
                 }
-                this.fs.writeFileSync("config.json", JSON.stringify(this.config))
+                if(updated) this.fs.writeFileSync("config.json", JSON.stringify(this.config))
             }
         } catch (e) {
             this.log("Loading config.json failed, creating a default one.")

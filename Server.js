@@ -273,10 +273,15 @@ class Server {
     }
 
     async delete_project(project_name, user_id){
-        //var user = await this.db.query_one("SELECT * FROM users WHERE id = ?". user_id)
+        var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
-        if(project.owner == this.user_id){
+        if(project.owner == user_id){
             await this.db.query("DELETE FROM projects WHERE id = ?", project_id)
+            this.log("Project deleted by: " + user.username)        
+            return true
+        }else{
+            this.log("You dont have permission to delete this project")
+            return false
         }
     }
 

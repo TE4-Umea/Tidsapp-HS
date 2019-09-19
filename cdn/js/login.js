@@ -1,4 +1,5 @@
 function check_usersname(el){
+    el.value = el.value.replace(/[^a-z0-9_]+|\s+/gmi, "")
     if(el.value.length < 3) {
         update_login_page(true, true)
         return
@@ -17,10 +18,9 @@ function update_login_page(username_taken, disabled = false){
     button.disabled = disabled
     button.title = disabled ? "Username must be at least 3 characters long" : (username_taken ? "Log in" : "Create account")
     button.innerText = disabled ? "sign up / log in" : (username_taken ? "log in" : "Sign up")
-
 }
 
-socket.on("err", msg => {
+socket.on("login_err", msg => {
     var error_box = document.getElementById("error-message")
     error_box.innerText = msg
     error_box.style.display = "block"
@@ -33,3 +33,7 @@ function login(){
         name: document.getElementById("name").value
     })
 }
+
+document.addEventListener("keypress", e => {
+    if(e.key == "Enter") login()
+})

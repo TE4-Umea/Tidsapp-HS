@@ -125,31 +125,60 @@ class Server {
         /* SOCKET IO */
         this.io.on("connection", socket => {
 
+            socket.on("login_with_token", async token => {
+                var user = await this.get_user_from_token(token)
+                if(user){
+                    delete user.password
+                    socket.emit("login", user)
+                } else {
+                    socket.emit("invalid_token")
+                }
+            })
 
             socket.on("login", async info => {
+
                 var user = await this.get_user_from_username(info.username)
                 if(user){
                     // Sign in
-
+                    user = await this.get_user_from_username_and_password(info.username, info.password)
+                    if(user){
+                        var token = await this.generate_token(user.username)
+                        if(token){
+                            socket.emit("token", token)
+                        }
+                    } else {
+                        socket.emit("login_err", "Wrong password")
+                        return
+                    }
                 } else {
                     // Sign up
-                    if(info.username.trim().length < 3){
-                        socket.emit("err" ,"Username has to be at least three characters long")
+                    if(info.username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== info.username){
+                        socket.emit("login_err", "Username contains illigal characters")
+                        return
+                    }
+                    if(info.username.length < 3){
+                        socket.emit("login_err" ,"Username has to be at least three characters long")
                         return
                     }
                     if(info.username.length > 20){
-                        socket.emit("err", "Username cannot exceed 20 characters")
+                        socket.emit("login_err", "Username cannot exceed 20 characters")
                         return
                     }
-                    if(info.name.trim.length() < 2 || info.name.indexOf(" ") == -1){
-                        socket.emit("err", "Please provide a full name, ex. Michael Stevens")
+                    if(info.name.indexOf(" ") == -1){
+                        socket.emit("login_err", "Please provide a full name, ex. Michael Stevens")
                         return
                     }
                     if(info.password == ""){
-                        socket.emit("err", "Please enter a password")
+                        socket.emit("login_err", "Please enter a password")
                         return
                     }
                     var user = await this.create_user(info.username, info.password, info.name)
+                    if(user){
+                        var token = await this.generate_token(user.username)
+                        socket.emit("token", token)
+                    } else {
+                        socket.emit("login_err", "Something went wrong when creating your account. Please notify administrators.")
+                    }
 
                 }
             })
@@ -219,6 +248,8 @@ class Server {
         var date = new Date()
         console.log(`[${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}] ${message}`)
     }
+
+   
 
     on_loaded() {
         this.log(`Happy Surfer's TimeTracker has started on port: ${this.port}`)
@@ -377,12 +408,24 @@ class Server {
     async delete_project(project_name, user_id){
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
-        if(project.owner == user_id){
+        if(project.owner === user_id){
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
             this.log("Project deleted by: " + user.username)        
             return true
         }else{
-            this.log("You dont have permission to delete this project")
+            this.log("Permission denied on delete project, " + user.username)
+            return false
+        }
+    }
+
+    async get_user_from_token(token){
+        var db_token = await this.db.query_one("SELECT * FROM tokens WHERE token = ?", token)
+        if(db_token){
+            var user = await this.get_user(db_token.user)
+            if(user){
+                return user
+            }
+        } else {
             return false
         }
     }
@@ -439,9 +482,9 @@ class Server {
     async generate_token(username){
         var user = await this.get_user_from_username(username)
         if(user){
-            var token = new this.hash()
-            await db.query("INSERT INTO tokens (token user) VALUES (?, ?)", [token, user.id])
-            return true
+            var token = this.hash()
+            await this.db.query("INSERT INTO tokens (token, user) VALUES (?, ?)", [token, user.id])
+            return token
         }
         return false
     }

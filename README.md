@@ -12,109 +12,6 @@
 4. Configure mysql and web-port `config.json`
 5. Done!
 
-## Systembeskrivning
-
-```javascript
-/**
- * Check in a user from via their user id 
- * @param user_id Int ID of the user(time:users:id)
- * @param check_in Boolean Overwrites and checks in the user if it's true. If this valus is
- * not definied the user will be toggled
- */
-check_in(user_id, check_in = null, project_name = null)
-
-
-/**
- * If the user is checked in
- * @param user_id int ID of the user.
- * @returns Boolean returns true if the user is checked in
- */
-is_checked_in(user_id)
-
-
-/**
- * Get user via their ID
- * If the user ID is invalid, return false
- * @param user_id Int ID of the user(time:users:id)
- */
-get_user(user_id)
-
-
-/**
- * Get user via their token
- * If the token is invalid, return false
- * @param token String The users token
- */
-get_user_from_token(token)
-
-
-/**
- * Create a new project
- * Provided project name and owner
- * @param project_name String Choosen name of the new project
- * @param user User User that did the change
- */
-create_project(project_name, user)
-
-
-/**
- * Get an entire project from the database
- * This inlcudes the project name and id
- * @param project_name Name of the project
- */
-get_project(project_name)
-
-
-/**
- * Edit the name of a project
- * @param project_name Old name of the project
- * @param new_project_name New name of the project
- * @param user The user who requested the change
- */
-edit_project_name(project_name, new_project_name, user)
-
-
-/**
- * Deletes the projekt specified
- * @param project_name The name of the project that is being deleted
- * @param user User that deleted the project for logs
- * 
- */
-delete_project(project_name, user)
-
-
-/**
- * Add a new user to the project specified in project name
- * @param user_to_add The target user to add 
- * @param project_name The target project to add the user to
- * @param user User that did the change for logs
- */
-add_user(user_to_add, project_name, user)
-
-
-/**
- * Remove user from project 
- * @param user_to_remove The user to be removed
- * @param project_name The project that the user will be removed from
- * @param user The user that removes the other user
- * 
- */
-remove_user(user_to_remove, project_name, user)
-
-
-/**
- * Log in function
- * @param username is the username
- * @param password is the password
- * 
- */
-login_user(username, password)
-
-
-```
--
-
-
 ## REST API
 Documentation https://github.com/te4umea2019/Tidsapp-HS/wiki
 
@@ -139,7 +36,6 @@ Documentation https://github.com/te4umea2019/Tidsapp-HS/wiki
         Add another user to one of your projects
         
     /remove <username> <project> 
-
 
 ## Diagram
 ![](img/diagram.png)

@@ -128,6 +128,12 @@ class Server {
                 socket.emit("documentation", this.documentation)
             })
 
+            socket.on("username_taken", async username => {
+                var user = await this.get_user_from_username(username)
+                if(user) socket.emit("username_taken", true)
+                else socket.emit("username_taken", false)
+            })
+
             socket.on("upload_documentation", pack => {
                 if(pack.token === this.config.admin_token){
                     delete pack.token
@@ -367,6 +373,11 @@ class Server {
      * @param {*} full_name Full name of the user
      */
     async create_user(username, password, full_name) {
+        var username_taken = await this.get_user_from_username(username)
+        if(username_taken){
+            this.log("Username taken")
+            return false
+        }
         // Insert into the database
         await this.db.query("INSERT INTO users (username, name, password) VALUES (?, ?, ?)", [username, full_name, this.md5(password)])
         var user = this.get_user_from_username(username)

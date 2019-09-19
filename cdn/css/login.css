@@ -26,20 +26,23 @@
     outline: none;
 }
 
+#name{
+    display: none;
+}
+
 #wrap{
+    height: auto;
     max-width: 400px;
-    height: 380px;
-    max-height: 400px;
     margin-top: 25px;
-    transition: height .2s;
 }
 
 #login-button{
     margin: 0 auto;
     display: block;
     position: relative;
-    margin-top: 15px;
+    margin-top: 25px;
     height: 45px;
+    margin-bottom: 35px;
     width: 200px;
 }
 
@@ -54,4 +57,12 @@
 #disclaimer{
     font-size: 13px;
     color: rgb(34, 34, 34);
+}
+
+#error-message{
+    display: none;
+    position: relative;
+    color: rgb(255, 24, 74);
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

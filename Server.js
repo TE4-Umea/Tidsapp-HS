@@ -124,6 +124,36 @@ class Server {
 
         /* SOCKET IO */
         this.io.on("connection", socket => {
+
+
+            socket.on("login", async info => {
+                var user = await this.get_user_from_username(info.username)
+                if(user){
+                    // Sign in
+
+                } else {
+                    // Sign up
+                    if(info.username.trim().length < 3){
+                        socket.emit("err" ,"Username has to be at least three characters long")
+                        return
+                    }
+                    if(info.username.length > 20){
+                        socket.emit("err", "Username cannot exceed 20 characters")
+                        return
+                    }
+                    if(info.name.trim.length() < 2 || info.name.indexOf(" ") == -1){
+                        socket.emit("err", "Please provide a full name, ex. Michael Stevens")
+                        return
+                    }
+                    if(info.password == ""){
+                        socket.emit("err", "Please enter a password")
+                        return
+                    }
+                    var user = await this.create_user(info.username, info.password, info.name)
+
+                }
+            })
+
             socket.on("get_documentation", () => {
                 socket.emit("documentation", this.documentation)
             })
@@ -385,6 +415,25 @@ class Server {
             this.log("Account created for " + full_name)
             return user
         }
+    }
+
+    async get_user_from_username_and_password(username, password){
+        var user = await this.get_user_from_username(username)
+        if(user){
+            if(user.password === this.md5(password)) 
+                return user
+        }
+        return false
+    }
+
+    async generate_token(username){
+        var user = await this.get_user_from_username(username)
+        if(user){
+            var token = new this.hash()
+            await db.query("INSERT INTO tokens (token user) VALUES (?, ?)", [token, user.id])
+            return true
+        }
+        return false
     }
 
     async delete_user(username) {

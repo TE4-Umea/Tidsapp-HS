@@ -338,9 +338,19 @@ class Server {
         return true
     }
 
-    async add_user_to_project(user_to_add, project_id, user) {
-
+    async delete_project(project_name, user_id){
+        var user = await this.get_user(user_id)
+        var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
+        if(project.owner == user_id){
+            await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
+            this.log("Project deleted by: " + user.username)        
+            return true
+        }else{
+            this.log("You dont have permission to delete this project")
+            return false
+        }
     }
+
 
     /**
      * Get user from slack request, if they are not registered an account will be created.

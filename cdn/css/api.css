@@ -13,6 +13,7 @@
     display: block;
     width: calc(100% - 20px);
     cursor: pointer;
+    word-wrap: inherit;
     padding: 5px;
     left: 0px;
     position: relative;

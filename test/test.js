@@ -84,6 +84,13 @@ describe("Check in / out testing", () => {
 
 
 describe("Delete user and cleanup", () => {
+    it("Delete project", async () => {
+        var user = await server.get_user_from_username(test_username)
+        var success = await server.delete_project(test_project, user.id)
+        assert.equal(success, true)
+        project = await server.get_project(test_project)
+        assert.equal(project, undefined)
+    })
 
     it("Clean up", async() => {
         var user = await server.get_user_from_username(test_username)
@@ -97,4 +104,5 @@ describe("Delete user and cleanup", () => {
         user = await server.get_user_from_username(test_username)
         assert.equal(user, undefined)
     })
+
 })

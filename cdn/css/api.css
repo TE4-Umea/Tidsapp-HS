@@ -62,8 +62,6 @@
 }
 
 .class, .text{
-/*     border-bottom: 2px solid var(--blu);
-    border-radius: 0px; */
     left: -5px;
     font-weight: 700;
 }

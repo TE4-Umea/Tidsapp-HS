@@ -1,2 +1,14 @@
-extends main
+extends dash
+block head
+    link(rel="stylesheet", href="css/dashboard.css")
+block header 
+    span(id="time") --:--
+    div(id="seconds-bar")
+block sidebar
+    span(id="add-new-project" title="Create new project") +
 block content
+    div(id="logged-in-as")
+    <a href="https://slack.com/oauth/authorize?scope=identity.basic&client_id=your_client_id" id="slack-button"><img src="https://api.slack.com/img/sign_in_with_slack.png" /></a>
+    button(class="mdc-button mdc-button--raised" id="check-in-button") Check in
+    button(class="mdc-button" id="log-out-button") Log out
+    script(src="js/dashboard.js")

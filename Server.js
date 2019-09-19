@@ -23,6 +23,8 @@ class Server {
         this.API = require("./API")
         this.API = new this.API()
 
+        this.online_users = []
+
         var Database = require("./Database")
 
 
@@ -125,10 +127,17 @@ class Server {
         /* SOCKET IO */
         this.io.on("connection", socket => {
 
+            socket.on("disconnect", () => {
+                // Remove this connection from online users
+                this.online_users.splice(this.online_users.indexOf(socket.id), 1)
+            })
+
             socket.on("login_with_token", async token => {
                 var user = await this.get_user_from_token(token)
                 if(user){
                     delete user.password
+                    // Add the connection to the online users pool
+                    this.online_users[socket.id] = user.id
                     socket.emit("login", user)
                 } else {
                     socket.emit("invalid_token")
@@ -250,7 +259,6 @@ class Server {
     }
 
    
-
     on_loaded() {
         this.log(`Happy Surfer's TimeTracker has started on port: ${this.port}`)
     }
@@ -264,14 +272,16 @@ class Server {
         this.unsorted_documentation = []
         var pages = this.fs.readdirSync("documentation")
 
-        
-
         for (var page of pages) {
             this.unsorted_documentation.push(JSON.parse(this.fs.readFileSync("documentation/" + page)))
         }
 
         this.unsorted_documentation.sort((a, b) => {
             return b.pinned
+        })
+
+        this.unsorted_documentation.sort((a, b) => {
+            return a.type == "variable"
         })
 
         for(page of this.unsorted_documentation){
@@ -524,7 +534,7 @@ class Server {
 
     routes() {
         /* Website pages */
-        this.app.get("/", (req, res) => {
+        this.app.get("/dashboard", (req, res) => {
             res.render("dashboard")
         })
 

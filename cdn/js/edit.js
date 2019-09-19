@@ -31,7 +31,7 @@ function load(el){
     var page = documentation[el.value]
     el.value = ""
     document.getElementById("text-area").value = page.text
-    document.getElementById("title").value = page.title
+    document.getElementById("title-input").value = page.title
     document.getElementById("type").value = page.type
     document.getElementById("pinned").checked = page.pinned
     document.getElementById("class").value = page.class ? page.class : ""
@@ -48,7 +48,7 @@ function upload(){
         text: document.getElementById("text-area").value,
         type: document.getElementById("type").value,
         pinned: document.getElementById("pinned").checked,
-        title: document.getElementById("title").value,
+        title: document.getElementById("title-input").value,
         class: (document.getElementById("class").value.length > 0) ? documentation[document.getElementById("class").value].title : null
     })
 }

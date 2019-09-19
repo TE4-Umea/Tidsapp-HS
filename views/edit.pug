@@ -1,14 +1,17 @@
-head
+extends dash
+block head
     title Edit
     script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js")
     script(src="js/main.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/10.0.0/markdown-it.js")
+    |<link rel="stylesheet" href="css/api.css"> 
     |<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/default.min.css"> 
     |<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
-body
-    textarea(name="", oninput="preview(this)" id="text-area" cols="70", rows="20" style="display:inline-block;")
-    div(id="preview" style="") Preview...
-    input(type="text" id="title" placeholder="Title")
+block content   
+    div(class="top-text-area")
+        textarea(name="", oninput="preview(this)" id="text-area" cols="70", rows="20" style="display:inline-block;")
+        div(id="preview" style="") Preview...
+    input(type="text" id="title-input" placeholder="Title")
     input(type="password" placeholder="token" id="token")
     
     select(id="type")

@@ -1,0 +1,16 @@
+.top-text-area {
+    display: flex;
+}
+
+#preview, #text-area {
+    max-width: 50%;
+}
+
+#preview {
+    overflow-wrap: break-word;
+}
+
+#text-area {
+    resize: none;
+    overflow-y: auto;
+}

@@ -20,7 +20,7 @@ socket.on("documentation", doc => {
     var sidebar_html = ""
     for (var i = 0; i < documentation.length; i++) {
         var page = documentation[i]
-        sidebar_html += "<div class='api-page " + page.type + "' onclick='visit(" + i + ")' page='" + i + "'>" + page.title + "</div>"
+        sidebar_html += "<div class='api-page " + page.type + "' onclick='visit(" + i + ")' page='" + i + "'> <img src='img/icons/" + page.type + ".png' class='api-icon-small'><span class='api-name'>" + page.title + "</span></div>"
     }
     document.getElementById("api-list").innerHTML = sidebar_html
     visit(0)

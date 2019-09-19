@@ -13,6 +13,7 @@
     display: block;
     width: calc(100% - 20px);
     cursor: pointer;
+    word-wrap: inherit;
     padding: 5px;
     left: 0px;
     position: relative;
@@ -68,4 +69,12 @@
 }
 .class:hover{
     left: 0px;
+}
+
+
+.api-icon-small{
+    height: 20px;
+    position: relative;
+    margin: 5px;
+    margin-bottom: -5px;
 }

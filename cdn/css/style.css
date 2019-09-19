@@ -89,3 +89,14 @@ img {
     display: block;
     visibility: hidden;
 }
+
+
+a{
+    color: black;
+    border-bottom: solid 2px var(--blu);
+    text-decoration: none;
+}
+
+a:hover{
+    color: rgb(87, 87, 87);
+}

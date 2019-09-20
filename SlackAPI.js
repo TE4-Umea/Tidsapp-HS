@@ -46,8 +46,10 @@ class SlackAPI {
             if (success) {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
+                    console.log(req.body)
                     var project = req.body.text ? req.body.text : ""
                     var success = await server.check_in(user.id, true, project, "slack")
+                    console.log("Success: ?" + success)
                     if(success){
                         res.json(SlackJSON.SlackResponse("You are now checked in!", [SlackJSON.SlackAttachments("Project: " + (project ? project : " none"))]))
                     } else {

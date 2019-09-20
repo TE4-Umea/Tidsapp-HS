@@ -319,10 +319,11 @@ class Server {
      * @param {*} type 
      * @returns Success, if the check in/out was successfull
      */
-    async check_in(user_id, check_in = null, project_name = null, type = "Slack") {
+    async check_in(user_id, check_in = null, project_name = null, type = "unknown") {
         var user = await this.get_user(user_id)
         if (user) {
             if (project_name) {
+                console.log("CHECKING PROJECT")
                 var project = await this.get_project(project_name)
                 if (project) {
                     var owns_project = await this.is_joined_in_project(user.id, project.id)

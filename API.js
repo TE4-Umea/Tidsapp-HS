@@ -1,4 +1,9 @@
 class API{
+
+    constructor(server){
+        this.server = server
+    }
+
     async checkin(req, res){
         res.end("This API call is not implemented yet.")
     }

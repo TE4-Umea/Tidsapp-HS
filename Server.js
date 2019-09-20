@@ -535,7 +535,7 @@ class Server {
     }
 
     async get_user_from_username(username) {
-        var user = await this.db.query_one("SELECT * FROM users WHERE username = ?", username)
+        var user = await this.db.query_one("SELECT * FROM users WHERE upper(username) = ?", username.toUpperCase())
         return user
     }
 

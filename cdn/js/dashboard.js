@@ -1,11 +1,6 @@
 var sign_token = document.getElementById("slack-sign-token").innerText
-if(sign_token.length > 0){
-    console.log(sign_token)
-    
-}
-
 if(sign_token){
-    console.log("EXISTS")
+    socket.emit("sign_slack", {token, sign_token})
 }
 
 var time_el = document.getElementById("time")

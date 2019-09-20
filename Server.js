@@ -22,7 +22,7 @@ class Server {
         this.SlackAPI = require("./SlackAPI")
 
         this.API = require("./API")
-        this.API = new this.API()
+        
 
         this.online_users = []
         this.slack_sign_users = []
@@ -127,12 +127,26 @@ class Server {
             this.API.login(req, res)
         })
 
+        this.API = new this.API(this)
+
         /* SOCKET IO */
         this.io.on("connection", socket => {
 
             socket.on("disconnect", () => {
                 // Remove this connection from online users
                 this.online_users.splice(this.online_users.indexOf(socket.id), 1)
+            })
+
+            socket.on("sign_slack", async info => {
+                for(var sign of this.slack_sign_users){
+                    if(sign.token === info.sign_token){
+                        var user = this.get_user_from_token(info.token)
+                        if(user){
+                            // Fill users slack information
+                            await db.query("UPDATE users WHERE id = ? SET (email, slack_id, slack_domain, access_token, avatar, name) VALUES (?, ?, ?, ?, ?, ?)", [user.id, sign.email, sign.slack_id, sign.slakc_domain, sign.access_token, sign.avatar, sign.name])
+                        }
+                    }
+                }
             })
 
             socket.on("login_with_token", async token => {

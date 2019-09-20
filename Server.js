@@ -528,8 +528,8 @@ class Server {
             res.render("dashboard")
         })
 
-        this.app.get("/signup", (req, res) => {
-            res.render("signup")
+        this.app.get("/login", (req, res) => {
+            res.render("login")
         })
 
         this.app.get("/api", (req, res) => {

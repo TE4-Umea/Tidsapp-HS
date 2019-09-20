@@ -331,10 +331,11 @@ class Server {
                         return false
                     }
                 } else {
+                    this.log("Project not found")
                     return false
                 }
             }
-            
+
             var last_check = await this.get_last_check(user.id)
             if (check_in === null) {
                 // Toggle checkin

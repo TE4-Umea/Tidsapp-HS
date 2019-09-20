@@ -47,7 +47,8 @@ class SlackAPI {
             if (success) {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
-
+                    console.log("USER FOUND")
+                    console.log(user)
                 } else {
                     res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com")]))
                 }

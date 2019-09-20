@@ -91,6 +91,13 @@ describe("Check in / out testing", () => {
         assert.equal(success, true)
     })
 
+    it("Test if the user is the owner or joined", async () => {
+        var user = await server.get_user_from_username(test_username)
+        var project = await server.get_project(test_project)
+        var is_joined = await server.is_joined_in_project(user.id, project.id)
+        assert(is_joined, true)
+    })
+
     it("Check in (force, project name)", async() => {
         var user = await server.get_user_from_username(test_username)
 

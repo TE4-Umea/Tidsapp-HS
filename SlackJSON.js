@@ -5,16 +5,18 @@ class SlackJSON {
      * @param {*} attachments Array of attachements, optional
      */
     SlackResponse(text = "", attachments = []) {
-        this.text = text
-        this.attachments = attachments
+        return {
+            text: text,
+            attachments: attachments
+        }
     }
 
 
-    SlackAttachement(text = "", color = "#0a6cff") {
-        this.text = text
-        this.color = color
-        this.tilte = ""
-        this.title_link = ""
+    SlackAttachments(text = "", color = "#0a6cff") {
+        return {
+            text: text,
+            color: color
+        }
     }
 }
 

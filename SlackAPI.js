@@ -3,6 +3,10 @@ class SlackAPI{
         var SlackJSON = require("./SlackJSON")
             SlackJSON = new SlackJSON()
 
+        app.get("/auth", async(req, res) => {
+            console.log(req.body)
+        })
+
         app.post("/api/slack/checkin", async (req, res) => {
             var success = server.verify_slack_request(req)
             if (success) {

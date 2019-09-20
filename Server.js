@@ -320,17 +320,13 @@ class Server {
      * @returns Success, if the check in/out was successfull
      */
     async check_in(user_id, check_in = null, project_name = null, type = "unknown") {
-        console.log("STARTED")
         var user = await this.get_user(user_id)
         if (user) {
-            this.log("User found")
             if (project_name) {
-                console.log("CHECKING PROJECT")
                 var project = await this.get_project(project_name)
                 if (project) {
                     var owns_project = await this.is_joined_in_project(user.id, project.id)
                     if (!owns_project) {
-                        this.log("User isn't apart of the project")
                         return false
                     }
                 } else {
@@ -339,21 +335,22 @@ class Server {
                 }
             }
 
+            if(check_in === true){
+                await this.insert_check(user.id, true, project_name, type)
+                return true
+            }
+
+            if(check_in === false){
+                await this.insert_check(user.id, false, project_name, type)
+                return true
+            }
+            
             var last_check = await this.get_last_check(user.id)
+            
             if (check_in === null) {
                 // Toggle checkin
                 await this.insert_check(user.id, !last_check.check_in, project_name, type)
                 return true
-            }
-            if (check_in != last_check.check_in) {
-                // A change, commit the check
-                await this.insert_check(user.id, check_in, project_name, type)
-                return true
-            } else {
-                if (check_in && project_name != last_check.project) {
-                    await this.insert_check(user.id, check_in, project_name, type)
-                    return true
-                }
             }
         } else {
             this.log("User ID not found".red)

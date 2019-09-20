@@ -323,19 +323,18 @@ class Server {
         var user = await this.get_user(user_id)
         if (user) {
             if (project_name) {
-                if (project_name.length > 0) {
-                    var project = await this.get_project(project_name)
-                    if (project) {
-                        var owns_project = await this.is_joined_in_project(user.id, project.id)
-                        if (!owns_project) {
-                            this.log("User isn't apart of the project")
-                            return false
-                        }
-                    } else {
+                var project = await this.get_project(project_name)
+                if (project) {
+                    var owns_project = await this.is_joined_in_project(user.id, project.id)
+                    if (!owns_project) {
+                        this.log("User isn't apart of the project")
                         return false
                     }
+                } else {
+                    return false
                 }
             }
+            
             var last_check = await this.get_last_check(user.id)
             if (check_in === null) {
                 // Toggle checkin

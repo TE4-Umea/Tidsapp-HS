@@ -227,7 +227,7 @@ class Server {
 
         /* WEBHOOK */
         this.app.post("/webhook", async (req, res) => {
-            log("Restarting because of webhook")
+            this.log("Restarting because of webhook")
             require("child_process").exec("git pull origin " + this.config.branch)
         })
 

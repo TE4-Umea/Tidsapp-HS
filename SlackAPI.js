@@ -50,7 +50,7 @@ class SlackAPI {
                     console.log("USER FOUND")
                     console.log(user)
                 } else {
-                    res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com")]))
+                    res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com/login")]))
                 }
             }
         })

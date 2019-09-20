@@ -521,7 +521,8 @@ class Server {
      * @param {*} slack_id
      */
     async get_user_from_slack_id(slack_id) {
-        return false
+        var user = await db.query_one("SELECT * FROM users WHERE slack_id = ?", slack_id)
+        return user
     }
 
     /**

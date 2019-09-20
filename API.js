@@ -1,4 +1,9 @@
 class API{
+
+    constructor(server){
+        this.server = server
+    }
+
     async checkin(req, res){
         var success = true
         var project = undefined

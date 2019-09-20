@@ -18,12 +18,14 @@ class Server {
         this.crypto = require("crypto")
         this.qs = require("qs")
         this.colors = require("colors")
-        this.SlackJSON = require("./SlackJSON")
+        
+        this.SlackAPI = require("./SlackAPI")
 
         this.API = require("./API")
-        this.API = new this.API()
+        
 
         this.online_users = []
+        this.slack_sign_users = []
 
         var Database = require("./Database")
 
@@ -38,6 +40,8 @@ class Server {
             admin_token: this.hash(),
             // Slack app info
             signing_secret: "*******",
+            client_id: "00032323",
+            client_secret: "********",
             // mySQL connection information
             mysql_host: "localhost",
             mysql_user: "admin",
@@ -46,8 +50,6 @@ class Server {
             branch: "master",
             // Database name
             database: "time",
-            // Slack team name of the users who are allowed to sign in
-            slack_team: "SLACK TEAM NAME"
         }
 
         try {
@@ -89,6 +91,7 @@ class Server {
         // Bind socket.io to the webserver, (socket.io, REST API and the website are all on the same port)
         this.io = require("socket.io")(this.server)
 
+        
 
         // Bind the cdn folder to the webserver, everything in it is accessable via the website
         this.app.use(this.express.static(__dirname + '/cdn'))
@@ -124,12 +127,26 @@ class Server {
             this.API.login(req, res)
         })
 
+        this.API = new this.API(this)
+
         /* SOCKET IO */
         this.io.on("connection", socket => {
 
             socket.on("disconnect", () => {
                 // Remove this connection from online users
                 this.online_users.splice(this.online_users.indexOf(socket.id), 1)
+            })
+
+            socket.on("sign_slack", async info => {
+                for(var sign of this.slack_sign_users){
+                    if(sign.token === info.sign_token){
+                        var user = this.get_user_from_token(info.token)
+                        if(user){
+                            // Fill users slack information
+                            await db.query("UPDATE users WHERE id = ? SET (email, slack_id, slack_domain, access_token, avatar, name) VALUES (?, ?, ?, ?, ?, ?)", [user.id, sign.email, sign.slack_id, sign.slakc_domain, sign.access_token, sign.avatar, sign.name])
+                        }
+                    }
+                }
             })
 
             socket.on("login_with_token", async token => {
@@ -225,26 +242,14 @@ class Server {
 
         /* WEBHOOK */
         this.app.post("/webhook", async (req, res) => {
-            log("Restarting because of webhook")
+            this.log("Restarting because of webhook")
             require("child_process").exec("git pull origin " + this.config.branch)
         })
 
-        /* SLACK API */
-
-        this.app.post("/api/slack/checkin", async (req, res) => {
-            var success = this.verify_slack_request(req)
-            if (success) {
-                var user = await this.get_user_from_slack(req)
-                if (user) {
-
-                } else {
-                    res.json(new this.SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [new this.SlackJSON.SlackAttachement("https://hs.ygstr.com")]))
-                }
-            }
-        })
 
         this.routes()
         this.on_loaded()
+        this.SlackAPI = new this.SlackAPI(this.app, this)
     }
 
     /**
@@ -352,8 +357,10 @@ class Server {
     }
 
     async is_joined_in_project(user_id, project_id) {
-        if (await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])) return true
-        if (await this.get_project_from_id(project_id)) return true
+        var is_joined = await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])
+        if(is_joined) return true
+        var project = await this.get_project_from_id(project_id)
+        if(project.owner == user_id) return true
         return false
     }
 
@@ -415,6 +422,18 @@ class Server {
         return true
     }
 
+    async add_user_to_project(user_to_add, project_id, user) {
+        // Check if user is already in project
+        var is_joined = await this.is_joined_in_project(user_to_add.id, project_id)
+        if (is_joined){
+            this.log("User is already a part of project")
+            return false
+        }
+        //Add the user to joints
+        await this.db.query("INSERT INTO joints (project, user, date) VALUES (?, ?, ?)", [project_id, user_to_add.id, Date.now()])
+        return true
+    }
+
     async delete_project(project_name, user_id){
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
@@ -446,11 +465,11 @@ class Server {
      * @param {*} req Slack request
      */
     async get_user_from_slack(req) {
-        var success = verify_slack_request(req)
+        var success = this.verify_slack_request(req)
         if (success) {
             var body = req.body
             var slack_id = body.user_id
-            var user = await get_user_from_slack_id(slack_id)
+            var user = await this.get_user_from_slack_id(slack_id)
             if (user) {
                 return user
             } else {
@@ -538,8 +557,8 @@ class Server {
             res.render("dashboard")
         })
 
-        this.app.get("/signup", (req, res) => {
-            res.render("signup")
+        this.app.get("/login", (req, res) => {
+            res.render("login")
         })
 
         this.app.get("/api", (req, res) => {
@@ -554,7 +573,7 @@ class Server {
     verify_slack_request(req) {
         try {
             var slack_signature = req.headers['x-slack-signature']
-            var request_body = qs.stringify(req.body, {
+            var request_body = this.qs.stringify(req.body, {
                 format: 'RFC1738'
             })
             var timestamp = req.headers['x-slack-request-timestamp']
@@ -577,7 +596,7 @@ class Server {
             }
         } catch (e) {
             console.log(e) // KEEP
-            log("ERROR: Make sure your config.json:signing_secret is correct!")
+            this.log("ERROR: Make sure your config.json:signing_secret is correct!")
         }
     }
 }

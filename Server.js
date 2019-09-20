@@ -39,6 +39,8 @@ class Server {
             admin_token: this.hash(),
             // Slack app info
             signing_secret: "*******",
+            client_id: "00032323",
+            client_secret: "********",
             // mySQL connection information
             mysql_host: "localhost",
             mysql_user: "admin",
@@ -47,8 +49,6 @@ class Server {
             branch: "master",
             // Database name
             database: "time",
-            // Slack team name of the users who are allowed to sign in
-            slack_team: "SLACK TEAM NAME"
         }
 
         try {

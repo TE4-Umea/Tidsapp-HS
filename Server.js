@@ -544,7 +544,7 @@ class Server {
     verify_slack_request(req) {
         try {
             var slack_signature = req.headers['x-slack-signature']
-            var request_body = qs.stringify(req.body, {
+            var request_body = this.qs.stringify(req.body, {
                 format: 'RFC1738'
             })
             var timestamp = req.headers['x-slack-request-timestamp']

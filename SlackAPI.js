@@ -1,0 +1,19 @@
+class SlackAPI{
+    constructor(app, server){
+        var SlackJSON = require("./SlackJSON")
+
+        app.post("/api/slack/checkin", async (req, res) => {
+            var success = server.verify_slack_request(req)
+            if (success) {
+                var user = await server.get_user_from_slack(req)
+                if (user) {
+
+                } else {
+                    res.json(new SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [new SlackJSON.SlackAttachement("https://hs.ygstr.com")]))
+                }
+            }
+        })
+    }
+}
+
+module.exports = SlackAPI

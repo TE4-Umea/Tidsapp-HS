@@ -9,7 +9,8 @@ block sidebar
 block content
     span(hidden id="slack-sign-token") #{token}
     div(id="logged-in-as")
-    |<a id="slack-button" href="https://slack.com/oauth/authorize?scope=identity.basic,identity.email,identity.team,identity.avatar&client_id=715933475586.762170658964"><img alt=""Sign in with Slack"" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" /></a>
+    a(href='https://slack.com/oauth/authorize?scope=identity.basic,identity.email,identity.team,identity.avatar&client_id=' + client_id id="slack-button")
+        <img alt=""Sign in with Slack"" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" />
     button(class="mdc-button mdc-button--raised" id="check-in-button") Check in
     button(class="mdc-button" id="log-out-button") Log out
     script(src="js/dashboard.js")

@@ -339,7 +339,13 @@ class Server {
     }
 
     async add_user_to_project(user_to_add, project_id, user) {
-
+        // Check if user is already in project
+        if (this.is_joined_in_project(user_to_add.id, project_id)){
+            this.log("User is already a part of project")
+            return false
+        }
+        await this.db.query("INSERT INTO joints (project, user) VALUES (?, ?)", [project_id, user_to_add.id])
+        return true
     }
 
     /**

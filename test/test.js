@@ -4,6 +4,8 @@ const server = new Server()
 
 var test_username = "TestUser"
 var test_full_name = "Test User"
+var test_username_2 = "TestUser2"
+var test_full_name_2 = "Test User2"
 var test_project = "test project"
 
 describe("Check config file", () => {
@@ -35,6 +37,32 @@ describe("MYSQL connection and account managing", () => {
         })
 
     })
+})
+
+describe("Add user to project testing", () => {
+
+
+    it("Create project, " + test_project, async() => {
+        var user = await server.get_user_from_username(test_username)
+        var success = await server.create_project(test_project, user)
+        assert.equal(success, true)
+    })
+     
+    it ("Add user to project, " + test_username_2, async() => {
+        var user1 = await server.get_user_from_username(test_username)
+        var user2 = await server.get_user_from_username(test_username_2)
+        var project = await server.get_project(test_project)
+        var addedUser = await server.add_user_to_project(user2, project.id, user1)
+        assert.equal(addedUser, true)
+    })
+
+    it ("Check if user is part of project, " + test_username_2, async() => {
+        var user2 = await server.get_user_from_username(test_username_2)
+        var project = await server.get_project(test_project)
+        var isJoined = await server.is_joined_in_project(user2.id, project.id)
+        assert.equal(isJoined, true)
+    })
+
 })
 
 

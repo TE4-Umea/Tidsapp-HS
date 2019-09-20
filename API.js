@@ -3,7 +3,7 @@ class API{
         res.end("This API call is not implemented yet.")
     }
 
-    async checkout(req, res){
+    async checkout(req, res){ 
         res.end("This API call is not implemented yet.")
     }
 

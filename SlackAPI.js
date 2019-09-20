@@ -11,8 +11,8 @@ class SlackAPI{
 
                 } else {
                     console.log("SENT")
-                    console.log(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachement("https://hs.ygstr.com")]))
-                    res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachement("https://hs.ygstr.com")]))
+                    console.log(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com")]))
+                    res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com")]))
                     
                 }
             }

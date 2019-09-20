@@ -12,12 +12,10 @@ class SlackJSON {
     }
 
 
-    SlackAttachement(text = "", color = "#0a6cff") {
+    SlackAttachments(text = "", color = "#0a6cff") {
         return {
             text: text,
-            color: color,
-            tilte: "",
-            title_link: ""
+            color: color
         }
     }
 }

@@ -559,8 +559,8 @@ class Server {
             res.render("api")
         })
 
-        this.app.get("/edit", (req, res) => {
-            res.render("edit")
+        this.app.get("/docs", (req, res) => {
+            res.render("docs")
         })
     }
 

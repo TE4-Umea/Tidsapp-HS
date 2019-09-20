@@ -436,11 +436,11 @@ class Server {
      * @param {*} req Slack request
      */
     async get_user_from_slack(req) {
-        var success = verify_slack_request(req)
+        var success = this.verify_slack_request(req)
         if (success) {
             var body = req.body
             var slack_id = body.user_id
-            var user = await get_user_from_slack_id(slack_id)
+            var user = await this.get_user_from_slack_id(slack_id)
             if (user) {
                 return user
             } else {

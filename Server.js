@@ -342,8 +342,10 @@ class Server {
     }
 
     async is_joined_in_project(user_id, project_id) {
-        if (await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])) return true
-        if (await this.get_project_from_id(project_id)) return true
+        var is_joined = await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])
+        if(is_joined) return true
+        var project = await this.get_project_from_id(project_id)
+        if(project.owner == user_id) return true
         return false
     }
 

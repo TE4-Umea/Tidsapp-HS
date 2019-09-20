@@ -48,12 +48,8 @@ function upload(){
         text: document.getElementById("text-area").value,
         type: document.getElementById("type").value,
         pinned: document.getElementById("pinned").checked,
-<<<<<<< HEAD
         title: document.getElementById("title-input").value,
-        class: (document.getElementById("class").value.length > 0) ? documentation[document.getElementById("class").value].title : null
-=======
-        title: document.getElementById("title").value,
         class: document.getElementById("class").value ? document.getElementById("class").value : null
->>>>>>> 1314566f6117d70eda5c02cf36dd06750a6176e1
+
     })
 }

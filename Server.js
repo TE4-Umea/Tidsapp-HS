@@ -533,7 +533,7 @@ class Server {
      * @param {*} slack_id
      */
     async get_user_from_slack_id(slack_id) {
-        var user = await db.query_one("SELECT * FROM users WHERE slack_id = ?", slack_id)
+        var user = await this.db.query_one("SELECT * FROM users WHERE slack_id = ?", slack_id)
         return user
     }
 
@@ -567,12 +567,8 @@ class Server {
             res.render("login")
         })
 
-        this.app.get("/api", (req, res) => {
-            res.render("api")
-        })
-
-        this.app.get("/docs", (req, res) => {
-            res.render("docs")
+        this.app.get("/edit", (req, res) => {
+            res.render("edit")
         })
     }
 

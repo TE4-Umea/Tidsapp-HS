@@ -1,0 +1,65 @@
+#title{
+    text-align: right;
+    font-size: 40px;
+    top: 28px;
+}
+
+#time{
+    font-family: 'Ubuntu';
+}
+
+#seconds-bar{
+    position: absolute;
+    left: 60px;
+    height: 3px;
+    border-radius: 20px;
+    width: 0px;
+    transition: width .5s;
+    background: var(--blu);
+}
+
+#slack-button{
+    border: none;
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+}
+
+#check-in-button{
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+    width: 200px;
+    font-size: 18px;
+    height: 45px;
+}
+
+#log-out-button{
+    position: absolute;
+    right: 260px;
+    bottom: 30px;
+    width: 120px;
+    font-size: 18px;
+    height: 45px;
+}
+
+#add-new-project{
+    color: var(--blu);
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    background: white;
+    position: absolute;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    line-height: 25px;
+    font-size: 35px;
+    font-family: "Ubuntu";
+    left: 15px;
+    bottom: 15px;
+}
+
+#logged-in-as{
+    margin: 30px;
+}

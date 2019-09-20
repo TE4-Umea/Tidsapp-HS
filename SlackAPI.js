@@ -6,7 +6,6 @@ class SlackAPI {
         app.get("/auth", async (req, res) => {
             if (req.query.code) {
                 /* Send a request to slack to get user information from the login */
-                console.log(`https://slack.com/api/oauth.access?client_id=${server.config.client_id}&client_secret=${server.config.client_secret}&code=${req.query.code}`)
                 server.https.get(`https://slack.com/api/oauth.access?client_id=${server.config.client_id}&client_secret=${server.config.client_secret}&code=${req.query.code}`, resp => {
                     var data = ''
                     resp.on('data', (chunk) => {
@@ -19,7 +18,16 @@ class SlackAPI {
                         if (data.ok) {
                             (async () => {
                                 /* Check if the user is already signed up */
-                                console.log("Valid user, ", data.user)
+                                console.log(data)
+                                var sign_token = server.hash()
+                                server.slack_sign_users.push({
+                                    slack_id: data.user.id,
+                                    name: data.user.name,
+                                    avatar: data.user.image_512,
+                                    email: data.user.email,
+                                    token: sign_token
+                                })
+                                console.log(server.slack_sign_users)
                             })()
 
                         } else {

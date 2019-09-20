@@ -25,6 +25,7 @@ class Server {
         this.API = new this.API()
 
         this.online_users = []
+        this.slack_sign_users = []
 
         var Database = require("./Database")
 

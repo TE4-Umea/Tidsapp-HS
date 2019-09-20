@@ -567,7 +567,7 @@ class Server {
             }
         } catch (e) {
             console.log(e) // KEEP
-            log("ERROR: Make sure your config.json:signing_secret is correct!")
+            this.log("ERROR: Make sure your config.json:signing_secret is correct!")
         }
     }
 }

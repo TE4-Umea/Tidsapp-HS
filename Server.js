@@ -143,7 +143,7 @@ class Server {
                         var user = this.get_user_from_token(info.token)
                         if(user){
                             // Fill users slack information
-                            await db.query("UPDATE users WHERE id = ? SET (email, slack_id, slack_domain, access_token, avatar, name) VALUES (?, ?, ?, ?, ?, ?)", [user.id, sign.email, sign.slack_id, sign.slakc_domain, sign.access_token, sign.avatar, sign.name])
+                            await this.db.query("UPDATE users WHERE id = ? SET (email, slack_id, slack_domain, access_token, avatar, name) VALUES (?, ?, ?, ?, ?, ?)", [user.id, sign.email, sign.slack_id, sign.slakc_domain, sign.access_token, sign.avatar, sign.name])
                             console.log("Updated")
                         }
                     }

@@ -9,7 +9,7 @@ class SlackAPI{
                 if (user) {
 
                 } else {
-                    res.json(new SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [new SlackJSON.SlackAttachement("https://hs.ygstr.com")]))
+                    res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachement("https://hs.ygstr.com")]))
                 }
             }
         })

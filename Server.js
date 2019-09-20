@@ -153,10 +153,9 @@ class Server {
             socket.on("login_with_token", async token => {
                 var user = await this.get_user_from_token(token)
                 if (user) {
-                    delete user.password
-                    // Add the connection to the online users pool
                     this.online_users[socket.id] = user.id
-                    socket.emit("login", user)
+                    var user_data = await this.get_user_data(user.id)
+                    socket.emit("login", user_data)
                 } else {
                     socket.emit("invalid_token")
                 }
@@ -355,6 +354,41 @@ class Server {
         } else {
             this.log("User ID not found".red)
             return false
+        }
+    }
+
+    async login_user_with_token(token){
+        var user = await this.get_user_from_token(token)
+        if(user){
+            var data = await this.get_user_data(user.id)
+            return data
+        }
+        return false
+    }
+
+    async get_user_data(user_id){
+        var user = await this.get_user(user_id)
+        if(user){
+            delete user.access_token
+            delete user.password
+            user.checked_in = await this.is_checked_in(user.id)
+            user.projects = await this.db.query("SELECT * FROM projects WHERE owner = ?", user.id)
+            var joints = await this.db.query("SELECT * FROM joints WHERE user = ?", user.id)
+
+            for(var joint of joints){
+                for(let project of user.projects){
+                    if(joint.project == project.id && project.owner == user.id){
+                        // User is the owner of this project
+                        project.time = joint.work
+                        break
+                    }
+                }
+                // User is not owner of the project, download project form database
+                let project = await this.get_project_from_id(joint.project)
+                project.work = joint.work
+                user.projects.push(project)
+            }
+            return user
         }
     }
 
@@ -561,11 +595,15 @@ class Server {
     routes() {
         /* Website pages */
         this.app.get("/dashboard", (req, res) => {
-            res.render("dashboard")
+            res.render("dashboard", {client_id: this.config.client_id})
         })
 
         this.app.get("/login", (req, res) => {
             res.render("login")
+        })
+
+        this.app.get("/docs", (req, res) => {
+            res.render("docs")
         })
 
         this.app.get("/edit", (req, res) => {

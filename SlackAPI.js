@@ -46,20 +46,40 @@ class SlackAPI {
             if (success) {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
-                    console.log(req.body)
                     var project = req.body.text ? req.body.text : ""
                     var success = await server.check_in(user.id, true, project, "slack")
-                    console.log("Success: ?" + success)
+              
                     if(success){
                         res.json(SlackJSON.SlackResponse("You are now checked in!", [SlackJSON.SlackAttachments("Project: " + (project ? project : " none"))]))
                     } else {
                         res.json(SlackJSON.SlackResponse("Invalid project, please create one (something went wrong)", [SlackJSON.SlackAttachments("`/new`")]))
                     }
                 } else {
-                    res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com/login")]))
+                    this.user_not_found(red)
                 }
             }
         })
+
+        app.post("/api/slack/checkout", async (req, res) => {
+            var success = server.verify_slack_request(req)
+            if (success) {
+                var user = await server.get_user_from_slack(req)
+                if (user) {
+                    var success = await server.check_in(user.id, false, null, "slack")
+                    if(success){
+                        res.json(SlackJSON.SlackResponse("You are now checked out!", [SlackJSON.SlackAttachments("2h 3m")]))
+                    } else {
+                        res.json(SlackJSON.SlackResponse("Ops, something went wrong!"))
+                    }
+                } else {
+                    this.user_not_found(red)
+                }
+            }
+        })
+    }
+
+    user_not_found(res){
+        res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com/login")]))
     }
 }
 

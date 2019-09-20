@@ -323,6 +323,7 @@ class Server {
         console.log("STARTED")
         var user = await this.get_user(user_id)
         if (user) {
+            this.log("User found")
             if (project_name) {
                 console.log("CHECKING PROJECT")
                 var project = await this.get_project(project_name)

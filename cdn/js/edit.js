@@ -21,7 +21,7 @@ socket.on("documentation", doc => {
     for(var i = 0;i  < documentation.length; i++){
         var page = documentation[i]
         list+="<option value='" + i + "'>" + page.title + "</option>"
-        if(page.type == "class") classes += "<option value='" + i + "'>" + page.title + "</option>"
+        if(page.type == "class") classes += "<option value='" + page.title + "'>" + page.title + "</option>"
     }
     document.getElementById("class").innerHTML += classes
     document.getElementById("load-page").innerHTML += list
@@ -49,6 +49,6 @@ function upload(){
         type: document.getElementById("type").value,
         pinned: document.getElementById("pinned").checked,
         title: document.getElementById("title").value,
-        class: (document.getElementById("class").value.length > 0) ? documentation[document.getElementById("class").value].title : null
+        class: document.getElementById("class").value ? document.getElementById("class").value : null
     })
 }

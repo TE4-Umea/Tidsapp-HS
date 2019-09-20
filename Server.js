@@ -18,11 +18,11 @@ class Server {
         this.crypto = require("crypto")
         this.qs = require("qs")
         this.colors = require("colors")
-        
+
         this.SlackAPI = require("./SlackAPI")
 
         this.API = require("./API")
-        
+
 
         this.online_users = []
         this.slack_sign_users = []
@@ -55,13 +55,13 @@ class Server {
         try {
             this.config = JSON.parse(this.fs.readFileSync("config.json"))
             var updated = false
-            for(var key in this.config_templete){
-                if(this.config[key] === undefined){
+            for (var key in this.config_templete) {
+                if (this.config[key] === undefined) {
                     this.config[key] = this.config_templete[key]
                     updated = true
                     this.log("Updated config.json with the missing option " + key)
                 }
-                if(updated) this.fs.writeFileSync("config.json", JSON.stringify(this.config))
+                if (updated) this.fs.writeFileSync("config.json", JSON.stringify(this.config))
             }
         } catch (e) {
             this.log("Loading config.json failed, creating a default one.")
@@ -91,7 +91,7 @@ class Server {
         // Bind socket.io to the webserver, (socket.io, REST API and the website are all on the same port)
         this.io = require("socket.io")(this.server)
 
-        
+
 
         // Bind the cdn folder to the webserver, everything in it is accessable via the website
         this.app.use(this.express.static(__dirname + '/cdn'))
@@ -138,10 +138,10 @@ class Server {
             })
 
             socket.on("sign_slack", async info => {
-                for(var sign of this.slack_sign_users){
-                    if(sign.token === info.sign_token){
+                for (var sign of this.slack_sign_users) {
+                    if (sign.token === info.sign_token) {
                         var user = await this.get_user_from_token(info.token)
-                        if(user){
+                        if (user) {
                             // Fill users slack information
                             await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slack_domain, sign.access_token, sign.avatar, sign.name, user.id])
                             socket.emit("redir", "dashboard")
@@ -152,7 +152,7 @@ class Server {
 
             socket.on("login_with_token", async token => {
                 var user = await this.get_user_from_token(token)
-                if(user){
+                if (user) {
                     delete user.password
                     // Add the connection to the online users pool
                     this.online_users[socket.id] = user.id
@@ -165,12 +165,12 @@ class Server {
             socket.on("login", async info => {
 
                 var user = await this.get_user_from_username(info.username)
-                if(user){
+                if (user) {
                     // Sign in
                     user = await this.get_user_from_username_and_password(info.username, info.password)
-                    if(user){
+                    if (user) {
                         var token = await this.generate_token(user.username)
-                        if(token){
+                        if (token) {
                             socket.emit("token", token)
                         }
                     } else {
@@ -179,28 +179,28 @@ class Server {
                     }
                 } else {
                     // Sign up
-                    if(info.username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== info.username){
+                    if (info.username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== info.username) {
                         socket.emit("login_err", "Username contains illigal characters")
                         return
                     }
-                    if(info.username.length < 3){
-                        socket.emit("login_err" ,"Username has to be at least three characters long")
+                    if (info.username.length < 3) {
+                        socket.emit("login_err", "Username has to be at least three characters long")
                         return
                     }
-                    if(info.username.length > 20){
+                    if (info.username.length > 20) {
                         socket.emit("login_err", "Username cannot exceed 20 characters")
                         return
                     }
-                    if(info.name.indexOf(" ") == -1){
+                    if (info.name.indexOf(" ") == -1) {
                         socket.emit("login_err", "Please provide a full name, ex. Michael Stevens")
                         return
                     }
-                    if(info.password == ""){
+                    if (info.password == "") {
                         socket.emit("login_err", "Please enter a password")
                         return
                     }
                     var user = await this.create_user(info.username, info.password, info.name)
-                    if(user){
+                    if (user) {
                         var token = await this.generate_token(user.username)
                         socket.emit("token", token)
                     } else {
@@ -216,22 +216,22 @@ class Server {
 
             socket.on("username_taken", async username => {
                 var user = await this.get_user_from_username(username)
-                if(user) socket.emit("username_taken", true)
+                if (user) socket.emit("username_taken", true)
                 else socket.emit("username_taken", false)
             })
 
             socket.on("upload_documentation", pack => {
-                if(pack.token === this.config.admin_token){
+                if (pack.token === this.config.admin_token) {
                     delete pack.token
-                    if(pack.title.length == 0){
+                    if (pack.title.length == 0) {
                         socket.emit("err", "Don't forget the title")
                         return
                     }
-                    try{
-                        this.fs.writeFileSync("documentation/"+pack.title.split(" ").join("_")+".json", JSON.stringify(pack))
+                    try {
+                        this.fs.writeFileSync("documentation/" + pack.title.split(" ").join("_") + ".json", JSON.stringify(pack))
                         socket.emit("err", "Success!")
                         this.load_documentation()
-                    } catch(e){
+                    } catch (e) {
                         this.log(e)
                         socket.emit("err", "Error writing fail, check the title. Make sure there are no weird characters in it.")
                     }
@@ -264,7 +264,7 @@ class Server {
         console.log(`[${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}] ${message}`)
     }
 
-   
+
     on_loaded() {
         this.log(`Happy Surfer's TimeTracker has started on port: ${this.port}`)
     }
@@ -290,17 +290,17 @@ class Server {
             return a.type == "variable"
         })
 
-        for(page of this.unsorted_documentation){
-            if(page.type == "text"){
+        for (page of this.unsorted_documentation) {
+            if (page.type == "text") {
                 this.documentation.push(page)
             }
         }
 
-        for(page of this.unsorted_documentation){
-            if(page.type == "class"){
+        for (page of this.unsorted_documentation) {
+            if (page.type == "class") {
                 this.documentation.push(page)
-                for(var p of this.unsorted_documentation){
-                    if(p.class == page.title){
+                for (var p of this.unsorted_documentation) {
+                    if (p.class == page.title) {
                         this.documentation.push(p)
                     }
                 }
@@ -323,17 +323,18 @@ class Server {
         var user = await this.get_user(user_id)
         if (user) {
             if (project_name) {
-                var project = await this.get_project(project_name)
-                if (project) {
-                    var owns_project = await this.is_joined_in_project(user.id, project.id)
-                    if (!owns_project) {
-                        this.log("User isn't apart of the project")
+                if (project_name.length > 0) {
+                    var project = await this.get_project(project_name)
+                    if (project) {
+                        var owns_project = await this.is_joined_in_project(user.id, project.id)
+                        if (!owns_project) {
+                            this.log("User isn't apart of the project")
+                            return false
+                        }
+                    } else {
                         return false
                     }
-                } else {
-                    return false
                 }
-
             }
             var last_check = await this.get_last_check(user.id)
             if (check_in === null) {
@@ -359,9 +360,9 @@ class Server {
 
     async is_joined_in_project(user_id, project_id) {
         var is_joined = await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])
-        if(is_joined) return true
+        if (is_joined) return true
         var project = await this.get_project_from_id(project_id)
-        if(project.owner == user_id) return true
+        if (project.owner == user_id) return true
         return false
     }
 
@@ -426,7 +427,7 @@ class Server {
     async add_user_to_project(user_to_add, project_id, user) {
         // Check if user is already in project
         var is_joined = await this.is_joined_in_project(user_to_add.id, project_id)
-        if (is_joined){
+        if (is_joined) {
             this.log("User is already a part of project")
             return false
         }
@@ -435,24 +436,24 @@ class Server {
         return true
     }
 
-    async delete_project(project_name, user_id){
+    async delete_project(project_name, user_id) {
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
-        if(project.owner === user_id){
+        if (project.owner === user_id) {
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
-            this.log("Project deleted by: " + user.username)        
+            this.log("Project deleted by: " + user.username)
             return true
-        }else{
+        } else {
             this.log("Permission denied on delete project, " + user.username)
             return false
         }
     }
 
-    async get_user_from_token(token){
+    async get_user_from_token(token) {
         var db_token = await this.db.query_one("SELECT * FROM tokens WHERE token = ?", token)
-        if(db_token){
+        if (db_token) {
             var user = await this.get_user(db_token.user)
-            if(user){
+            if (user) {
                 return user
             }
         } else {
@@ -487,7 +488,7 @@ class Server {
      */
     async create_user(username, password, full_name) {
         var username_taken = await this.get_user_from_username(username)
-        if(username_taken){
+        if (username_taken) {
             this.log("Username taken")
             return false
         }
@@ -500,18 +501,18 @@ class Server {
         }
     }
 
-    async get_user_from_username_and_password(username, password){
+    async get_user_from_username_and_password(username, password) {
         var user = await this.get_user_from_username(username)
-        if(user){
-            if(user.password === this.md5(password)) 
+        if (user) {
+            if (user.password === this.md5(password))
                 return user
         }
         return false
     }
 
-    async generate_token(username){
+    async generate_token(username) {
         var user = await this.get_user_from_username(username)
-        if(user){
+        if (user) {
             var token = this.hash()
             await this.db.query("INSERT INTO tokens (token, user) VALUES (?, ?)", [token, user.id])
             return token

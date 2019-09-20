@@ -18,16 +18,18 @@ class SlackAPI {
                         if (data.ok) {
                             (async () => {
                                 /* Check if the user is already signed up */
-                                console.log(data)
+                          
                                 var sign_token = server.hash()
                                 server.slack_sign_users.push({
+                                    access_token: data.access_token,
+                                    slack_domain: data.team.domain,
                                     slack_id: data.user.id,
                                     name: data.user.name,
                                     avatar: data.user.image_512,
                                     email: data.user.email,
                                     token: sign_token
                                 })
-                                console.log(server.slack_sign_users)
+                                res.end("dashboard", sign_token)
                             })()
 
                         } else {

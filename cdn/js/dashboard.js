@@ -1,4 +1,12 @@
+var sign_token = document.getElementById("token").innerText
+if(sign_token.length > 0){
+    console.log(sign_token)
+    
+}
 
+if(sign_token){
+    console.log("EXISTS")
+}
 
 var time_el = document.getElementById("time")
 var sec_bar = document.getElementById("seconds-bar")

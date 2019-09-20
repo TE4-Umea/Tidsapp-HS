@@ -4,10 +4,10 @@ class SlackJSON {
      * @param {*} text Text you want to submit, optional
      * @param {*} attachments Array of attachements, optional
      */
-    SlackResponse(text = "", attachements = []) {
+    SlackResponse(text = "", attachments = []) {
         return {
             text: text,
-            attachements: attachements
+            attachments: attachments
         }
     }
 

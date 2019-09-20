@@ -1,6 +1,17 @@
 class API{
     async checkin(req, res){
-        res.end("This API call is not implemented yet.")
+        var success = true
+        var project = undefined
+        var user = await server.get_user_from_token()
+        if(success){
+            if(project){
+                res.end("Checked in, Project: " + this.project.name)
+            }else{
+                res.end("Checked in")
+            }
+        }else{
+            res.end("Check in failed")
+        }
     }
 
     async checkout(req, res){

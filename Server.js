@@ -423,6 +423,18 @@ class Server {
         return true
     }
 
+    async add_user_to_project(user_to_add, project_id, user) {
+        // Check if user is already in project
+        var is_joined = await this.is_joined_in_project(user_to_add.id, project_id)
+        if (is_joined){
+            this.log("User is already a part of project")
+            return false
+        }
+        //Add the user to joints
+        await this.db.query("INSERT INTO joints (project, user, date) VALUES (?, ?, ?)", [project_id, user_to_add.id, Date.now()])
+        return true
+    }
+
     async delete_project(project_name, user_id){
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)

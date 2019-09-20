@@ -4,6 +4,8 @@ const server = new Server()
 
 var test_username = "TestUser"
 var test_full_name = "Test User"
+var test_username2 = "TestUser2"
+var test_full_name2 = "Test User2"
 var test_project = "test project"
 
 describe("Check config file", () => {
@@ -30,12 +32,14 @@ describe("MYSQL connection and account managing", () => {
         it("Delete if exists, then creating a test account", async () => {
             await server.delete_user(test_username)
             var user = await server.create_user(test_username, "test_password", test_full_name)
+            var user2 = await server.create_user(test_username2, "test_password", test_full_name2)
             assert.notEqual(user, undefined)
             assert.equal(user.username, test_username)
         })
 
     })
 })
+
 
 
 describe("Check in / out testing", () => {
@@ -87,6 +91,40 @@ describe("Check in / out testing", () => {
         assert.equal(last_checkin.check_in, true)
         assert.equal(last_checkin.project, "")
     })
+})
+
+describe("Add user to project testing", () => {
+
+    it ("Check if user is not a part of project, " + test_username2, async() => {
+        var user2 = await server.get_user_from_username(test_username2)
+        var project = await server.get_project(test_project)
+        var isJoined = await server.is_joined_in_project(user2.id, project.id)
+        assert.equal(isJoined, false)
+    })
+     
+    it ("Add user to project, " + test_username2, async() => {
+        var user1 = await server.get_user_from_username(test_username)
+        var user2 = await server.get_user_from_username(test_username2)
+        var project = await server.get_project(test_project)
+        var added_user = await server.add_user_to_project(user2, project.id, user1)
+        assert.equal(added_user, true)
+    })
+
+    it ("Check if user is part of project, " + test_username2, async() => {
+        var user2 = await server.get_user_from_username(test_username2)
+        var project = await server.get_project(test_project)
+        var isJoined = await server.is_joined_in_project(user2.id, project.id)
+        assert.equal(isJoined, true)
+    })
+
+    it ("Try to add the user again " + test_username2, async() => {
+        var user1 = await server.get_user_from_username(test_username)
+        var user2 = await server.get_user_from_username(test_username2)
+        var project = await server.get_project(test_project)
+        var added_user = await server.add_user_to_project(user2, project.id, user1)
+        assert.equal(added_user, false)
+    })
+
 })
 
 

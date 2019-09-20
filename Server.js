@@ -320,6 +320,7 @@ class Server {
      * @returns Success, if the check in/out was successfull
      */
     async check_in(user_id, check_in = null, project_name = null, type = "unknown") {
+        console.log("STARTED")
         var user = await this.get_user(user_id)
         if (user) {
             if (project_name) {

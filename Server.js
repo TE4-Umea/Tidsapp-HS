@@ -143,7 +143,7 @@ class Server {
                         var user = await this.get_user_from_token(info.token)
                         if(user){
                             // Fill users slack information
-                            await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slakc_domain, sign.access_token, sign.avatar, sign.name, user.id])
+                            await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slack_domain, sign.access_token, sign.avatar, sign.name, user.id])
                             socket.emit("redir", "dashboard")
                         }
                     }
@@ -492,7 +492,7 @@ class Server {
             return false
         }
         // Insert into the database
-        await this.db.query("INSERT INTO users (username, name, password) VALUES (?, ?, ?)", [username, full_name, this.md5(password)])
+        await this.db.query("INSERT INTO users (username, name, password, created) VALUES (?, ?, ?)", [username, full_name, this.md5(password), Date.now()])
         var user = this.get_user_from_username(username)
         if (user) {
             this.log("Account created for " + full_name)

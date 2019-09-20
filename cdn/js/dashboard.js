@@ -1,4 +1,4 @@
-var sign_token = document.getElementById("token").innerText
+var sign_token = document.getElementById("slack-sign-token").innerText
 if(sign_token.length > 0){
     console.log(sign_token)
     

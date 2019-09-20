@@ -29,7 +29,7 @@ class SlackAPI {
                                     email: data.user.email,
                                     token: sign_token
                                 })
-                                res.end("dashboard", sign_token)
+                                res.render("dashboard", sign_token)
                             })()
 
                         } else {

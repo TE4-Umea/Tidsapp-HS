@@ -6,6 +6,7 @@ class SlackAPI {
         app.get("/auth", async (req, res) => {
             if (req.query.code) {
                 /* Send a request to slack to get user information from the login */
+                console.log(`https://slack.com/api/oauth.access?client_id=${server.config.client_id}&client_secret=${server.config.client_secret}&code=${req.query.code}`)
                 server.https.get(`https://slack.com/api/oauth.access?client_id=${server.config.client_id}&client_secret=${server.config.client_secret}&code=${req.query.code}`, resp => {
                     var data = ''
                     resp.on('data', (chunk) => {

@@ -144,7 +144,7 @@ class Server {
                         if(user){
                             // Fill users slack information
                             await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slakc_domain, sign.access_token, sign.avatar, sign.name, user.id])
-                            console.log("Updated")
+                            socket.emit("redir", "dashboard")
                         }
                     }
                 }

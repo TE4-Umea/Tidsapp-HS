@@ -527,7 +527,7 @@ class Server {
             return false
         }
         // Insert into the database
-        await this.db.query("INSERT INTO users (username, name, password, created) VALUES (?, ?, ?)", [username, full_name, this.md5(password), Date.now()])
+        await this.db.query("INSERT INTO users (username, name, password, created) VALUES (?, ?, ?, ?)", [username, full_name, this.md5(password), Date.now()])
         var user = this.get_user_from_username(username)
         if (user) {
             this.log("Account created for " + full_name)
@@ -557,7 +557,10 @@ class Server {
     async delete_user(username) {
         var user = await this.get_user_from_username(username)
         if (user) {
+            /* Delete user from the database */
             await this.db.query("DELETE FROM users WHERE id = ?", user.id)
+            /* Delete all tokens belonging to the user */
+            await this.db.query("DELETE FROM tokens WHERE user = ?" , user.id)
             return true
         }
         return false
@@ -608,6 +611,10 @@ class Server {
 
         this.app.get("/edit", (req, res) => {
             res.render("edit")
+        })
+
+        this.app.get("/", (req, res) => {
+            res.render("index")
         })
     }
 

@@ -2,6 +2,7 @@ const assert = require("assert")
 const Server = require("../Server")
 const server = new Server()
 
+var test_slack_id = "FFF000"
 var test_username = "TestUser"
 var test_full_name = "Test User"
 var test_username2 = "TestUser2"
@@ -10,40 +11,60 @@ var test_project = "test project"
 
 describe("Check config file", () => {
     it("Config file loaded or created", done => {
-        assert(server.config, !undefined)
+        assert.notEqual(server.config, undefined)
         done()
     })
 })
 
-describe("MYSQL connection and account managing", () => {
+describe("MYSQL connection and prep", () => {
 
-    describe("MYSQL Connection", () => {
-        it("SELECTING from projects", async () => {
-            var result = await server.db.query("SELECT * FROM projects")
-            assert.equal(typeof result, "object") // Make sure response is of type object (array)
-            assert.equal(isNaN(result.length), false) // Make sure the response is an array
-        })
+    it("Test MYSQL Connection", async () => {
+        var result = await server.db.query("SELECT 1")
+        assert.notEqual(result, undefined)
     })
 
 
-    describe("Managing", () => {
-        
-
+    describe("Prepare", () => {
         it("Delete if exists, then creating a test account", async () => {
             await server.delete_user(test_username)
+            await server.delete_user(test_full_name2)
             var user = await server.create_user(test_username, "test_password", test_full_name)
             var user2 = await server.create_user(test_username2, "test_password", test_full_name2)
             assert.notEqual(user, undefined)
             assert.equal(user.username, test_username)
-        })
 
+            await server.db.query("UPDATE users SET slack_id = ? WHERE id = ?", [test_slack_id, user.id])
+        })
+    })
+})
+
+describe("Account managing", () => {
+    it("Generate token for user", async () => {
+        var user = await server.get_user_from_username(test_username)
+        var token = await server.generate_token(test_username)
+        var user_from_token = await server.get_user_from_token(token)
+        assert.equal(user_from_token.id, user.id)
+    })
+
+    it("Get user from username", async () => {
+        var user = await server.get_user_from_username(test_username)
+        assert.notEqual(user, undefined)
+    })
+
+    it("Get user from slack id", async () => {
+        var user = await server.get_user_from_slack_id(test_slack_id)
+        assert.notEqual(user, undefined)
+    })
+
+    it("Get user from username and password (safe)", async () => {
+        var user = await server.get_user_from_username_and_password(test_username, "test_password")
+        assert.notEqual(user, undefined)
     })
 })
 
 
-
 describe("Check in / out testing", () => {
-    it("Check in user (toggle, no project)", async() => {
+    it("Check in user (toggle, no project)", async () => {
         var user = await server.get_user_from_username(test_username)
         assert.equal(await server.is_checked_in(user.id), false)
         var success = await server.check_in(user.id, undefined, undefined, "Test")
@@ -52,7 +73,7 @@ describe("Check in / out testing", () => {
         assert.equal(success, true)
     })
 
-    it("Check out (toggle, no project)", async() => {
+    it("Check out (toggle, no project)", async () => {
         var user = await server.get_user_from_username(test_username)
         assert.equal(await server.is_checked_in(user.id), true)
         var success = await server.check_in(user.id, undefined, undefined, "Test")
@@ -61,7 +82,7 @@ describe("Check in / out testing", () => {
         assert.equal(await server.is_checked_in(user.id), false)
     })
 
-    it("Create project, " + test_project, async() => {
+    it("Create project, " + test_project, async () => {
         var user = await server.get_user_from_username(test_username)
         var success = await server.create_project(test_project, user)
         assert.equal(success, true)
@@ -71,10 +92,10 @@ describe("Check in / out testing", () => {
         var user = await server.get_user_from_username(test_username)
         var project = await server.get_project(test_project)
         var is_joined = await server.is_joined_in_project(user.id, project.id)
-        assert(is_joined, true)
+        assert.equal(is_joined, true)
     })
 
-    it("Check in (force, project name)", async() => {
+    it("Check in (force, project name)", async () => {
         var user = await server.get_user_from_username(test_username)
 
         var success = await server.check_in(user.id, true, test_project, "Test")
@@ -83,7 +104,7 @@ describe("Check in / out testing", () => {
         assert.equal(await server.is_checked_in(user.id), true)
     })
 
-    it("Check in (force, no project)", async() => {
+    it("Check in (force, no project)", async () => {
         var user = await server.get_user_from_username(test_username)
         var success = await server.check_in(user.id, true, "", "Test")
         assert.equal(success, true)
@@ -95,14 +116,14 @@ describe("Check in / out testing", () => {
 
 describe("Add user to project testing", () => {
 
-    it ("Check if user is not a part of project, " + test_username2, async() => {
+    it("Check if user is not a part of project, " + test_username2, async () => {
         var user2 = await server.get_user_from_username(test_username2)
         var project = await server.get_project(test_project)
         var isJoined = await server.is_joined_in_project(user2.id, project.id)
         assert.equal(isJoined, false)
     })
-     
-    it ("Add user to project, " + test_username2, async() => {
+
+    it("Add user to project, " + test_username2, async () => {
         var user1 = await server.get_user_from_username(test_username)
         var user2 = await server.get_user_from_username(test_username2)
         var project = await server.get_project(test_project)
@@ -110,14 +131,14 @@ describe("Add user to project testing", () => {
         assert.equal(added_user, true)
     })
 
-    it ("Check if user is part of project, " + test_username2, async() => {
+    it("Check if user is part of project, " + test_username2, async () => {
         var user2 = await server.get_user_from_username(test_username2)
         var project = await server.get_project(test_project)
         var isJoined = await server.is_joined_in_project(user2.id, project.id)
         assert.equal(isJoined, true)
     })
 
-    it ("Try to add the user again " + test_username2, async() => {
+    it("Try to add the user again " + test_username2, async () => {
         var user1 = await server.get_user_from_username(test_username)
         var user2 = await server.get_user_from_username(test_username2)
         var project = await server.get_project(test_project)
@@ -137,17 +158,21 @@ describe("Delete user and cleanup", () => {
         assert.equal(project, undefined)
     })
 
-    it("Clean up", async() => {
+    it("Clean up", async () => {
         var user = await server.get_user_from_username(test_username)
+        var user2 = await server.get_user_from_username(test_username2)
         await server.db.query("DELETE FROM checks WHERE user = ?", user.id)
         await server.db.query("DELETE FROM projects WHERE owner = ?", user.id)
-        
+        await server.db.query("DELETE FROM checks WHERE user = ?", user2.id)
+        await server.db.query("DELETE FROM projects WHERE owner = ?", user2.id)
+        await server.db.query("DELETE FROM joints WHERE user = ?", user.id)
+        await server.db.query("DELETE FROM joints WHERE user = ?", user2.id)
     })
 
-    it("Delete user", async () => {
+    it("Delete users", async () => {
         await server.delete_user(test_username)
+        await server.delete_user(test_username2)
         user = await server.get_user_from_username(test_username)
         assert.equal(user, undefined)
     })
-
 })

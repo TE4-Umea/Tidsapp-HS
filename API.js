@@ -33,7 +33,10 @@ class API {
                 })
             }
         } else {
-            res.json({success: false, text: "Please register an account and link it before using slash commands https://hs.ygstr.com"})
+            res.json({
+                success: false,
+                text: "Please register an account and link it before using slash commands https://hs.ygstr.com"
+            })
         }
     }
 
@@ -41,19 +44,11 @@ class API {
         var project_name = req.body.project
         var token = req.body.token
         var user = await this.server.get_user_from_token(token)
-        if (user) {
-            project = await this.server.get_project(project_name)
-            await this.server.add_user_to_project(token, project, user)
-            res.json({
-                success: true,
-                text: "User added to project"
-            })
-        } else {
-            res.json({
-                success: false,
-                text: "User does not exist."
-            })
-        }
+        var user_to_add = await this.server.get_user_from_username(req.body.username)
+
+        var project = await this.server.get_project(project_name)
+        var response = await this.server.add_user_to_project(user_to_add, project.id, user)
+        res.json(response)
     }
 
 

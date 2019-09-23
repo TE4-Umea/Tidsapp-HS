@@ -339,8 +339,6 @@ class Server {
                 }
             }
 
-            console.log(project_name + " , is nuollll")
-
             if (check_in === true) {
                 await this.insert_check(user.id, true, project_name, type)
                 return {

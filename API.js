@@ -4,8 +4,27 @@ class API {
         this.server = server
     }
 
-    async checkin(req, res) {
-        res.end("This API call is not implemented yet.")
+    async checkin(req, res){
+        var token = req.body.token
+        var check_in = req.body.check_in
+        var project = req.body.project ? req.body.project : null
+        console.log(project)
+        var user = await this.server.get_user_from_token(token)
+        console.log(user)
+        if(user){
+            var result = await this.server.check_in(user.id, check_in, project, "api")
+            if(result.success){
+                if(project === null){
+                    res.json({success: true, text: "Checked in: " + user.name})
+                }else if(project != null){
+                    res.json({success: true, text: "Checked in " + user.name + " on Project: " + project})
+                }
+            }else{
+                res.json({success: false, text: result.reason})
+            }
+        }else{
+            res.end("Please register an account and link it before using slash commands https://hs.ygstr.com")
+        }
     }
 
     async add(req, res) {

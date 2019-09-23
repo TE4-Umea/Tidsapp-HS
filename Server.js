@@ -531,8 +531,28 @@ class Server {
      * @param {*} user 
      */
     async add_user_to_project(user_to_add, project_id, user) {
-        if(!user_to_add || !user || !project_id) return
-        
+
+        if(!user_to_add){
+            return {
+                success: false,
+                text: "User not found"
+            }
+        }
+
+        if(!user){
+            return {
+                success: false,
+                text: "Invalid token"
+            }
+        }
+
+        if(!project_id){
+            return {
+                success: false,
+                text: "Project not found"
+            }
+        }
+
         var project = await this.get_project_from_id(project_id)
         if (project) {
             // Check if user is already in project

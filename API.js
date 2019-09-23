@@ -8,9 +8,7 @@ class API {
         var token = req.body.token
         var check_in = req.body.check_in
         var project = req.body.project ? req.body.project : null
-        console.log(project)
         var user = await this.server.get_user_from_token(token)
-        console.log(user)
         if(user){
             var result = await this.server.check_in(user.id, check_in, project, "api")
             if(result.success){
@@ -32,7 +30,56 @@ class API {
     }
 
     async remove(req, res) {
-        res.end("This API call is not implemented yet.")
+        var user_to_remove = req.body.username
+        console.log(user_to_remove)
+        var token = req.body.token
+        console.log(token)
+        var project_name = req.body.project
+        console.log(project_name)
+
+        if(user_to_remove !== null || project !== null || token !== null){
+            user_to_remove = await this.server.get_user_from_username(user_to_remove)
+            var user = await this.server.get_user_from_token(token)
+            var project = await this.server.get_project(project_name)
+            console.log(project.owner)
+            console.log(user.id)
+
+            if(project.owner == user.id || user_to_remove.id == user.id){
+                var result = await this.server.remove_user_from_project(user_to_remove.id, project.id)
+                console.log(result)
+                res.json({
+                    success: true, 
+                    text: result.reason
+                })
+                console.log("1")
+            }else{
+                res.json({
+                    success: false,
+                    text: "failed"
+                })
+            }
+
+        }else if(user_to_remove === null){
+            res.json({
+                success: false, 
+                text: "You need to instert a user to remove"
+            })
+            console.log("1")
+        }else if(project === null){
+            res.json({
+                success: false, 
+                text: "You need to insert project to remove user from"
+            })
+            console.log("1")
+        }else if(token === null){
+            res.json({
+                success: false, 
+                text: "Token was not found"
+            })
+            console.log("1")
+        }else{
+            res.json({success: false, text: "Removal failed"})
+        }
     }
 
     /**

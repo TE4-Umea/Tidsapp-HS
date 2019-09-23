@@ -33,10 +33,6 @@ class API{
         }
     }
 
-    async checkout(req, res){
-        res.end("This API call is not implemented yet.")
-    }
-
     async add(req, res){
         res.end("This API call is not implemented yet.")
     }
@@ -49,12 +45,9 @@ class API{
         res.end("This API call is not implemented yet.")
     }
 
-    async check(req, res){
-        res.end("This API call is not implemented yet.")
-    }
-
     async login(req, res){
-        res.end("This API call is not implemented yet.")
+        var username = req.body.username
+        var password = req.body.password
     }
 }
 

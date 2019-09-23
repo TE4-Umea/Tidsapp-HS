@@ -9,8 +9,7 @@ class API {
         var check_in = req.body.check_in
         var project = req.body.project ? req.body.project : null
         var user = await this.server.get_user_from_token(token)
-
-        if (user) {
+        if(user){
             var result = await this.server.check_in(user.id, check_in, project, "api")
             if (result.success) {
                 if (project === null) {
@@ -41,14 +40,47 @@ class API {
     }
 
     async add(req, res) {
-        res.end("This API call is not implemented yet.")
+        var project_name = req.body.project
+        var token = req.body.token
+        var username = req.body.username
+        var user = await this.server.get_user_from_token(token)
+        var user_to_add = await this.server.get_user_from_username(username)
+        
+        var project = await this.server.get_project(project_name)
+        var response = await this.server.add_user_to_project(user_to_add, project.id, user)
+        res.json(response)
     }
 
     async remove(req, res) {
-        res.end("This API call is not implemented yet.")
+        var user_to_remove = req.body.username ? req.body.username : null
+        var token = req.body.token
+        var project_name = req.body.project
+
+        if(user_to_remove !== null && project_name !== null && token !== null){
+            var result = await this.server.remove_user_from_project(user_to_remove, project_name, token)
+
+        }else if(user_to_remove === null){
+            res.json({
+                success: false, 
+                text: "You need to instert a user to remove"
+            })
+        }else if(project === null){
+            res.json({
+                success: false, 
+                text: "You need to insert project to remove user from"
+            })
+        }else if(token === null){
+            res.json({
+                success: false, 
+                text: "Token was not found"
+            })
+        }else{
+            res.json({
+                success: false, 
+                text: "Removal failed"
+            })
+        }
     }
-
-
 
     /**
      * POST /api/project
@@ -130,7 +162,6 @@ class API {
     async login(req, res) {
         var username = req.body.username
         var password = req.body.password
-
         var user = await this.server.get_user_from_username(username)
 
         // Sign in

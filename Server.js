@@ -119,12 +119,20 @@ class Server {
             this.API.login(req, res)
         })
 
+        this.app.post("/api/signup", async (req, res) => {
+            this.API.signup(req, res)
+        })
+
         this.app.post("/api/profile", async (req, res) => {
             this.API.profile(req, res)
         })
 
         this.app.post("/api/user", async (req, res) => {
             this.API.username_taken(req, res)
+        })
+
+        this.app.post("/api/sign", async (req, res) => {
+            this.API.sign(req, res)
         })
 
         this.API = new this.API(this)
@@ -138,7 +146,7 @@ class Server {
             })
 
             socket.on("sign_slack", async info => {
-                for (var sign of this.slack_sign_users) {
+                /* for (var sign of this.slack_sign_users) {
                     if (sign.token === info.sign_token) {
                         var user = await this.get_user_from_token(info.token)
                         if (user) {
@@ -147,7 +155,7 @@ class Server {
                             socket.emit("redir", "dashboard")
                         }
                     }
-                }
+                } */
             })
 
             socket.on("login_with_token", async token => {
@@ -161,7 +169,7 @@ class Server {
                 }
             })
 
-            socket.on("login", async info => {
+            /* socket.on("login", async info => {
 
                 var user = await this.get_user_from_username(info.username)
                 if (user) {
@@ -207,7 +215,7 @@ class Server {
                     }
 
                 }
-            })
+            }) */
 
             socket.on("get_documentation", () => {
                 socket.emit("documentation", this.documentation)

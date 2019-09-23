@@ -1,6 +1,11 @@
 var sign_token = document.getElementById("slack-sign-token").innerText
 if(sign_token){
-    socket.emit("sign_slack", {token, sign_token})
+    axios.post("/api/sign", {token, sign_token}).then(res => {
+        var data = res.data
+        if(data.success){
+            location.href = data.redir
+        }
+    })
 }
 
 var time_el = document.getElementById("time")

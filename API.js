@@ -7,26 +7,27 @@ class API{
     async checkin(req, res){
         var project = undefined
         var token = req.body.token
+        console.log(token)
         var check_in = req.body.check_in
-        var project = req.body.project
+        console.log(check_in)
+        var project = req.body.project ? req.body.project : null
+        console.log(project)
         var user = await this.server.get_user_from_token(token)
+        console.log(user)
         if(user){
-            if(project){
-                var success = this.server.check_in(user.id, check_in, project, "api")
-                if(success){
-                    res.end("Checked in, Project: " + project)
-                }else{
-                    res.end("Check in failed")
+            console.log(user.id, check_in, project, "api")
+            var result = await this.server.check_in(user.id, check_in, project, "api")
+            console.log(result)
+            if(result.success){
+                if(project != null){
+                    res.json({success: true, text: "Checked in " + user.name + " on Project: " + project})
+                }else if(project === null){
+                    res.json({success: true, text: "Checked in: " + user.name})
                 }
             }else{
-                var success = this.server.check_in(user.id, check_in, null, "api")
-                if(success){
-                    res.end("Checked in: " + user.name)
-                }else{
-                    res.end("Check in failed")
-                }
+                res.json({success: false, text: "Check in failed"})
             }
-        }else{
+            }else{
                 res.end("Please register an account and link it before using slash commands https://hs.ygstr.com")
 
             //res.end("Check in failed")

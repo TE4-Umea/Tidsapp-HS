@@ -26,16 +26,16 @@ class API {
         var project_name = req.body.project
         var project = this.server.get_project(project_name)
         var project_data = this.server.get_project_data(project.id)
-        if(project_data){
-            return {
+        if (project_data) {
+            res.end({
                 success: true,
                 project: project_data
-            }
+            })
         } else {
-            return {
+            res.end({
                 success: false,
                 text: "Project not found"
-            }
+            })
         }
     }
 
@@ -45,10 +45,10 @@ class API {
      * @param {*} req 
      * @param {*} res 
      */
-    async profile(req, res){
+    async profile(req, res) {
         var token = req.body.token
         var user = await this.server.get_user_from_token(token)
-        if(user){
+        if (user) {
             var data = await this.server.get_user_data(user.id)
             res.json({
                 success: true,
@@ -98,9 +98,9 @@ class API {
      * @param {*} req 
      * @param {*} res 
      */
-    async username_taken(req, res){
+    async username_taken(req, res) {
         var username = req.body.username
-        if(!username){
+        if (!username) {
             res.json({
                 success: false,
                 text: "Missing username attribute"
@@ -108,7 +108,7 @@ class API {
             return
         }
         var user = this.server.get_user_from_username(username)
-        if(user){
+        if (user) {
             res.json({
                 success: true,
                 taken: true

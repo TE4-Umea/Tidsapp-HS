@@ -128,7 +128,7 @@ describe("Add user to project testing", () => {
         var user2 = await server.get_user_from_username(test_username2)
         var project = await server.get_project(test_project)
         var added_user = await server.add_user_to_project(user2, project.id, user1)
-        assert.equal(added_user, true)
+        assert.equal(added_user.success, true)
     })
 
     it("Check if user is part of project, " + test_username2, async () => {
@@ -143,7 +143,7 @@ describe("Add user to project testing", () => {
         var user2 = await server.get_user_from_username(test_username2)
         var project = await server.get_project(test_project)
         var added_user = await server.add_user_to_project(user2, project.id, user1)
-        assert.equal(added_user, false)
+        assert.equal(added_user.success, false)
     })
 
 })

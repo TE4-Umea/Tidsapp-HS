@@ -125,6 +125,7 @@ describe("Projects", () => {
         var user1 = await server.get_user_from_username(test_username)
         var user2 = await server.get_user_from_username(test_username2)
         var project = await server.get_project(test_project)
+        var is_owner = await server.is_joined_in_project(user1.id, project.id)
         var added_user = await server.add_user_to_project(user2, project.id, user1)
         assert.equal(added_user.success, true)
     })

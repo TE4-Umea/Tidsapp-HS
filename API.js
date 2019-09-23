@@ -29,7 +29,7 @@ class API {
             } else {
                 res.json({
                     success: false,
-                    text: result.reason
+                    text: result.text
                 })
             }
         } else {

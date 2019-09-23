@@ -336,13 +336,13 @@ class Server {
                     if (!owns_project) {
                         return {
                             success: false,
-                            reason: "User is not apart of this project"
+                            text: "User is not apart of this project"
                         }
                     }
                 } else {
                     return {
                         success: false,
-                        reason: "Project not found"
+                        text: "Project not found"
                     }
                 }
             }
@@ -377,7 +377,7 @@ class Server {
         } else {
             return {
                 success: false,
-                reason: "User not found"
+                text: "User not found"
             }
         }
     }
@@ -420,10 +420,9 @@ class Server {
     async is_joined_in_project(user_id, project_id) {
         if (user_id && project_id) {
             var is_joined = await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])
-            if (is_joined) return true
             var project = await this.get_project_from_id(project_id)
             if (project) {
-                if (project.owner == user_id) return true
+                if (project.owner == user_id || is_joined) return true
             }
         }
         return false
@@ -515,19 +514,41 @@ class Server {
         return true
     }
 
+    /**
+     * 
+     * @param {*} user_to_add 
+     * @param {*} project_id 
+     * @param {*} user 
+     */
     async add_user_to_project(user_to_add, project_id, user) {
-        // Check if user is already in project
-        var is_joined = await this.is_joined_in_project(user_to_add.id, project_id)
-        if (is_joined) {
+        var project = await this.get_project_from_id(project_id)
+        if (project) {
+            // Check if user is already in project
+            var is_joined = await this.is_joined_in_project(user_to_add.id, project_id)
+            if (is_joined) {
+                return {
+                    success: false,
+                    text: "User is already apart of project"
+                }
+            }
+            if (user) {
+                var has_authority = await this.is_joined_in_project(user.id, project_id)
+                if (!has_authority) {
+                    return {
+                        success: false,
+                        text: "You dont have the authority to do this action"
+                    }
+                }
+            }
+            //Add the user to joints
+            await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
             return {
-                success: false,
-                reason: "User is already a part of project"
+                success: true
             }
         }
-        //Add the user to joints
-        await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
         return {
-            success: true
+            success: false,
+            text: "Project doesnt exist"
         }
     }
 

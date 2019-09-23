@@ -135,17 +135,22 @@ class Server {
             this.API.sign(req, res)
         })
 
+        this.app.get("/api/documentation", async (req, res) => {
+            this.API.documentation(req, res)
+        })
+
+
         this.API = new this.API(this)
 
         /* SOCKET IO */
         this.io.on("connection", socket => {
 
-            socket.on("disconnect", () => {
+            /* socket.on("disconnect", () => {
                 // Remove this connection from online users
                 this.online_users.splice(this.online_users.indexOf(socket.id), 1)
-            })
+            }) */
 
-            socket.on("sign_slack", async info => {
+            /* socket.on("sign_slack", async info => { */
                 /* for (var sign of this.slack_sign_users) {
                     if (sign.token === info.sign_token) {
                         var user = await this.get_user_from_token(info.token)
@@ -156,9 +161,9 @@ class Server {
                         }
                     }
                 } */
-            })
+           /*  }) */
 
-            socket.on("login_with_token", async token => {
+            /* socket.on("login_with_token", async token => {
                 var user = await this.get_user_from_token(token)
                 if (user) {
                     this.online_users[socket.id] = user.id
@@ -167,7 +172,7 @@ class Server {
                 } else {
                     socket.emit("invalid_token")
                 }
-            })
+            }) */
 
             /* socket.on("login", async info => {
 
@@ -217,9 +222,9 @@ class Server {
                 }
             }) */
 
-            socket.on("get_documentation", () => {
+            /* socket.on("get_documentation", () => {
                 socket.emit("documentation", this.documentation)
-            })
+            }) */
 
             socket.on("username_taken", async username => {
                 var user = await this.get_user_from_username(username)

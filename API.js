@@ -45,6 +45,8 @@ class API {
         res.end("This API call is not implemented yet.")
     }
 
+    
+
     /**
      * POST /api/project
      * Get information of a project and all the members
@@ -253,6 +255,10 @@ class API {
                 }
             }
         }
+    }
+
+    async documentation(req, res){
+        res.json(this.server.documentation)
     }
 }
 

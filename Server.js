@@ -519,6 +519,23 @@ class Server {
         }
     }
 
+    async remove_user_from_project(user_to_delete, project_id){
+        var is_joined = await this.is_joined_in_project(user_to_delete, project_id)
+        if(is_joined){
+            await this.db.query("DELETE FROM joints WHERE user = ?", user_to_delete.id)
+            return{
+                success: true,
+                reason: "User removed"
+            }
+        }else{
+            return{
+                success: false,
+                text: is_joined,
+                reason: "User not found in project"
+            }
+        }
+    }
+
     async delete_project(project_name, user_id) {
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)

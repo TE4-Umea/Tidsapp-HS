@@ -43,21 +43,18 @@ class API {
     async add(req, res) {
         var project_name = req.body.project
         var token = req.body.token
+        var username = req.body.username
         var user = await this.server.get_user_from_token(token)
-        var user_to_add = await this.server.get_user_from_username(req.body.username)
-
+        var user_to_add = await this.server.get_user_from_username(username)
+        
         var project = await this.server.get_project(project_name)
         var response = await this.server.add_user_to_project(user_to_add, project.id, user)
         res.json(response)
     }
 
-
-
     async remove(req, res) {
         res.end("This API call is not implemented yet.")
     }
-
-
 
     /**
      * POST /api/project

@@ -142,7 +142,6 @@ class API {
     async login(req, res) {
         var username = req.body.username
         var password = req.body.password
-
         var user = await this.server.get_user_from_username(username)
 
         // Sign in

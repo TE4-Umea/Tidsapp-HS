@@ -29,3 +29,20 @@ on_login = () => {
     if(me.slack_id) document.getElementById("slack-button").remove()
     document.getElementById("logged-in-as").innerText = "Logged in as " + me.name + " (" + me.username + ")"
 }
+
+function check_in(){
+    axios.post("/api/checkin", {token: token, check_in: true})
+}
+
+function update_checked_in_status(checked_in){
+    var check_in_button = document.getElementById("check-in-button")
+    if(checked_in){
+        check_in_button.classList.add("mdc-button--outlined")
+        check_in_button.classList.remove("mdc-button--raised")
+        check_in_button.innerText = "check out"
+    } else {
+        check_in_button.classList.remove("mdc-button--outlined")
+        check_in_button.classList.add("mdc-button--raised")
+        check_in_button.innerText = "check in"
+    }
+}

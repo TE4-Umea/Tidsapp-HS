@@ -41,11 +41,11 @@ class API {
     }
 
     async remove(req, res) {
-        var user_to_remove = req.body.username
+        var user_to_remove = req.body.username ? req.body.username : null
         var token = req.body.token
         var project_name = req.body.project
 
-        if(user_to_remove !== null && project !== null && token !== null){
+        if(user_to_remove !== null && project_name !== null && token !== null){
             var result = await this.server.remove_user_from_project(user_to_remove, project_name, token)
 
         }else if(user_to_remove === null){

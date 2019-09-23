@@ -576,7 +576,7 @@ class Server {
                     reason: "User not found in project"
                 }
             }
-
+        }
     }
 
     async delete_project(project_name, user_id) {

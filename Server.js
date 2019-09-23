@@ -317,7 +317,8 @@ class Server {
     async check_in(user_id, check_in = null, project_name = null, type = "unknown") {
         var user = await this.get_user(user_id)
         if (user) {
-            if (project_name) {
+            
+            if (project_name != null && project_name != "" && project_name != undefined) {
                 var project = await this.get_project(project_name)
                 if (project) {
                     var owns_project = await this.is_joined_in_project(user.id, project.id)

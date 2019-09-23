@@ -70,7 +70,7 @@ describe("Check in / out testing", () => {
         var success = await server.check_in(user.id, undefined, undefined, "Test")
 
         assert.equal(await server.is_checked_in(user.id), true)
-        assert.equal(success, true)
+        assert.equal(success.success, true)
     })
 
     it("Check out (toggle, no project)", async () => {
@@ -78,7 +78,7 @@ describe("Check in / out testing", () => {
         assert.equal(await server.is_checked_in(user.id), true)
         var success = await server.check_in(user.id, undefined, undefined, "Test")
 
-        assert.equal(success, true)
+        assert.equal(success.success, true)
         assert.equal(await server.is_checked_in(user.id), false)
     })
 
@@ -100,14 +100,14 @@ describe("Check in / out testing", () => {
 
         var success = await server.check_in(user.id, true, test_project, "Test")
 
-        assert.equal(success, true)
+        assert.equal(success.success, true)
         assert.equal(await server.is_checked_in(user.id), true)
     })
 
     it("Check in (force, no project)", async () => {
         var user = await server.get_user_from_username(test_username)
         var success = await server.check_in(user.id, true, "", "Test")
-        assert.equal(success, true)
+        assert.equal(success.success, true)
         var last_checkin = await server.get_last_check(user.id)
         assert.equal(last_checkin.check_in, true)
         assert.equal(last_checkin.project, "")

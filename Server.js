@@ -123,6 +123,10 @@ class Server {
             this.API.profile(req, res)
         })
 
+        this.app.get("/api/user", async(req, res) => {
+            this.API.username_taken(req, res)
+        })
+
         this.API = new this.API(this)
 
         /* SOCKET IO */

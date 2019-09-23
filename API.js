@@ -60,6 +60,35 @@ class API {
             })
         }
     }
+
+    /**
+     * GET /api/user
+     * Check if a username is taken
+     * @param {*} req 
+     * @param {*} res 
+     */
+    async username_taken(req, res){
+        var username = req.body.username
+        if(!username){
+            res.json({
+                success: false,
+                text: "Missing username attribute"
+            })
+            return
+        }
+        var user = this.server.get_user_from_username(username)
+        if(user){
+            res.json({
+                success: true,
+                taken: true
+            })
+        } else {
+            res.json({
+                success: true,
+                taken: false
+            })
+        }
+    }
 }
 
 module.exports = API

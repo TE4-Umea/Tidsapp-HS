@@ -57,7 +57,7 @@ class API {
         res.end("This API call is not implemented yet.")
     }
 
-    
+
 
     /**
      * POST /api/project
@@ -268,8 +268,41 @@ class API {
         }
     }
 
-    async documentation(req, res){
+    async documentation(req, res) {
         res.json(this.server.documentation)
+    }
+
+    async document(req, res) {
+        var pack = req.body
+        if (pack.token === this.server.config.admin_token) {
+            delete pack.token
+            if (pack.title.length == 0) {
+                res.json({
+                    success: false,
+                    text: "Don't forget the title"
+                })
+                return
+            }
+            try {
+                this.server.fs.writeFileSync("documentation/" + pack.title.split(" ").join("_") + ".json", JSON.stringify(pack))
+                res.json({
+                    success: true,
+                    text: "Success!"
+                })
+                this.server.load_documentation()
+            } catch (e) {
+                this.server.log(e)
+                res.json({
+                    success: false,
+                    text: "Error writing fail, check the title. Make sure there are no weird characters in it."
+                })
+            }
+        } else {
+            res.json({
+                success: false,
+                text: "Wrong token"
+            })
+        }
     }
 }
 

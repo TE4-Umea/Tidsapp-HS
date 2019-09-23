@@ -46,7 +46,19 @@ class API {
      * @param {*} res 
      */
     async new_project(req, res){
-        res.end("Not implemented yet")
+        var token = req.body.token
+        var project_name = req.body.project
+
+        var user = await this.server.get_user_from_token(token)
+        if(user){
+            var response = await this.server.create_project(project_name, user)
+            res.json(response)
+        } else {
+            res.json({
+                success: false,
+                text: "Invalid token"
+            })
+        }
     }
 
     async add(req, res) {
@@ -178,6 +190,14 @@ class API {
         var password = req.body.password
         var name = req.body.name
 
+        if(!(username && password && name)){
+            res.json({
+                success: false,
+                text: "Missing parameters:" + (!username ? " username" : "") + (!password ? " password" : "") + (!name ? " name" : "") 
+            })
+            return
+        }
+
         // Sign up
         if (username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== username) {
             res.json({
@@ -214,9 +234,9 @@ class API {
             })
             return
         }
-        var user = await this.server.create_user(username, password, name)
-        if (user) {
-            var token = await this.server.generate_token(user.username)
+        var response = await this.server.create_user(username, password, name)
+        if (response.success) {
+            var token = await this.server.generate_token(response.user.username)
             res.json({
                 success: true,
                 token: token
@@ -224,7 +244,7 @@ class API {
         } else {
             res.json({
                 success: false,
-                text: "Something went wrong when creating your account. Please notify administrators."
+                text: response.text
             })
         }
     }
@@ -288,8 +308,14 @@ class API {
 
     async document(req, res) {
         var pack = req.body
-        if (pack.token === this.server.config.admin_token) {
+        var user = await this.server.get_user_from_token(pack.token)
+        if (user.admin) {
             delete pack.token
+            try{
+                this.server.fs.unlinkSync("documentation/" + pack.old_title.split(" ").join("_") + ".json")
+            } catch(__){}
+            delete pack.old_title
+
             if (pack.title.length == 0) {
                 res.json({
                     success: false,
@@ -314,7 +340,7 @@ class API {
         } else {
             res.json({
                 success: false,
-                text: "Wrong token"
+                text: "You need to be admin to do this."
             })
         }
     }

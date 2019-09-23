@@ -502,7 +502,8 @@ class Server {
                 project.members.push({
                     username: user.username,
                     name: user.name,
-                    work: joint.work
+                    work: joint.work,
+                    owner: user.id == project.owner
                 })
             }
 
@@ -520,12 +521,39 @@ class Server {
     }
 
     async create_project(project_name, user) {
-        if (project_name.length > 20 || project_name < 3) {
-            this.log("Project name is too short")
-            return false
+        if(!project_name || !user) return {
+            success: false,
+            text: "Missing project_name or user"
         }
+
+        var existing_project = await this.get_project(project_name)
+        if(existing_project) return {
+            success: false,
+            text: "Project name taken"
+        }
+
+        if (project_name.length > 30 || project_name < 3) {
+            return {
+                success: false,
+                text: "Project name has to be between 3 > 30"
+            }
+        }
+
+        if(project_name.replace(/[^a-z0-9_]+|\s+/gmi, "") !== project_name){
+            return {
+                success: false,
+                text: "Project name forbidden"
+            }
+        }
+
         await this.db.query("INSERT INTO projects (name, owner) VALUES (?, ?)", [project_name, user.id])
-        return true
+        var project = await this.get_project(project_name)
+        await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project.id, user.id, Date.now(), 0])
+
+        return {
+            success: true,
+            text: "Created project " + project_name
+        }
     }
 
     /**
@@ -689,15 +717,20 @@ class Server {
     async create_user(username, password, full_name) {
         var username_taken = await this.get_user_from_username(username)
         if (username_taken) {
-            this.log("Username taken")
-            return false
+            return {
+                success: false,
+                text: "Username taken"
+            }
         }
         // Insert into the database
         await this.db.query("INSERT INTO users (username, name, password, created) VALUES (?, ?, ?, ?)", [username, full_name, this.md5(password), Date.now()])
-        var user = this.get_user_from_username(username)
+        var user = await this.get_user_from_username(username)
         if (user) {
             this.log("Account created for " + full_name)
-            return user
+            return {
+                success: true,
+                user: user
+            }
         }
     }
 
@@ -737,6 +770,7 @@ class Server {
      * @param {*} slack_id
      */
     async get_user_from_slack_id(slack_id) {
+        if(!slack_id) return false
         var user = await this.db.query_one("SELECT * FROM users WHERE slack_id = ?", slack_id)
         return user
     }

@@ -10,10 +10,10 @@ block head
     script(src="js/edit.js")
 block content   
     div(class="top-text-area")
-        textarea(name="", oninput="preview(this)" id="text-area" cols="70", rows="20" style="display:inline-block;")
+        textarea(name="", onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}" oninput="preview(this)" id="text-area" cols="70", rows="20" style="display:inline-block;")
         div(id="preview" style="") Preview...
 
-    input(type="text" id="title-input" placeholder="Title")
+    input(type="text" id="title-input" placeholder="Old title" oninput="update_title(this)")
 
     select(id="type")
         option(value="") Select type
@@ -25,7 +25,7 @@ block content
     select(name="" id="load-page" onchange="load(this)")
         option(value="") Select page to edit....
     br
-    input(type="password" placeholder="token" id="token")
+    input(type="text" placeholder="New title" id="new-title" oninput="warn()")
     select(id="class")
         option(value="") Select class....
     //button(class="mdc-button mdc-button--outlined" id="check-in-button") Hi

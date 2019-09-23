@@ -132,7 +132,7 @@ class API {
             })
             return
         }
-        var user = this.server.get_user_from_username(username)
+        var user = await this.server.get_user_from_username(username)
         if (user) {
             res.json({
                 success: true,

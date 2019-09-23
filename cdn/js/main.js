@@ -1,3 +1,4 @@
+
 /**
  * Main script
  * This script logs in the user and connects to socket.io
@@ -8,29 +9,25 @@ var on_login = () => {}
 
 var token = localStorage.getItem("token")
 if(token){
-    /* socket.emit("login_with_token", token) */
-    /* axios */
+    axios.post("/api/profile", {
+        token
+    }).then(res => {
+        var data = res.data
+        if(data.success){
+            me = data.profile
+            on_login()
+        } else {
+            localStorage.removeItem("token")
+            location.href = "/"
+        }
+    })
 }
-/* 
-socket.on("login", user => {
-    me = user
-    on_login()
-}) */
 
-/* socket.on("invalid_token", () => {
-    console.warn("Invalid token")
-    localStorage.removeItem("token")
-}) */
-
-/* socket.on("err", msg => {
-    alert(msg)
-})
-
-socket.on("token", token => {
+/* socket.on("token", token => {
     localStorage.setItem("token", token)
     location.href = "/dashboard"
 })
-
-socket.on("redir", url => {
+ */
+/* socket.on("redir", url => {
     location.href = url
-}) */
+})  */

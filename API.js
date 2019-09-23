@@ -17,38 +17,63 @@ class API {
     }
 
     /**
-     * GET /api/project
+     * POST /api/project
      * Get information of a project and all the members
      * @param {*} req 
      * @param {*} res 
      */
     async project(req, res) {
         var project_name = req.body.project
-        var project = this.server.get_project(project_name)
-        var project_data = this.server.get_project_data(project.id)
-        if(project_data){
-            return {
-                success: true,
-                project: project_data
+        var token = req.body.token
+        var user = await this.server.get_user_from_token(token)
+        var project = await this.server.get_project(project_name)
+        var project_data = await this.server.get_project_data(project.id)
+
+        if (user) {
+            if (project) {
+                var has_access = await this.server.is_joined_in_project(user.id, project.id)
+                if (project_data) {
+                    if (has_access) {
+                        res.json({
+                            success: true,
+                            project: project_data
+                        })
+                    } else {
+                        res.json({
+                            success: false,
+                            text: "You don't have access to this project"
+                        })
+                    }
+                } else {
+                    res.json({
+                        success: false,
+                        text: "Project data corrupt"
+                    })
+                }
+            } else {
+                res.json({
+                    success: false,
+                    text: "Project not found"
+                })
             }
         } else {
-            return {
+            res.json({
                 success: false,
-                text: "Project not found"
-            }
+                text: "Invalid token"
+            })
         }
     }
 
     /**
-     * GET api/profile
+     * POST api/profile
      * Get client profile from token
      * @param {*} req 
      * @param {*} res 
      */
-    async profile(req, res){
+    async profile(req, res) {
         var token = req.body.token
         var user = await this.server.get_user_from_token(token)
-        if(user){
+        if (user) {
             var data = await this.server.get_user_data(user.id)
             res.json({
                 success: true,
@@ -93,14 +118,14 @@ class API {
     }
 
     /**
-     * GET /api/user
+     * POST /api/user
      * Check if a username is taken
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
-    async username_taken(req, res){
+    async username_taken(req, res) {
         var username = req.body.username
-        if(!username){
+        if (!username) {
             res.json({
                 success: false,
                 text: "Missing username attribute"
@@ -108,7 +133,7 @@ class API {
             return
         }
         var user = this.server.get_user_from_username(username)
-        if(user){
+        if (user) {
             res.json({
                 success: true,
                 taken: true

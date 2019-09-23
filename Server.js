@@ -326,34 +326,51 @@ class Server {
                 if (project) {
                     var owns_project = await this.is_joined_in_project(user.id, project.id)
                     if (!owns_project) {
-                        return false
+                        return {
+                            success: false,
+                            reason: "User is not apart of this project"
+                        }
                     }
                 } else {
-                    this.log("Project not found")
-                    return false
+                    return {
+                        success: false,
+                        reason: "Project not found"
+                    }
                 }
             }
 
             if(check_in === true){
                 await this.insert_check(user.id, true, project_name, type)
-                return true
+                return {
+                    success: true,
+                    checked_in: true
+                }
             }
 
             if(check_in === false){
                 await this.insert_check(user.id, false, project_name, type)
-                return true
+                return {
+                    success: true,
+                    checked_in: false
+                }
             }
             
             var last_check = await this.get_last_check(user.id)
             
             if (check_in === null) {
                 // Toggle checkin
-                await this.insert_check(user.id, !last_check.check_in, project_name, type)
-                return true
+                var checked_in = await this.insert_check(user.id, !last_check.check_in, project_name, type)
+                return {
+                    success: true,
+                    checked_in: checked_in
+                }
             }
+
         } else {
-            this.log("User ID not found".red)
-            return false
+            return  {
+                success: false,
+                reason: "User not found"
+            }
         }
     }
 

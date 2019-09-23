@@ -24,12 +24,12 @@ class API {
         var username = req.body.username
         var password = req.body.password
 
-        var user = await this.get_user_from_username(username)
+        var user = await this.server.get_user_from_username(username)
 
         // Sign in
-        user = await this.get_user_from_username_and_password(username, password)
+        user = await this.server.get_user_from_username_and_password(username, password)
         if (user) {
-            var token = await this.generate_token(user.username)
+            var token = await this.server.generate_token(user.username)
             if (token) {
                 res.json({
                     success: true,
@@ -39,7 +39,7 @@ class API {
         } else {
             res.json({
                 success: false,
-                reason: "Wrong username or password"
+                text: "Wrong username or password"
             })
         }
     }

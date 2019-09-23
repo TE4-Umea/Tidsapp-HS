@@ -9,8 +9,25 @@ class API {
     }
 
     async add(req, res) {
-        res.end("This API call is not implemented yet.")
+        var project_name = req.body.project
+        var token = req.body.token
+        var user = await this.server.get_user_from_token(token)
+        if (user) {
+            project = await this.server.get_project(project_name)
+            await this.server.add_user_to_project(token, project, user)
+            res.json({
+                success: true,
+                text: "User added to project"
+            })
+        } else {
+            res.json({
+                success: false,
+                text: "User does not exist."
+            })
+        }
     }
+
+
 
     async remove(req, res) {
         res.end("This API call is not implemented yet.")
@@ -20,22 +37,23 @@ class API {
         res.end("This API call is not implemented yet.")
     }
 
-    async profile(req, res){
+    async profile(req, res) {
         var token = req.body.token
         var user = await this.server.get_user_from_token(token)
-        if(user){
-            var data = await this.server.get_user_data(user.id)
-            res.json({
-                success: true,
-                profile: data
-            })
-        } else {
-            res.json({
-                success: false,
-                reason: "Invalid token"
-            })
-        }
+            if (user) {
+                var data = await this.server.get_user_data(user.id)
+                res.json({
+                    success: true,
+                    profile: data
+                })
+            } else {
+                res.json({
+                    success: false,
+                    reason: "Invalid token"
+                })
+            }
     }
+
 
     async login(req, res) {
         var username = req.body.username

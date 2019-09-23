@@ -7,7 +7,7 @@ var test_username = "TestUser"
 var test_full_name = "Test User"
 var test_username2 = "TestUser2"
 var test_full_name2 = "Test User2"
-var test_project = "test project"
+var test_project = "test_project"
 
 describe("Check config file", () => {
     it("Config file loaded or created", done => {
@@ -30,10 +30,12 @@ describe("MYSQL connection and prep", () => {
             await server.delete_user(test_full_name2)
             var user = await server.create_user(test_username, "test_password", test_full_name)
             var user2 = await server.create_user(test_username2, "test_password", test_full_name2)
-            assert.notEqual(user, undefined)
-            assert.equal(user.username, test_username)
 
-            await server.db.query("UPDATE users SET slack_id = ? WHERE id = ?", [test_slack_id, user.id])
+            assert.equal(user.success, true)
+            assert.notEqual(user.user, undefined)
+            assert.equal(user.user.username, test_username)
+
+            await server.db.query("UPDATE users SET slack_id = ? WHERE id = ?", [test_slack_id, user.user.id])
         })
     })
 })
@@ -85,7 +87,7 @@ describe("Check in / out testing", () => {
     it("Create project, " + test_project, async () => {
         var user = await server.get_user_from_username(test_username)
         var success = await server.create_project(test_project, user)
-        assert.equal(success, true)
+        assert.equal(success.success, true)
     })
 
     it("Test if the user is the owner or joined", async () => {

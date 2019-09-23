@@ -123,6 +123,10 @@ class Server {
             this.API.profile(req, res)
         })
 
+        this.app.get("/api/user", async (req, res) => {
+            this.API.username_taken(req, res)
+        })
+
         this.API = new this.API(this)
 
         /* SOCKET IO */
@@ -317,7 +321,6 @@ class Server {
     async check_in(user_id, check_in = null, project_name = null, type = "unknown") {
         var user = await this.get_user(user_id)
         if (user) {
-            
             if (project_name != null && project_name != "" && project_name != undefined) {
                 var project = await this.get_project(project_name)
                 if (project) {
@@ -336,7 +339,9 @@ class Server {
                 }
             }
 
-            if(check_in === true){
+            console.log(project_name + " , is nuollll")
+
+            if (check_in === true) {
                 await this.insert_check(user.id, true, project_name, type)
                 return {
                     success: true,
@@ -344,16 +349,16 @@ class Server {
                 }
             }
 
-            if(check_in === false){
+            if (check_in === false) {
                 await this.insert_check(user.id, false, project_name, type)
                 return {
                     success: true,
                     checked_in: false
                 }
             }
-            
+
             var last_check = await this.get_last_check(user.id)
-            
+
             if (check_in === null) {
                 // Toggle checkin
                 var checked_in = await this.insert_check(user.id, !last_check.check_in, project_name, type)
@@ -364,34 +369,34 @@ class Server {
             }
 
         } else {
-            return  {
+            return {
                 success: false,
                 reason: "User not found"
             }
         }
     }
 
-    async login_user_with_token(token){
+    async login_user_with_token(token) {
         var user = await this.get_user_from_token(token)
-        if(user){
+        if (user) {
             var data = await this.get_user_data(user.id)
             return data
         }
         return false
     }
 
-    async get_user_data(user_id){
+    async get_user_data(user_id) {
         var user = await this.get_user(user_id)
-        if(user){
+        if (user) {
             delete user.access_token
             delete user.password
             user.checked_in = await this.is_checked_in(user.id)
             user.projects = await this.db.query("SELECT * FROM projects WHERE owner = ?", user.id)
             var joints = await this.db.query("SELECT * FROM joints WHERE user = ?", user.id)
 
-            for(var joint of joints){
-                for(let project of user.projects){
-                    if(joint.project == project.id && project.owner == user.id){
+            for (var joint of joints) {
+                for (let project of user.projects) {
+                    if (joint.project == project.id && project.owner == user.id) {
                         // User is the owner of this project
                         project.time = joint.work
                         break
@@ -421,9 +426,10 @@ class Server {
      * @param {*} project 
      * @param {*} type 
      */
-    async insert_check(user_id, check_in, project, type) {
+    async insert_check(user_id, check_in, project = null, type) {
         var user = await this.get_user(user_id)
         if (!check_in) project = ""
+        if (!project) project = ""
         await this.db.query("INSERT INTO checks (user, check_in, project, date, type) VALUES (?, ?, ?, ?, ?)", [user_id, check_in, project, Date.now(), type])
         this.log(user.name + " checked " + (check_in ? "in" : "out") + " via " + type)
     }
@@ -454,8 +460,32 @@ class Server {
      * @param {*} project_name 
      */
     async get_project(project_name) {
-        var project = await this.db.query_one("SELECT * FROM projects WHERE upper(name) = ?", project_name.toUpperCase())
-        return project
+        if (project_name) {
+            var project = await this.db.query_one("SELECT * FROM projects WHERE upper(name) = ?", project_name.toUpperCase())
+            return project
+        }
+        return false
+    }
+
+    async get_project_data(project_id) {
+        var project = await this.get_project_from_id(project_id)
+        if (project) {
+            project.members = []
+            var joints = await this.db.query("SELECT * FROM joints WHERE project = ?", project_id)
+
+            for (var joint of joints) {
+                var user = await this.get_user(joint.user)
+
+                project.members.push({
+                    username: user.username,
+                    name: user.name,
+                    work: joint.work
+                })
+            }
+
+            return project
+        }
+        return false
     }
 
     async get_project_from_id(project_id) {
@@ -476,12 +506,16 @@ class Server {
         // Check if user is already in project
         var is_joined = await this.is_joined_in_project(user_to_add.id, project_id)
         if (is_joined) {
-            this.log("User is already a part of project")
-            return false
+            return {
+                success: false,
+                reason: "User is already a part of project"
+            }
         }
         //Add the user to joints
-        await this.db.query("INSERT INTO joints (project, user, date) VALUES (?, ?, ?)", [project_id, user_to_add.id, Date.now()])
-        return true
+        await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
+        return {
+            success: true
+        }
     }
 
     async delete_project(project_name, user_id) {
@@ -574,7 +608,7 @@ class Server {
             /* Delete user from the database */
             await this.db.query("DELETE FROM users WHERE id = ?", user.id)
             /* Delete all tokens belonging to the user */
-            await this.db.query("DELETE FROM tokens WHERE user = ?" , user.id)
+            await this.db.query("DELETE FROM tokens WHERE user = ?", user.id)
             return true
         }
         return false
@@ -612,7 +646,9 @@ class Server {
     routes() {
         /* Website pages */
         this.app.get("/dashboard", (req, res) => {
-            res.render("dashboard", {client_id: this.config.client_id})
+            res.render("dashboard", {
+                client_id: this.config.client_id
+            })
         })
 
         this.app.get("/login", (req, res) => {

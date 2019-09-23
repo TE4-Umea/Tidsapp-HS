@@ -46,23 +46,7 @@ class API {
         var project_name = req.body.project
 
         if(user_to_remove !== null && project !== null && token !== null){
-            user_to_remove = await this.server.get_user_from_username(user_to_remove)
-            var user = await this.server.get_user_from_token(token)
-            var project = await this.server.get_project(project_name)
-
-            if(project.owner == user.id || user_to_remove.id == user.id){
-                var result = await this.server.remove_user_from_project(user_to_remove.id, project.id)
-                console.log(result)
-                res.json({
-                    success: true, 
-                    text: result.reason
-                })
-            }else{
-                res.json({
-                    success: false,
-                    text: "failed"
-                })
-            }
+            var result = await this.server.remove_user_from_project(user_to_remove, project_name, token)
 
         }else if(user_to_remove === null){
             res.json({

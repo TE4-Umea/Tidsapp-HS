@@ -557,21 +557,26 @@ class Server {
         }
     }
 
-    async remove_user_from_project(user_to_delete, project_id){
-        var is_joined = await this.is_joined_in_project(user_to_delete, project_id)
-        if(is_joined){
-            await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_delete.id, project_id])
-            return{
-                success: true,
-                reason: "User removed"
+    async remove_user_from_project(user_to_delete, project, user){
+        user_to_remove = await this.get_user_from_username(user_to_remove)
+        var user = await this.get_user_from_token(token)
+        var project = await this.get_project(project_name)
+        if(project.owner == user.id || user_to_remove.id == user.id){
+            var is_joined = await this.is_joined_in_project(user_to_delete, project_id)
+            if(is_joined){
+                await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_delete.id, project_id])
+                return{
+                    success: true,
+                    reason: "User removed"
+                }
+            }else{
+                return{
+                    success: false,
+                    text: is_joined,
+                    reason: "User not found in project"
+                }
             }
-        }else{
-            return{
-                success: false,
-                text: is_joined,
-                reason: "User not found in project"
-            }
-        }
+
     }
 
     async delete_project(project_name, user_id) {

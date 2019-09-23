@@ -5,23 +5,24 @@
 
 var me
 var on_login = () => {}
-var socket = io.connect()
+
 var token = localStorage.getItem("token")
 if(token){
-    socket.emit("login_with_token", token)
+    /* socket.emit("login_with_token", token) */
+    /* axios */
 }
-
+/* 
 socket.on("login", user => {
     me = user
     on_login()
-})
+}) */
 
-socket.on("invalid_token", () => {
+/* socket.on("invalid_token", () => {
     console.warn("Invalid token")
     localStorage.removeItem("token")
-})
+}) */
 
-socket.on("err", msg => {
+/* socket.on("err", msg => {
     alert(msg)
 })
 
@@ -32,4 +33,4 @@ socket.on("token", token => {
 
 socket.on("redir", url => {
     location.href = url
-})
+}) */

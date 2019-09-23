@@ -111,7 +111,7 @@ class Server {
             this.API.remove(req, res)
         })
 
-        this.app.get("/api/project", async (req, res) => {
+        this.app.post("/api/project", async (req, res) => {
             this.API.project(req, res)
         })
 
@@ -119,11 +119,11 @@ class Server {
             this.API.login(req, res)
         })
 
-        this.app.get("/api/profile", async (req, res) => {
+        this.app.post("/api/profile", async (req, res) => {
             this.API.profile(req, res)
         })
 
-        this.app.get("/api/user", async (req, res) => {
+        this.app.post("/api/user", async (req, res) => {
             this.API.username_taken(req, res)
         })
 
@@ -487,8 +487,11 @@ class Server {
     }
 
     async get_project_from_id(project_id) {
-        var project = await this.db.query_one("SELECT * FROM projects WHERE id = ?", project_id)
-        return project
+        if (project_id) {
+            var project = await this.db.query_one("SELECT * FROM projects WHERE id = ?", project_id)
+            return project
+        }
+        return false
     }
 
     async create_project(project_name, user) {
@@ -530,15 +533,16 @@ class Server {
     }
 
     async get_user_from_token(token) {
-        var db_token = await this.db.query_one("SELECT * FROM tokens WHERE token = ?", token)
-        if (db_token) {
-            var user = await this.get_user(db_token.user)
-            if (user) {
-                return user
+        if (token) {
+            var db_token = await this.db.query_one("SELECT * FROM tokens WHERE token = ?", token)
+            if (db_token) {
+                var user = await this.get_user(db_token.user)
+                if (user) {
+                    return user
+                }
             }
-        } else {
-            return false
         }
+        return false
     }
 
 

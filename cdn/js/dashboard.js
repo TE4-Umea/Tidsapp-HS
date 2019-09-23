@@ -26,5 +26,6 @@ setInterval(() => {
 }, 1000)
 
 on_login = () => {
+    if(me.slack_id) document.getElementById("slack-button").remove()
     document.getElementById("logged-in-as").innerText = "Logged in as " + me.name + " (" + me.username + ")"
 }

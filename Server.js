@@ -123,7 +123,7 @@ class Server {
             this.API.profile(req, res)
         })
 
-        this.app.get("/api/user", async(req, res) => {
+        this.app.get("/api/user", async (req, res) => {
             this.API.username_taken(req, res)
         })
 
@@ -321,7 +321,6 @@ class Server {
     async check_in(user_id, check_in = null, project_name = null, type = "unknown") {
         var user = await this.get_user(user_id)
         if (user) {
-
             if (project_name != null && project_name != "" && project_name != undefined) {
                 var project = await this.get_project(project_name)
                 if (project) {
@@ -339,6 +338,8 @@ class Server {
                     }
                 }
             }
+
+            console.log(project_name + " , is nuollll")
 
             if (check_in === true) {
                 await this.insert_check(user.id, true, project_name, type)
@@ -425,9 +426,10 @@ class Server {
      * @param {*} project 
      * @param {*} type 
      */
-    async insert_check(user_id, check_in, project, type) {
+    async insert_check(user_id, check_in, project = null, type) {
         var user = await this.get_user(user_id)
         if (!check_in) project = ""
+        if (!project) project = ""
         await this.db.query("INSERT INTO checks (user, check_in, project, date, type) VALUES (?, ?, ?, ?, ?)", [user_id, check_in, project, Date.now(), type])
         this.log(user.name + " checked " + (check_in ? "in" : "out") + " via " + type)
     }
@@ -458,8 +460,32 @@ class Server {
      * @param {*} project_name 
      */
     async get_project(project_name) {
-        var project = await this.db.query_one("SELECT * FROM projects WHERE upper(name) = ?", project_name.toUpperCase())
-        return project
+        if (project_name) {
+            var project = await this.db.query_one("SELECT * FROM projects WHERE upper(name) = ?", project_name.toUpperCase())
+            return project
+        }
+        return false
+    }
+
+    async get_project_data(project_id) {
+        var project = await this.get_project_from_id(project_id)
+        if (project) {
+            project.members = []
+            var joints = await this.db.query("SELECT * FROM joints WHERE project = ?", project_id)
+
+            for (var joint of joints) {
+                var user = await this.get_user(joint.user)
+
+                project.members.push({
+                    username: user.username,
+                    name: user.name,
+                    work: joint.work
+                })
+            }
+
+            return project
+        }
+        return false
     }
 
     async get_project_from_id(project_id) {
@@ -486,7 +512,7 @@ class Server {
             }
         }
         //Add the user to joints
-        await this.db.query("INSERT INTO joints (project, user, date) VALUES (?, ?, ?)", [project_id, user_to_add.id, Date.now()])
+        await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
         return {
             success: true
         }

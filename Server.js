@@ -119,12 +119,20 @@ class Server {
             this.API.login(req, res)
         })
 
+        this.app.post("/api/signup", async (req, res) => {
+            this.API.signup(req, res)
+        })
+
         this.app.post("/api/profile", async (req, res) => {
             this.API.profile(req, res)
         })
 
         this.app.post("/api/user", async (req, res) => {
             this.API.username_taken(req, res)
+        })
+
+        this.app.post("/api/sign", async (req, res) => {
+            this.API.sign(req, res)
         })
 
         this.API = new this.API(this)
@@ -138,7 +146,7 @@ class Server {
             })
 
             socket.on("sign_slack", async info => {
-                for (var sign of this.slack_sign_users) {
+                /* for (var sign of this.slack_sign_users) {
                     if (sign.token === info.sign_token) {
                         var user = await this.get_user_from_token(info.token)
                         if (user) {
@@ -147,7 +155,7 @@ class Server {
                             socket.emit("redir", "dashboard")
                         }
                     }
-                }
+                } */
             })
 
             socket.on("login_with_token", async token => {
@@ -161,7 +169,7 @@ class Server {
                 }
             })
 
-            socket.on("login", async info => {
+            /* socket.on("login", async info => {
 
                 var user = await this.get_user_from_username(info.username)
                 if (user) {
@@ -207,7 +215,7 @@ class Server {
                     }
 
                 }
-            })
+            }) */
 
             socket.on("get_documentation", () => {
                 socket.emit("documentation", this.documentation)
@@ -328,13 +336,13 @@ class Server {
                     if (!owns_project) {
                         return {
                             success: false,
-                            reason: "User is not apart of this project"
+                            text: "User is not apart of this project"
                         }
                     }
                 } else {
                     return {
                         success: false,
-                        reason: "Project not found"
+                        text: "Project not found"
                     }
                 }
             }
@@ -362,14 +370,14 @@ class Server {
                 var checked_in = await this.insert_check(user.id, !last_check.check_in, project_name, type)
                 return {
                     success: true,
-                    checked_in: checked_in
+                    checked_in: !last_check.check_in
                 }
             }
 
         } else {
             return {
                 success: false,
-                reason: "User not found"
+                text: "User not found"
             }
         }
     }
@@ -410,10 +418,13 @@ class Server {
     }
 
     async is_joined_in_project(user_id, project_id) {
-        var is_joined = await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])
-        if (is_joined) return true
-        var project = await this.get_project_from_id(project_id)
-        if (project.owner == user_id) return true
+        if (user_id && project_id) {
+            var is_joined = await this.db.query_one("SELECT * FROM joints WHERE project = ? && user = ?", [project_id, user_id])
+            var project = await this.get_project_from_id(project_id)
+            if (project) {
+                if (project.owner == user_id || is_joined) return true
+            }
+        }
         return false
     }
 
@@ -503,19 +514,41 @@ class Server {
         return true
     }
 
+    /**
+     * 
+     * @param {*} user_to_add 
+     * @param {*} project_id 
+     * @param {*} user 
+     */
     async add_user_to_project(user_to_add, project_id, user) {
-        // Check if user is already in project
-        var is_joined = await this.is_joined_in_project(user_to_add.id, project_id)
-        if (is_joined) {
+        var project = await this.get_project_from_id(project_id)
+        if (project) {
+            // Check if user is already in project
+            var is_joined = await this.is_joined_in_project(user_to_add.id, project_id)
+            if (is_joined) {
+                return {
+                    success: false,
+                    text: "User is already apart of project"
+                }
+            }
+            if (user) {
+                var has_authority = await this.is_joined_in_project(user.id, project_id)
+                if (!has_authority) {
+                    return {
+                        success: false,
+                        text: "You dont have the authority to do this action"
+                    }
+                }
+            }
+            //Add the user to joints
+            await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
             return {
-                success: false,
-                reason: "User is already a part of project"
+                success: true
             }
         }
-        //Add the user to joints
-        await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
         return {
-            success: true
+            success: false,
+            text: "Project doesnt exist"
         }
     }
 

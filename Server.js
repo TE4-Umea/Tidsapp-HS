@@ -370,7 +370,7 @@ class Server {
                 var checked_in = await this.insert_check(user.id, !last_check.check_in, project_name, type)
                 return {
                     success: true,
-                    checked_in: checked_in
+                    checked_in: !last_check.check_in
                 }
             }
 

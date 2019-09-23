@@ -4,26 +4,36 @@ class API {
         this.server = server
     }
 
-    async checkin(req, res){
+    async checkin(req, res) {
         var token = req.body.token
         var check_in = req.body.check_in
         var project = req.body.project ? req.body.project : null
-        console.log(project)
         var user = await this.server.get_user_from_token(token)
-        console.log(user)
-        if(user){
+
+        if (user) {
             var result = await this.server.check_in(user.id, check_in, project, "api")
-            if(result.success){
-                if(project === null){
-                    res.json({success: true, text: "Checked in: " + user.name})
-                }else if(project != null){
-                    res.json({success: true, text: "Checked in " + user.name + " on Project: " + project})
+            if (result.success) {
+                if (project === null) {
+                    res.json({
+                        success: true,
+                        checked_in: result.checked_in,
+                        text: "Checked in: " + user.name
+                    })
+                } else if (project != null) {
+                    res.json({
+                        success: true,
+                        checked_in: result.checked_in,
+                        text: "Checked in " + user.name + " on Project: " + project
+                    })
                 }
-            }else{
-                res.json({success: false, text: result.reason})
+            } else {
+                res.json({
+                    success: false,
+                    text: result.reason
+                })
             }
-        }else{
-            res.end("Please register an account and link it before using slash commands https://hs.ygstr.com")
+        } else {
+            res.json({success: false, text: "Please register an account and link it before using slash commands https://hs.ygstr.com"})
         }
     }
 
@@ -143,23 +153,38 @@ class API {
 
         // Sign up
         if (username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== username) {
-            res.json({success: false, text: "Username contains illigal characters"})
+            res.json({
+                success: false,
+                text: "Username contains illigal characters"
+            })
             return
         }
         if (username.length < 3) {
-            res.json({success: false, text: "Username has to be at least three characters long"})
+            res.json({
+                success: false,
+                text: "Username has to be at least three characters long"
+            })
             return
         }
         if (username.length > 20) {
-            res.json({success: false, text: "Username cannot exceed 20 characters"})
+            res.json({
+                success: false,
+                text: "Username cannot exceed 20 characters"
+            })
             return
         }
         if (name.indexOf(" ") == -1) {
-            res.json({success: false, text: "Please provide a full name, ex. Michael Stevens"})
+            res.json({
+                success: false,
+                text: "Please provide a full name, ex. Michael Stevens"
+            })
             return
         }
         if (password == "") {
-            res.json({success: false, text: "Please enter a password"})
+            res.json({
+                success: false,
+                text: "Please enter a password"
+            })
             return
         }
         var user = await this.server.create_user(username, password, name)

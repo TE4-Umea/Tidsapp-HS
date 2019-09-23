@@ -560,7 +560,7 @@ class Server {
     async remove_user_from_project(user_to_delete, project_id){
         var is_joined = await this.is_joined_in_project(user_to_delete, project_id)
         if(is_joined){
-            await this.db.query("DELETE FROM joints WHERE user = ?", user_to_delete.id)
+            await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_delete.id, project_id])
             return{
                 success: true,
                 reason: "User removed"

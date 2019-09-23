@@ -93,6 +93,8 @@ class API {
         }
     }
 
+    
+
     /**
      * POST /api/project
      * Get information of a project and all the members
@@ -301,6 +303,10 @@ class API {
                 }
             }
         }
+    }
+
+    async documentation(req, res){
+        res.json(this.server.documentation)
     }
 }
 

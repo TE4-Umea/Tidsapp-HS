@@ -101,7 +101,7 @@ class API {
         } else {
             res.json({
                 success: false,
-                reason: "Invalid token"
+                text: "Invalid token"
             })
         }
     }
@@ -136,6 +136,47 @@ class API {
         }
     }
 
+    async signup(req, res) {
+        var username = req.body.username
+        var password = req.body.password
+        var name = req.body.name
+
+        // Sign up
+        if (username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== username) {
+            res.json({success: false, text: "Username contains illigal characters"})
+            return
+        }
+        if (username.length < 3) {
+            res.json({success: false, text: "Username has to be at least three characters long"})
+            return
+        }
+        if (username.length > 20) {
+            res.json({success: false, text: "Username cannot exceed 20 characters"})
+            return
+        }
+        if (name.indexOf(" ") == -1) {
+            res.json({success: false, text: "Please provide a full name, ex. Michael Stevens"})
+            return
+        }
+        if (password == "") {
+            res.json({success: false, text: "Please enter a password"})
+            return
+        }
+        var user = await this.server.create_user(username, password, name)
+        if (user) {
+            var token = await this.server.generate_token(user.username)
+            res.json({
+                success: true,
+                token: token
+            })
+        } else {
+            res.json({
+                success: false,
+                text: "Something went wrong when creating your account. Please notify administrators."
+            })
+        }
+    }
+
     /**
      * POST /api/user
      * Check if a username is taken
@@ -162,6 +203,30 @@ class API {
                 success: true,
                 taken: false
             })
+        }
+    }
+
+    /**
+     * Sign a client to thier slack account (link)
+     * @param {*} req 
+     * @param {*} res 
+     */
+    async sign(req, res) {
+        var token = req.body.token
+        var sign_token = req.body.sign_token
+
+        for (var sign of this.server.slack_sign_users) {
+            if (sign.token === sign_token) {
+                var user = await this.server.get_user_from_token(token)
+                if (user) {
+                    // Fill users slack information
+                    await this.server.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slack_domain, sign.access_token, sign.avatar, sign.name, user.id])
+                    res.json({
+                        success: true,
+                        redir: "/dashboard"
+                    })
+                }
+            }
         }
     }
 }

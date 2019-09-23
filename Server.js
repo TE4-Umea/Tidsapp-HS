@@ -139,6 +139,10 @@ class Server {
             this.API.documentation(req, res)
         })
 
+        this.app.post("/api/document", async (req, res) => {
+            this.API.document(req, res)
+        })
+
 
         this.API = new this.API(this)
 
@@ -226,13 +230,13 @@ class Server {
                 socket.emit("documentation", this.documentation)
             }) */
 
-            socket.on("username_taken", async username => {
+            /* socket.on("username_taken", async username => {
                 var user = await this.get_user_from_username(username)
                 if (user) socket.emit("username_taken", true)
                 else socket.emit("username_taken", false)
-            })
+            }) */
 
-            socket.on("upload_documentation", pack => {
+            /* socket.on("upload_documentation", pack => {
                 if (pack.token === this.config.admin_token) {
                     delete pack.token
                     if (pack.title.length == 0) {
@@ -245,12 +249,13 @@ class Server {
                         this.load_documentation()
                     } catch (e) {
                         this.log(e)
+                        console.log(e)
                         socket.emit("err", "Error writing fail, check the title. Make sure there are no weird characters in it.")
                     }
                 } else {
                     socket.emit("err", "Wrong token")
                 }
-            })
+            }) */
         })
 
         /* WEBHOOK */
@@ -526,6 +531,8 @@ class Server {
      * @param {*} user 
      */
     async add_user_to_project(user_to_add, project_id, user) {
+        if(!user_to_add || !user || !project_id) return
+        
         var project = await this.get_project_from_id(project_id)
         if (project) {
             // Check if user is already in project

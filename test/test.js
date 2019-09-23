@@ -97,16 +97,14 @@ describe("Check in / out testing", () => {
 
     it("Check in (force, project name)", async () => {
         var user = await server.get_user_from_username(test_username)
-
         var success = await server.check_in(user.id, true, test_project, "Test")
-
         assert.equal(success.success, true)
         assert.equal(await server.is_checked_in(user.id), true)
     })
 
     it("Check in (force, no project)", async () => {
         var user = await server.get_user_from_username(test_username)
-        var success = await server.check_in(user.id, true, "", "Test")
+        var success = await server.check_in(user.id, true, null, "Test")
         assert.equal(success.success, true)
         var last_checkin = await server.get_last_check(user.id)
         assert.equal(last_checkin.check_in, true)
@@ -114,7 +112,7 @@ describe("Check in / out testing", () => {
     })
 })
 
-describe("Add user to project testing", () => {
+describe("Projects", () => {
 
     it("Check if user is not a part of project, " + test_username2, async () => {
         var user2 = await server.get_user_from_username(test_username2)
@@ -144,6 +142,13 @@ describe("Add user to project testing", () => {
         var project = await server.get_project(test_project)
         var added_user = await server.add_user_to_project(user2, project.id, user1)
         assert.equal(added_user.success, false)
+    })
+
+    it("Get project data and members", async () => {
+        var project = await server.get_project(test_project)
+        var project_data = await server.get_project_data(project.id)
+        assert.notEqual(project_data, undefined)
+        assert.notEqual(project_data.members[0].name, undefined)
     })
 
 })

@@ -22,7 +22,7 @@ class Server {
         this.SlackAPI = require("./SlackAPI")
 
         this.API = require("./API")
-
+        this.API = new this.API(this)
 
         this.online_users = []
         this.slack_sign_users = []
@@ -98,6 +98,7 @@ class Server {
         // Enable PUG rendering in the express app
         this.app.set('view engine', 'pug')
 
+
         /* REST API */
         this.app.post("/api/checkin", async (req, res) => {
             this.API.checkin(req, res)
@@ -105,6 +106,10 @@ class Server {
 
         this.app.post("/api/add", async (req, res) => {
             this.API.add(req, res)
+        })
+
+        this.app.post("/api/new", async (req, res) => {
+            this.API.new_project(req, res)
         })
 
         this.app.post("/api/remove", async (req, res) => {
@@ -143,11 +148,10 @@ class Server {
             this.API.document(req, res)
         })
 
-
-        this.API = new this.API(this)
+        
 
         /* SOCKET IO */
-        this.io.on("connection", socket => {
+        /* this.io.on("connection", socket => { */
 
             /* socket.on("disconnect", () => {
                 // Remove this connection from online users
@@ -155,17 +159,17 @@ class Server {
             }) */
 
             /* socket.on("sign_slack", async info => { */
-                /* for (var sign of this.slack_sign_users) {
-                    if (sign.token === info.sign_token) {
-                        var user = await this.get_user_from_token(info.token)
-                        if (user) {
-                            // Fill users slack information
-                            await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slack_domain, sign.access_token, sign.avatar, sign.name, user.id])
-                            socket.emit("redir", "dashboard")
-                        }
+            /* for (var sign of this.slack_sign_users) {
+                if (sign.token === info.sign_token) {
+                    var user = await this.get_user_from_token(info.token)
+                    if (user) {
+                        // Fill users slack information
+                        await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slack_domain, sign.access_token, sign.avatar, sign.name, user.id])
+                        socket.emit("redir", "dashboard")
                     }
-                } */
-           /*  }) */
+                }
+            } */
+            /*  }) */
 
             /* socket.on("login_with_token", async token => {
                 var user = await this.get_user_from_token(token)
@@ -256,7 +260,7 @@ class Server {
                     socket.emit("err", "Wrong token")
                 }
             }) */
-        })
+   /*      }) */
 
         /* WEBHOOK */
         this.app.post("/webhook", async (req, res) => {
@@ -532,21 +536,21 @@ class Server {
      */
     async add_user_to_project(user_to_add, project_id, user) {
 
-        if(!user_to_add){
+        if (!user_to_add) {
             return {
                 success: false,
                 text: "User not found"
             }
         }
 
-        if(!user){
+        if (!user) {
             return {
                 success: false,
                 text: "Invalid token"
             }
         }
 
-        if(!project_id){
+        if (!project_id) {
             return {
                 success: false,
                 text: "Project not found"
@@ -584,24 +588,49 @@ class Server {
         }
     }
 
-    async remove_user_from_project(user_to_delete, project, user){
-        user_to_remove = await this.get_user_from_username(user_to_remove)
-        var user = await this.get_user_from_token(token)
-        var project = await this.get_project(project_name)
-        if(project.owner == user.id || user_to_remove.id == user.id){
-            var is_joined = await this.is_joined_in_project(user_to_delete, project_id)
-            if(is_joined){
-                await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_delete.id, project_id])
-                return{
-                    success: true,
-                    reason: "User removed"
-                }
-            }else{
-                return{
+    /**
+     * Remove user from project
+     * @param {User} user_to_remove User to remove from project (can't be owner, but won't crash)
+     * @param {String} project_name Project name of the project
+     * @param {User} user User that requests the action
+     */
+    async remove_user_from_project(user_to_remove, project_id, user) {
+
+        var project = await this.get_project_from_id(project_id)
+        if (project) {
+            if (project.owner == user_to_remove.id) {
+                return {
                     success: false,
-                    text: is_joined,
-                    reason: "User not found in project"
+                    text: "User is the owner of the project (delete project to leave)"
                 }
+            }
+
+            var is_joined = await this.is_joined_in_project(user_to_remove.id, project.id)
+            var has_authority = await this.is_joined_in_project(user.id, project.id)
+
+            if (is_joined) {
+                if (has_authority) {
+                    await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_remove.id, project_id])
+                    return {
+                        success: true,
+                        reason: "User removed"
+                    }
+                } else {
+                    return {
+                        success: false,
+                        reason: "You are not allowed to modify this project"
+                    }
+                }
+            } else {
+                return {
+                    success: false,
+                    text: "User not found in project"
+                }
+            }
+        } else {
+            return {
+                success: false,
+                text: "Project not found"
             }
         }
     }

@@ -20,6 +20,23 @@ class API {
         res.end("This API call is not implemented yet.")
     }
 
+    async profile(req, res){
+        var token = req.body.token
+        var user = await this.server.get_user_from_token(token)
+        if(user){
+            var data = await this.server.get_user_data(user.id)
+            res.json({
+                success: true,
+                profile: data
+            })
+        } else {
+            res.json({
+                success: false,
+                reason: "Invalid token"
+            })
+        }
+    }
+
     async login(req, res) {
         var username = req.body.username
         var password = req.body.password

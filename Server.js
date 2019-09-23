@@ -103,10 +103,6 @@ class Server {
             this.API.checkin(req, res)
         })
 
-        this.app.post("/api/checkout", async (req, res) => {
-            this.API.checkout(req, res)
-        })
-
         this.app.post("/api/add", async (req, res) => {
             this.API.add(req, res)
         })
@@ -115,16 +111,16 @@ class Server {
             this.API.remove(req, res)
         })
 
-        this.app.post("/api/project", async (req, res) => {
+        this.app.get("/api/project", async (req, res) => {
             this.API.project(req, res)
-        })
-
-        this.app.post("/api/check", async (req, res) => {
-            this.API.check(req, res)
         })
 
         this.app.post("/api/login", async (req, res) => {
             this.API.login(req, res)
+        })
+
+        this.app.get("/api/profile", async (req, res) => {
+            this.API.profile(req, res)
         })
 
         this.API = new this.API(this)

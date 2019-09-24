@@ -136,7 +136,7 @@
                         if (user) {
                             var project_name = req.body.text
                             var response = await server.create_project(project_name, user)
-                            res.json(SlackJSON.SlackResponse("...", SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)))
+                            res.json(SlackJSON.SlackResponse("...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)]))
                         } else {
                             this.user_not_found(res)
                         }

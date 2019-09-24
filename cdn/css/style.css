@@ -1,5 +1,6 @@
 :root{
     --blu: #0a6cff;
+    --dark-blu: #185cc3;
     --mdc-theme-primary: var(--blu);
     --mdc-theme-secondary: #c7c7c7;
 }

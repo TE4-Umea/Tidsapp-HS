@@ -6,12 +6,18 @@
     border-radius: 0px;
     border-right: solid 5px var(--blu);
     background: rgb(255, 255, 255);
-    overflow: hidden;
+    overflow-y: scroll;
+    height: 500px;
+}
+
+#content{
+    overflow: auto;
 }
 
 .api-page{
     display: block;
     width: calc(100% - 20px);
+    height: 28px;
     cursor: pointer;
     word-wrap: inherit;
     padding: 5px;
@@ -99,24 +105,28 @@
 
 #text-area {
     resize: none;
-    overflow-y: auto;
+    overflow: auto;
+    padding: 15px;
 }
-#title-input, #type, #token, #class, #load-page, #upload,#pinned {
+
+
+#title-input, #type, #new-title, #class, #load-page,#pinned {
     margin-top: 5px;
     border-radius: 10px;
     margin-right: 40px;
     border: 2px solid var(--blu);
-    color: var(--blu);
+    color: black;
     display: inline;
-    
-    
+    padding: 5px;
+    font-size: 15px;    
 }
-#title-input, #token, #load-page {
+#title-input, #new-title, #load-page {
     width: 20%;
     margin-left: 15px;
     height: 5%;
     margin-bottom: 20px;
 }
+
 #type, #class {
     width: 12%;
     height: 5%;

@@ -53,7 +53,7 @@ class SlackAPI {
                     var project = req.body.text ? req.body.text : ""
                     var response = await server.check_in(user.id, true, project, "slack")
 
-                    res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : "Attendance", response.success ? SUCCESS : FAIL)]))
+                    res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : (response.success ? "Attendance" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
                 } else {
                     this.user_not_found(red)
                 }

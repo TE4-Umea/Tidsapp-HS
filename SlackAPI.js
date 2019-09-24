@@ -79,6 +79,5 @@ class SlackAPI {
     user_not_found(res) {
         res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com/login", WARN)]))
     }
-
 }
 module.exports = SlackAPI

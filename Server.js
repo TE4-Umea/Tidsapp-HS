@@ -651,12 +651,12 @@ class Server {
                     await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_remove.id, project_id])
                     return {
                         success: true,
-                        reason: "User removed"
+                        text: "User removed"
                     }
                 } else {
                     return {
                         success: false,
-                        reason: "You are not allowed to modify this project"
+                        text: "You are not allowed to modify this project"
                     }
                 }
             } else {

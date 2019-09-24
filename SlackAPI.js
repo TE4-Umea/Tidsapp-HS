@@ -102,7 +102,7 @@ class SlackAPI {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
                     var project_name = req.body.text
-                    var results = server.create_project(project_name, user)
+                    var results = await server.create_project(project_name, user)
                     res.json(SlackJSON.SlackResponse(results.text))
                 } else {
                     this.user_not_found(res)
@@ -111,8 +111,7 @@ class SlackAPI {
         })
 
         app.post("/api/slack/help", async (req, res) => {
-            var response = SlackResponse(this.server.fs.readFileSync("commands.md", "utf8"))
-            response.mrkdwn = true
+            var response = SlackJSON.SlackResponse("Happy Surfers Time App Help Menu", [SlackJSON.SlackAttachments(server.fs.readFileSync("commands.md", "utf8"))])
             res.json(response)
         })
 

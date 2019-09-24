@@ -148,119 +148,119 @@ class Server {
             this.API.document(req, res)
         })
 
-        
+
 
         /* SOCKET IO */
         /* this.io.on("connection", socket => { */
 
-            /* socket.on("disconnect", () => {
-                // Remove this connection from online users
-                this.online_users.splice(this.online_users.indexOf(socket.id), 1)
-            }) */
+        /* socket.on("disconnect", () => {
+            // Remove this connection from online users
+            this.online_users.splice(this.online_users.indexOf(socket.id), 1)
+        }) */
 
-            /* socket.on("sign_slack", async info => { */
-            /* for (var sign of this.slack_sign_users) {
-                if (sign.token === info.sign_token) {
-                    var user = await this.get_user_from_token(info.token)
-                    if (user) {
-                        // Fill users slack information
-                        await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slack_domain, sign.access_token, sign.avatar, sign.name, user.id])
-                        socket.emit("redir", "dashboard")
-                    }
-                }
-            } */
-            /*  }) */
-
-            /* socket.on("login_with_token", async token => {
-                var user = await this.get_user_from_token(token)
+        /* socket.on("sign_slack", async info => { */
+        /* for (var sign of this.slack_sign_users) {
+            if (sign.token === info.sign_token) {
+                var user = await this.get_user_from_token(info.token)
                 if (user) {
-                    this.online_users[socket.id] = user.id
-                    var user_data = await this.get_user_data(user.id)
-                    socket.emit("login", user_data)
-                } else {
-                    socket.emit("invalid_token")
+                    // Fill users slack information
+                    await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slack_domain, sign.access_token, sign.avatar, sign.name, user.id])
+                    socket.emit("redir", "dashboard")
                 }
-            }) */
+            }
+        } */
+        /*  }) */
 
-            /* socket.on("login", async info => {
+        /* socket.on("login_with_token", async token => {
+            var user = await this.get_user_from_token(token)
+            if (user) {
+                this.online_users[socket.id] = user.id
+                var user_data = await this.get_user_data(user.id)
+                socket.emit("login", user_data)
+            } else {
+                socket.emit("invalid_token")
+            }
+        }) */
 
-                var user = await this.get_user_from_username(info.username)
+        /* socket.on("login", async info => {
+
+            var user = await this.get_user_from_username(info.username)
+            if (user) {
+                // Sign in
+                user = await this.get_user_from_username_and_password(info.username, info.password)
                 if (user) {
-                    // Sign in
-                    user = await this.get_user_from_username_and_password(info.username, info.password)
-                    if (user) {
-                        var token = await this.generate_token(user.username)
-                        if (token) {
-                            socket.emit("token", token)
-                        }
-                    } else {
-                        socket.emit("login_err", "Wrong password")
-                        return
-                    }
-                } else {
-                    // Sign up
-                    if (info.username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== info.username) {
-                        socket.emit("login_err", "Username contains illigal characters")
-                        return
-                    }
-                    if (info.username.length < 3) {
-                        socket.emit("login_err", "Username has to be at least three characters long")
-                        return
-                    }
-                    if (info.username.length > 20) {
-                        socket.emit("login_err", "Username cannot exceed 20 characters")
-                        return
-                    }
-                    if (info.name.indexOf(" ") == -1) {
-                        socket.emit("login_err", "Please provide a full name, ex. Michael Stevens")
-                        return
-                    }
-                    if (info.password == "") {
-                        socket.emit("login_err", "Please enter a password")
-                        return
-                    }
-                    var user = await this.create_user(info.username, info.password, info.name)
-                    if (user) {
-                        var token = await this.generate_token(user.username)
+                    var token = await this.generate_token(user.username)
+                    if (token) {
                         socket.emit("token", token)
-                    } else {
-                        socket.emit("login_err", "Something went wrong when creating your account. Please notify administrators.")
-                    }
-
-                }
-            }) */
-
-            /* socket.on("get_documentation", () => {
-                socket.emit("documentation", this.documentation)
-            }) */
-
-            /* socket.on("username_taken", async username => {
-                var user = await this.get_user_from_username(username)
-                if (user) socket.emit("username_taken", true)
-                else socket.emit("username_taken", false)
-            }) */
-
-            /* socket.on("upload_documentation", pack => {
-                if (pack.token === this.config.admin_token) {
-                    delete pack.token
-                    if (pack.title.length == 0) {
-                        socket.emit("err", "Don't forget the title")
-                        return
-                    }
-                    try {
-                        this.fs.writeFileSync("documentation/" + pack.title.split(" ").join("_") + ".json", JSON.stringify(pack))
-                        socket.emit("err", "Success!")
-                        this.load_documentation()
-                    } catch (e) {
-                        this.log(e)
-                        console.log(e)
-                        socket.emit("err", "Error writing fail, check the title. Make sure there are no weird characters in it.")
                     }
                 } else {
-                    socket.emit("err", "Wrong token")
+                    socket.emit("login_err", "Wrong password")
+                    return
                 }
-            }) */
-   /*      }) */
+            } else {
+                // Sign up
+                if (info.username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== info.username) {
+                    socket.emit("login_err", "Username contains illigal characters")
+                    return
+                }
+                if (info.username.length < 3) {
+                    socket.emit("login_err", "Username has to be at least three characters long")
+                    return
+                }
+                if (info.username.length > 20) {
+                    socket.emit("login_err", "Username cannot exceed 20 characters")
+                    return
+                }
+                if (info.name.indexOf(" ") == -1) {
+                    socket.emit("login_err", "Please provide a full name, ex. Michael Stevens")
+                    return
+                }
+                if (info.password == "") {
+                    socket.emit("login_err", "Please enter a password")
+                    return
+                }
+                var user = await this.create_user(info.username, info.password, info.name)
+                if (user) {
+                    var token = await this.generate_token(user.username)
+                    socket.emit("token", token)
+                } else {
+                    socket.emit("login_err", "Something went wrong when creating your account. Please notify administrators.")
+                }
+
+            }
+        }) */
+
+        /* socket.on("get_documentation", () => {
+            socket.emit("documentation", this.documentation)
+        }) */
+
+        /* socket.on("username_taken", async username => {
+            var user = await this.get_user_from_username(username)
+            if (user) socket.emit("username_taken", true)
+            else socket.emit("username_taken", false)
+        }) */
+
+        /* socket.on("upload_documentation", pack => {
+            if (pack.token === this.config.admin_token) {
+                delete pack.token
+                if (pack.title.length == 0) {
+                    socket.emit("err", "Don't forget the title")
+                    return
+                }
+                try {
+                    this.fs.writeFileSync("documentation/" + pack.title.split(" ").join("_") + ".json", JSON.stringify(pack))
+                    socket.emit("err", "Success!")
+                    this.load_documentation()
+                } catch (e) {
+                    this.log(e)
+                    console.log(e)
+                    socket.emit("err", "Error writing fail, check the title. Make sure there are no weird characters in it.")
+                }
+            } else {
+                socket.emit("err", "Wrong token")
+            }
+        }) */
+        /*      }) */
 
         /* WEBHOOK */
         this.app.post("/webhook", async (req, res) => {
@@ -521,13 +521,13 @@ class Server {
     }
 
     async create_project(project_name, user) {
-        if(!project_name || !user) return {
+        if (!project_name || !user) return {
             success: false,
             text: "Missing project_name or user"
         }
 
         var existing_project = await this.get_project(project_name)
-        if(existing_project) return {
+        if (existing_project) return {
             success: false,
             text: "Project name taken"
         }
@@ -539,7 +539,7 @@ class Server {
             }
         }
 
-        if(project_name.replace(/[^a-z0-9_]+|\s+/gmi, "") !== project_name){
+        if (project_name.replace(/[^a-z0-9_]+|\s+/gmi, "") !== project_name) {
             return {
                 success: false,
                 text: "Project name forbidden"
@@ -770,7 +770,7 @@ class Server {
      * @param {*} slack_id
      */
     async get_user_from_slack_id(slack_id) {
-        if(!slack_id) return false
+        if (!slack_id) return false
         var user = await this.db.query_one("SELECT * FROM users WHERE slack_id = ?", slack_id)
         return user
     }
@@ -790,8 +790,11 @@ class Server {
      * @param {*} username 
      */
     async get_user_from_username(username) {
-        var user = await this.db.query_one("SELECT * FROM users WHERE upper(username) = ?", username.toUpperCase())
-        return user
+        if (username) {
+            var user = await this.db.query_one("SELECT * FROM users WHERE upper(username) = ?", username.toUpperCase())
+            return user
+        }
+        return false
     }
 
 

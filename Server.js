@@ -359,13 +359,19 @@ class Server {
                         text: "Project not found"
                     }
                 }
+            } else {
+                project = ""
             }
 
+
+            var project_text = project ? "Project: " + project: "Attendance"
+    
             if (check_in === true) {
                 await this.insert_check(user.id, true, project_name, type)
                 return {
                     success: true,
-                    checked_in: true
+                    checked_in: true,
+                    text: "You are now checked in. " + project_text
                 }
             }
 
@@ -373,7 +379,8 @@ class Server {
                 await this.insert_check(user.id, false, project_name, type)
                 return {
                     success: true,
-                    checked_in: false
+                    checked_in: false,
+                    text: "You are now checked out. " + project_text
                 }
             }
 
@@ -384,7 +391,8 @@ class Server {
                 var checked_in = await this.insert_check(user.id, !last_check.check_in, project_name, type)
                 return {
                     success: true,
-                    checked_in: !last_check.check_in
+                    checked_in: !last_check.check_in,
+                    text: "You are now checked " + (!last_check_in.checkin ? "in. " : "out. ") + project_text
                 }
             }
 

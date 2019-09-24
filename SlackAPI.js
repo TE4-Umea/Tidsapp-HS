@@ -32,7 +32,9 @@ class SlackAPI {
                                     email: data.user.email,
                                     token: sign_token
                                 })
-                                res.render("dashboard", {token: sign_token})
+                                res.render("dashboard", {
+                                    token: sign_token
+                                })
                             })()
 
                         } else {
@@ -55,7 +57,7 @@ class SlackAPI {
 
                     res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : (response.success ? "Attendance" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
                 } else {
-                    this.user_not_found(red)
+                    this.user_not_found(res)
                 }
             }
         })
@@ -65,22 +67,18 @@ class SlackAPI {
             if (success) {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
-                    var success = await server.check_in(user.id, false, null, "slack")
-                    if(success){
-                        res.json(SlackJSON.SlackResponse("You are now checked out!", [SlackJSON.SlackAttachments("2h 3m")]))
-                    } else {
-                        res.json(SlackJSON.SlackResponse("Ops, something went wrong!"))
-                    }
+                    var response = await server.check_in(user.id, false, null, "slack")
+                    res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments((response.success ? "Success!" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
                 } else {
-                    this.user_not_found(red)
+                    this.user_not_found(res)
                 }
             }
         })
-    }
 
-    user_not_found(res){
+    }
+    user_not_found(res) {
         res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com/login", WARN)]))
     }
-}
 
+}
 module.exports = SlackAPI

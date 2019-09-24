@@ -364,7 +364,7 @@ class Server {
             }
 
 
-            var project_text = project ? "Project: " + project: "Attendance"
+            var project_text = project ? "\nProject: " + project: "Attendance"
     
             if (check_in === true) {
                 await this.insert_check(user.id, true, project_name, type)

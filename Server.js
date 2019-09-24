@@ -557,26 +557,48 @@ class Server {
         }
     }
 
-    async remove_user_from_project(user_to_delete, project, user){
-        user_to_remove = await this.get_user_from_username(user_to_remove)
-        var user = await this.get_user_from_token(token)
-        var project = await this.get_project(project_name)
-        if(project.owner == user.id || user_to_remove.id == user.id){
-            var is_joined = await this.is_joined_in_project(user_to_delete, project_id)
-            if(is_joined){
-                await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_delete.id, project_id])
-                return{
-                    success: true,
-                    reason: "User removed"
-                }
-            }else{
-                return{
-                    success: false,
-                    text: is_joined,
-                    reason: "User not found in project"
+    async remove_user_from_project(user_to_remove, project_name, token){
+        if(user_to_remove !== null && project_name !== null && token !== null){
+            user_to_remove = await this.get_user_from_username(user_to_remove)
+            var user = await this.get_user_from_token(token)
+            var project = await this.get_project(project_name)
+            if(project.owner == user.id || user_to_remove.id == user.id){
+                var is_joined = await this.is_joined_in_project(user_to_remove.id, project.id)
+                if(is_joined){
+                    await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_remove.id, project.id])
+                    return{
+                        success: true,
+                        reason: "User removed"
+                    }
+                }else{
+                    return{
+                        success: false,
+                        reason: "User not found in project"
+                    }
                 }
             }
+        }else if(user_to_remove === null){
+            return{
+                success: false, 
+                text: "You need to instert a user to remove"
+            }
+        }else if(project_name === null){
+            return{
+                success: false, 
+                text: "You need to insert project to remove user from"
+            }
+        }else if(token === null){
+            return{
+                success: false, 
+                text: "Token was not found"
+            }
+        }else{
+            return{
+                success: false, 
+                text: "Removal failed"
+            }
         }
+
     }
 
     async delete_project(project_name, user_id) {

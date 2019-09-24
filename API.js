@@ -42,33 +42,11 @@ class API {
 
     async remove(req, res) {
         var user_to_remove = req.body.username ? req.body.username : null
-        var token = req.body.token
-        var project_name = req.body.project
-
-        if(user_to_remove !== null && project_name !== null && token !== null){
-            var result = await this.server.remove_user_from_project(user_to_remove, project_name, token)
-
-        }else if(user_to_remove === null){
-            res.json({
-                success: false, 
-                text: "You need to instert a user to remove"
-            })
-        }else if(project === null){
-            res.json({
-                success: false, 
-                text: "You need to insert project to remove user from"
-            })
-        }else if(token === null){
-            res.json({
-                success: false, 
-                text: "Token was not found"
-            })
-        }else{
-            res.json({
-                success: false, 
-                text: "Removal failed"
-            })
-        }
+        var token = req.body.token ? req.body.token : null
+        var project_name = req.body.project ? req.body.project : null
+            
+        var result = await this.server.remove_user_from_project(user_to_remove, project_name, token)
+        res.json(result)
     }
 
     

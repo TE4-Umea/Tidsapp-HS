@@ -1,7 +1,6 @@
 class SlackAPI {
     constructor(app, server) {
         var SlackJSON = require("./SlackJSON")
-        const mdToPdf = require('md-to-pdf');
         SlackJSON = new SlackJSON()
 
         app.get("/auth", async (req, res) => {
@@ -83,8 +82,6 @@ class SlackAPI {
             var response = SlackResponse(this.server.fs.readFileSync("commands.md", "utf8"))
             response.mrkdwn = true
             res.json(response)
-
-
         })
 
     }

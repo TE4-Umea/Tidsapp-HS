@@ -1,3 +1,7 @@
+const SUCCESS = "#2df763"
+const FAIL = "#f72d4b"
+const WARN = "#f7c52d"
+
 class SlackAPI {
     constructor(app, server) {
         var SlackJSON = require("./SlackJSON")
@@ -29,7 +33,9 @@ class SlackAPI {
                                     email: data.user.email,
                                     token: sign_token
                                 })
-                                res.render("dashboard", {token: sign_token})
+                                res.render("dashboard", {
+                                    token: sign_token
+                                })
                             })()
 
                         } else {
@@ -48,15 +54,11 @@ class SlackAPI {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
                     var project = req.body.text ? req.body.text : ""
-                    var success = await server.check_in(user.id, true, project, "slack")
-              
-                    if(success){
-                        res.json(SlackJSON.SlackResponse("You are now checked in!", [SlackJSON.SlackAttachments("Project: " + (project ? project : " none"))]))
-                    } else {
-                        res.json(SlackJSON.SlackResponse("Invalid project, please create one (something went wrong)", [SlackJSON.SlackAttachments("`/new`")]))
-                    }
+                    var response = await server.check_in(user.id, true, project, "slack")
+
+                    res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : (response.success ? "Attendance" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
                 } else {
-                    this.user_not_found(red)
+                    this.user_not_found(res)
                 }
             }
         })
@@ -66,35 +68,17 @@ class SlackAPI {
             if (success) {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
-                    var success = await server.check_in(user.id, false, null, "slack")
-                    if(success){
-                        res.json(SlackJSON.SlackResponse("You are now checked out!", [SlackJSON.SlackAttachments("2h 3m")]))
-                    } else {
-                        res.json(SlackJSON.SlackResponse("Ops, something went wrong!"))
-                    }
+                    var response = await server.check_in(user.id, false, null, "slack")
+                    res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments((response.success ? "Success!" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
                 } else {
-                    this.user_not_found(red)
+                    this.user_not_found(res)
                 }
             }
         })
 
-
-        app.post("/api/slack/help", async (req, res) => {
-            var response = SlackResponse(this.server.fs.readFileSync("commands.md", "utf8"))
-            response.mrkdwn = true
-            res.json(response)
-
-
-        })
-        
-
-
-
     }
- 
-    user_not_found(res){
-        res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com/login")]))
+    user_not_found(res) {
+        res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com/login", WARN)]))
     }
 }
-
 module.exports = SlackAPI

@@ -102,8 +102,8 @@ class SlackAPI {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
                     var project_name = req.body.text
-                    console.log(project_name)
-                    
+                    var results = server.create_project(project_name, user)
+                    res.json(SlackJSON.SlackResponse(results.text))
                 } else {
                     this.user_not_found(res)
                 }

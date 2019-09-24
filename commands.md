@@ -1,29 +1,32 @@
-# **Happy Surfers Time App**
-Only for slack usage  
+    Usage:
+/command <required> [optional]
 
-/command \<required> [optional]
-## Commands
+Commands:
 
-### /hscheckin \[project name]
+/hscheckin [project name]
     Checking in to presence, if project name is specified you check in to the project.
 
-### /hscheckout
-    Check out of project and presence
+/hsprojects
+    NOT FINISHED
+    List of all projects you are a member of.
 
-### /hsnew \<name>
+/hscheckout
+    Check out of project and presence.
+
+/hsnew <name>
     Creates a new project with the name provided.
 
-### /hsproject \<projectname>
-    Get information about the project, how many hours you have worked  
-    (today, this week, all time)
+/hsdelete <project>
+    NOT FINISHED
+    Delete the project specified.
 
-### /hsadd \<username> \<project>
+/hsproject <projectname>
+    NOT FINISHED
+    Get information about the project, how many hours you have worked  
+    (today, this week, all time).
+
+/hsadd <username> <project>
     Add another user to one of your projects.
 
-### /hsremove \<username> \<project>
+/hsremove <username> <project>
     Remove the specified user from the project.
-
-
-
-## License
-[TimeApp](https://www.google.se/)

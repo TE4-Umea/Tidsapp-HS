@@ -52,14 +52,8 @@ class SlackAPI {
                 if (user) {
                     var project = req.body.text ? req.body.text : ""
                     var response = await server.check_in(user.id, true, project, "slack")
-                    var project = ""
-                    if(response.text.indexOf("\n") != -1){
-                        response.text = response.text.split("\n")
-                        project = response.text[1]
-                        response.text.splice(1, 1)
-                        response.text = response.text[0]
-                    }
-                    res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments(project, response.success ? SUCCESS : FAIL)]))
+
+                    res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : "Attendance", response.success ? SUCCESS : FAIL)]))
                 } else {
                     this.user_not_found(red)
                 }

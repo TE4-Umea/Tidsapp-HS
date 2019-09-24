@@ -350,28 +350,26 @@ class Server {
                     if (!owns_project) {
                         return {
                             success: false,
-                            text: "User is not apart of this project"
+                            text: "User is not apart of this project."
                         }
                     }
                 } else {
                     return {
                         success: false,
-                        text: "Project not found"
+                        text: "Project not found."
                     }
                 }
             } else {
                 project = ""
             }
 
-
-            var project_text = project ? "\nProject: " + project: "Attendance"
-    
             if (check_in === true) {
                 await this.insert_check(user.id, true, project_name, type)
                 return {
                     success: true,
                     checked_in: true,
-                    text: "You are now checked in. " + project_text
+                    text: "You are now checked in.",
+                    project: project
                 }
             }
 
@@ -380,7 +378,8 @@ class Server {
                 return {
                     success: true,
                     checked_in: false,
-                    text: "You are now checked out. " + project_text
+                    text: "You are now checked out.",
+                    project: project
                 }
             }
 
@@ -392,14 +391,15 @@ class Server {
                 return {
                     success: true,
                     checked_in: !last_check.check_in,
-                    text: "You are now checked " + (!last_check_in.checkin ? "in. " : "out. ") + project_text
+                    text: "You are now checked " + (!last_check_in.checkin ? "in." : "out."),
+                    project: project
                 }
             }
 
         } else {
             return {
                 success: false,
-                text: "User not found"
+                text: "User not found."
             }
         }
     }

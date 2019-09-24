@@ -16,9 +16,11 @@
 
 
         class SlackAPI {
+
+            
             constructor(app, server) {
-                var SlackJSON = require("./SlackJSON")
-                SlackJSON = new SlackJSON()
+                this.SlackJSON = require("./SlackJSON")
+                this.SlackJSON = new SlackJSON()
 
                 const SUCCESS = "#2df763"
                 const FAIL = "#f72d4b"
@@ -72,7 +74,7 @@
                             var project = req.body.text ? req.body.text : ""
                             var response = await server.check_in(user.id, true, project, "slack")
 
-                            res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : (response.success ? "Attendance" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
+                            res.json(this.SlackJSON.SlackResponse(response.text, [this.SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : (response.success ? "Attendance" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
                         } else {
                             this.user_not_found(res)
                         }
@@ -147,17 +149,17 @@
                 })
 
                 app.post("/api/slack/help", async (req, res) => {
-                    var response = SlackJSON.SlackResponse("Happy Surfers Time App Help Menu", [SlackJSON.SlackAttachments(server.fs.readFileSync("commands.md", "utf8"))])
+                    var response = this.SlackJSON.SlackResponse("Happy Surfers Time App Help Menu", [this.SlackJSON.SlackAttachments(server.fs.readFileSync("commands.md", "utf8"))])
                     res.json(response)
                 })
             }
 
             slack_response(response) {
-                return SlackJSON.SlackResponse(response.success ? "Success!" : "Something went wrong...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)])
+                return this.SlackJSON.SlackResponse(response.success ? "Success!" : "Something went wrong...", [this.SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)])
             }
 
             user_not_found(res) {
-                res.json(SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [SlackJSON.SlackAttachments("https://hs.ygstr.com/login")]))
+                res.json(this.SlackJSON.SlackResponse("Please register an account and link it before using slash commands", [this.SlackJSON.SlackAttachments("https://hs.ygstr.com/login")]))
             }
         }
 

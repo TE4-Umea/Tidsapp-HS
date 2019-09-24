@@ -92,7 +92,6 @@
                     }
                 })
 
-
                 app.post("/api/slack/remove", async (req, res) => {
                     var success = server.verify_slack_request(req)
                     if (success) {

@@ -369,7 +369,7 @@ class Server {
                     success: true,
                     checked_in: true,
                     text: "You are now checked in.",
-                    project: project
+                    project: project_name
                 }
             }
 
@@ -379,7 +379,7 @@ class Server {
                     success: true,
                     checked_in: false,
                     text: "You are now checked out.",
-                    project: project
+                    project: project_name
                 }
             }
 
@@ -392,7 +392,7 @@ class Server {
                     success: true,
                     checked_in: !last_check.check_in,
                     text: "You are now checked " + (!last_check.check_in ? "in." : "out."),
-                    project: project
+                    project: project_name
                 }
             }
 
@@ -603,7 +603,7 @@ class Server {
                     text: "User is already apart of project"
                 }
             }
-            
+
             if (user) {
                 var has_authority = await this.is_joined_in_project(user.id, project_id)
                 if (!has_authority) {
@@ -616,7 +616,8 @@ class Server {
             //Add the user to joints
             await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
             return {
-                success: true
+                success: true,
+                text: "Added " + user_to_add.name + "!"
             }
         }
         return {

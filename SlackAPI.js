@@ -101,7 +101,8 @@
                             var user_to_remove = inputs[0]
                             user_to_remove = await server.get_user_from_username(user_to_remove)
                             var project_name = inputs[1]
-                            var response = await server.add_user_to_project(user_to_remove, project_name, user)
+                            var project = await server.get_project(project_name)
+                            var response = await server.remove_user_from_project(user_to_remove, project.id, user)
                             res.json(SlackJSON.SlackResponse("...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)]))
                         } else {
                             this.user_not_found(res)

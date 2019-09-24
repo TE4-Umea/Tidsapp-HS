@@ -1,7 +1,7 @@
-Happy Surfers Time App
-
+    Usage:
 /command <required> [optional]
-    Commands
+
+    Commands:
 
 /hscheckin [project name]
     Checking in to presence, if project name is specified you check in to the project.

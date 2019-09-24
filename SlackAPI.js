@@ -79,7 +79,7 @@ class SlackAPI {
 
 
         app.post("/api/slack/help", async (req, res) => {
-            var response = SlackJSON.SlackResponse("Help Menu", [SlackJSON.SlackAttachments(server.fs.readFileSync("commands.md", "utf8"))])
+            var response = SlackJSON.SlackResponse("Happy Surfers Time App Help Menu", [SlackJSON.SlackAttachments(server.fs.readFileSync("commands.md", "utf8"))])
             res.json(response)
         })
 

@@ -1,7 +1,6 @@
 class SlackAPI {
     constructor(app, server) {
         var SlackJSON = require("./SlackJSON")
-        const mdToPdf = require('md-to-pdf');
         SlackJSON = new SlackJSON()
 
         app.get("/auth", async (req, res) => {

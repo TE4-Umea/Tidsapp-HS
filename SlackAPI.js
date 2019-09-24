@@ -95,6 +95,23 @@ class SlackAPI {
         
          */
 
+        app.post("/api/slack/add", async (req, res) => {
+            var success = server.verify_slack_request(req)
+            if (success) {
+                var user = await server.get_user_from_slack(req)
+                if (user) {
+                    var inputs = req.body.text.split(" ")
+                    var user_to_add = inputs[0]
+                    user_to_add = await server.get_user_from_username(user_to_add)
+                    var project_name = inputs[1]
+                    var response = await server.add_user_to_project(user_to_add, project_name, user)
+                    res.json(SlackJSON.SlackResponse("...", SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)))
+                } else {
+                    this.user_not_found(res)
+                }
+            }
+        })
+
 
         app.post("/api/slack/new", async (req, res) => {
             var success = server.verify_slack_request(req)
@@ -102,8 +119,8 @@ class SlackAPI {
                 var user = await server.get_user_from_slack(req)
                 if (user) {
                     var project_name = req.body.text
-                    var results = await server.create_project(project_name, user)
-                    res.json(SlackJSON.SlackResponse(results.text))
+                    var response = await server.create_project(project_name, user)
+                    res.json(SlackJSON.SlackResponse("...", SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)))
                 } else {
                     this.user_not_found(res)
                 }

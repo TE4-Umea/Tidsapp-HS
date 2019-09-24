@@ -20,7 +20,7 @@
             
             constructor(app, server) {
                 this.SlackJSON = require("./SlackJSON")
-                this.SlackJSON = new SlackJSON()
+                this.SlackJSON = new this.SlackJSON()
 
                 const SUCCESS = "#2df763"
                 const FAIL = "#f72d4b"

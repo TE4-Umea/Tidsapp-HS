@@ -79,10 +79,11 @@ class SlackAPI {
 
 
         app.post("/api/slack/help", async (req, res) => {
-            var response = SlackResponse(this.server.fs.readFileSync("commands.md", "utf8"))
+            var response = server.SackJSON.SlackResponse(this.server.fs.readFileSync("commands.md", "utf8"))
             response.mrkdwn = true
             res.json(response)
         })
+
 
     }
  

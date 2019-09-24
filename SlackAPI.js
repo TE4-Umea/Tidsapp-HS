@@ -82,8 +82,6 @@ class SlackAPI {
             var response = SlackResponse(this.server.fs.readFileSync("commands.md", "utf8"))
             response.mrkdwn = true
             res.json(response)
-
-
         })
 
     }

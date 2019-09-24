@@ -391,7 +391,7 @@ class Server {
                 return {
                     success: true,
                     checked_in: !last_check.check_in,
-                    text: "You are now checked " + (!last_check_in.checkin ? "in." : "out."),
+                    text: "You are now checked " + (!last_check.check_in ? "in." : "out."),
                     project: project
                 }
             }

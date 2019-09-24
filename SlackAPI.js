@@ -19,12 +19,12 @@
 
             
             constructor(app, server) {
-                this.SlackJSON = require("./SlackJSON")
-                this.SlackJSON = new this.SlackJSON()
+                var SlackJSON = require("./SlackJSON")
+                this.SlackJSON = new SlackJSON()
 
-                const SUCCESS = "#2df763"
-                const FAIL = "#f72d4b"
-                const WARN = "#f7c52d"
+                this.SUCCESS = "#2df763"
+                this.FAIL = "#f72d4b"
+                this.WARN = "#f7c52d"
 
                 app.get("/auth", async (req, res) => {
                     if (req.query.code) {
@@ -74,7 +74,7 @@
                             var project = req.body.text ? req.body.text : ""
                             var response = await server.check_in(user.id, true, project, "slack")
 
-                            res.json(this.SlackJSON.SlackResponse(response.text, [this.SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : (response.success ? "Attendance" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
+                            res.json(this.SlackJSON.SlackResponse(response.text, [this.SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : (response.success ? "Attendance" : "Checkout /hshelp for more info"), response.success ? this.SUCCESS : this.FAIL)]))
                         } else {
                             this.user_not_found(res)
                         }
@@ -155,7 +155,7 @@
             }
 
             slack_response(response) {
-                return this.SlackJSON.SlackResponse(response.success ? "Success!" : "Something went wrong...", [this.SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)])
+                return this.SlackJSON.SlackResponse(response.success ? "Success!" : "Something went wrong...", [this.SlackJSON.SlackAttachments(response.text, response.success ? this.SUCCESS : this.FAIL)])
             }
 
             user_not_found(res) {

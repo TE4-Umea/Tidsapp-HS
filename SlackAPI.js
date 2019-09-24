@@ -121,8 +121,10 @@
                             user_to_add = await server.get_user_from_username(user_to_add)
                             var project_name = inputs[1]
                             var project = await server.get_project(project_name)
-                            var response = await server.add_user_to_project(user_to_add, project.id, user)
+
+                            var response = await server.add_user_to_project(user_to_add, project ? project.id : -1, user)
                             res.json(this.slack_response(response))
+
                         } else {
                             this.user_not_found(res)
                         }
@@ -150,7 +152,7 @@
                 })
             }
 
-            slack_response(response){
+            slack_response(response) {
                 return SlackJSON.SlackResponse(response.success ? "Success!" : "Something went wrong...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)])
             }
 

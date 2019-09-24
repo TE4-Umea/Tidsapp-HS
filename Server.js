@@ -369,7 +369,7 @@ class Server {
                     success: true,
                     checked_in: true,
                     text: "You are now checked in.",
-                    project: project
+                    project: project_name
                 }
             }
 
@@ -379,7 +379,7 @@ class Server {
                     success: true,
                     checked_in: false,
                     text: "You are now checked out.",
-                    project: project
+                    project: project_name
                 }
             }
 
@@ -392,7 +392,7 @@ class Server {
                     success: true,
                     checked_in: !last_check.check_in,
                     text: "You are now checked " + (!last_check.check_in ? "in." : "out."),
-                    project: project
+                    project: project_name
                 }
             }
 
@@ -603,6 +603,7 @@ class Server {
                     text: "User is already apart of project"
                 }
             }
+
             if (user) {
                 var has_authority = await this.is_joined_in_project(user.id, project_id)
                 if (!has_authority) {
@@ -615,7 +616,8 @@ class Server {
             //Add the user to joints
             await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
             return {
-                success: true
+                success: true,
+                text: "Added " + user_to_add.name + "!"
             }
         }
         return {
@@ -631,7 +633,12 @@ class Server {
      * @param {User} user User that requests the action
      */
     async remove_user_from_project(user_to_remove, project_id, user) {
-
+        if(!user_to_remove || !project_id || !user){
+            return {
+                success: false,
+                text: "Missing attirbutes"
+            }
+        }
         var project = await this.get_project_from_id(project_id)
         if (project) {
             if (project.owner == user_to_remove.id) {
@@ -649,12 +656,12 @@ class Server {
                     await this.db.query("DELETE FROM joints WHERE user = ? AND project = ?", [user_to_remove.id, project_id])
                     return {
                         success: true,
-                        reason: "User removed"
+                        text: "User removed"
                     }
                 } else {
                     return {
                         success: false,
-                        reason: "You are not allowed to modify this project"
+                        text: "You are not allowed to modify this project"
                     }
                 }
             } else {

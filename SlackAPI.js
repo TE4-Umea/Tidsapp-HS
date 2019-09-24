@@ -119,7 +119,7 @@
                             var user_to_add = inputs[0]
                             user_to_add = await server.get_user_from_username(user_to_add)
                             var project_name = inputs[1]
-                            var project = await server.get_project(project)
+                            var project = await server.get_project(project_name)
                             var response = await server.remove_user_from_project(user_to_add, project.id, user)
                             res.json(SlackJSON.SlackResponse("...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)]))
                         } else {

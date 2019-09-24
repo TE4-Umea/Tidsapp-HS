@@ -603,6 +603,7 @@ class Server {
                     text: "User is already apart of project"
                 }
             }
+            
             if (user) {
                 var has_authority = await this.is_joined_in_project(user.id, project_id)
                 if (!has_authority) {

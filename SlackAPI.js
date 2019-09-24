@@ -85,7 +85,7 @@
                         var user = await server.get_user_from_slack(req)
                         if (user) {
                             var response = await server.check_in(user.id, false, null, "slack")
-                            res.json(SlackJSON.SlackResponse(response.text, [SlackJSON.SlackAttachments((response.success ? "Success!" : "Checkout /hshelp for more info"), response.success ? SUCCESS : FAIL)]))
+                            res.json(this.slack_response(response))
                         } else {
                             this.user_not_found(res)
                         }
@@ -103,7 +103,7 @@
                             var project_name = inputs[1]
                             var project = await server.get_project(project_name)
                             var response = await server.remove_user_from_project(user_to_remove, project.id, user)
-                            res.json(SlackJSON.SlackResponse("...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)]))
+                            res.json(this.slack_response(response))
                         } else {
                             this.user_not_found(res)
                         }
@@ -122,7 +122,7 @@
                             var project_name = inputs[1]
                             var project = await server.get_project(project_name)
                             var response = await server.add_user_to_project(user_to_add, project.id, user)
-                            res.json(SlackJSON.SlackResponse("...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)]))
+                            res.json(this.slack_response(response))
                         } else {
                             this.user_not_found(res)
                         }
@@ -137,8 +137,7 @@
                         if (user) {
                             var project_name = req.body.text
                             var response = await server.create_project(project_name, user)
-                            console.log(response)
-                            res.json(SlackJSON.SlackResponse("...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)]))
+                            res.json(this.slack_response(response))
                         } else {
                             this.user_not_found(res)
                         }
@@ -149,7 +148,10 @@
                     var response = SlackJSON.SlackResponse("Happy Surfers Time App Help Menu", [SlackJSON.SlackAttachments(server.fs.readFileSync("commands.md", "utf8"))])
                     res.json(response)
                 })
+            }
 
+            slack_response(response){
+                return SlackJSON.SlackResponse(response.success ? "Success!" : "Something went wrong...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)])
             }
 
             user_not_found(res) {

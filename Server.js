@@ -633,7 +633,12 @@ class Server {
      * @param {User} user User that requests the action
      */
     async remove_user_from_project(user_to_remove, project_id, user) {
-
+        if(!user_to_remove || !project_id || !user){
+            return {
+                success: false,
+                text: "Missing attirbutes"
+            }
+        }
         var project = await this.get_project_from_id(project_id)
         if (project) {
             if (project.owner == user_to_remove.id) {

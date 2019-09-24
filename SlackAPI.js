@@ -3,6 +3,10 @@ class SlackAPI {
         var SlackJSON = require("./SlackJSON")
         SlackJSON = new SlackJSON()
 
+        const FAIL = "#f03252"
+        const SUCCESS = "#60f745"
+        const WARN = "#f7bc45"
+
         app.get("/auth", async (req, res) => {
             if (req.query.code) {
                 /* Send a request to slack to get user information from the login */

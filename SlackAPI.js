@@ -101,7 +101,7 @@ class SlackAPI {
                     user_to_add = await server.get_user_from_username(user_to_add)
                     var project_name = inputs[1]
                     var response = await server.add_user_to_project(user_to_add, project_name, user)
-                    res.json(SlackJSON.SlackResponse("...", SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)))
+                    res.json(SlackJSON.SlackResponse("...", [SlackJSON.SlackAttachments(response.text, response.success ? SUCCESS : FAIL)]))
                 } else {
                     this.user_not_found(res)
                 }

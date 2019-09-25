@@ -171,6 +171,20 @@
                         }
                     }
                 })
+                app.post("/api/slack/project", async (req, res) => {
+                    var success = server.verify_slack_request(req)
+                    if (success) {
+                        var user = await server.get_user_from_slack(req)
+                        if (user) {
+                            var project_to_get_info = req.body.text
+                            var project = server.get_project_from_name(project_to_get_info)
+                            var response = await server.get_project_data(project.id)
+                            res.json(this.slack_response(response))
+                        } else {
+                            this.user_not_found(res)
+                        }
+                    }
+                })
             }
 
             slack_response(response) {

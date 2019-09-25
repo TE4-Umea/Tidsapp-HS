@@ -16,7 +16,6 @@
 
 
         class SlackAPI {
-
             
             constructor(app, server) {
                 var SlackJSON = require("./SlackJSON")
@@ -41,6 +40,12 @@
                                 if (data.ok) {
                                     (async () => {
                                         /* Check if the user is already signed up */
+                                        var slack_taken = await server.db.query_one("SELECT * FROM users WHERE slack_id = ?", data.user.id)
+                                        if(slack_taken){
+                                            res.send("This slack account is already linked to another user. Please delete that account first or ask an administrator for help.")
+                                            return
+                                        }
+                                        
                                         var sign_token = server.hash()
                                         server.slack_sign_users.push({
                                             access_token: data.access_token,

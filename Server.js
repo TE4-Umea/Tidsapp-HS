@@ -515,7 +515,10 @@ class Server {
                 })
             }
 
-            return project
+            return {
+                success: true,
+                project: project
+            }
         }
         return false
     }
@@ -683,7 +686,7 @@ class Server {
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
         if ((project.owner === user_id) || user.username === "alexm") {
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
-            this.log("Project" + project_name +  "deleted by: " + user.username)
+            this.log("Project " + project_name +  " deleted by: " + user.username)
             return {
                 success: true, 
                 text: "Project deleted by: "  + user.username

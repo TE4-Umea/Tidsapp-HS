@@ -31,3 +31,8 @@ if(token){
 /* socket.on("redir", url => {
     location.href = url
 })  */
+
+function logout(){
+    localStorage.removeItem("token")
+    location.href = "/"
+}

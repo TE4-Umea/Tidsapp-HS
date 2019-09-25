@@ -165,7 +165,7 @@
                         if (user) {
                             var project_to_delete = req.body.text
                             var response = await server.delete_project(project_to_delete, user.id)
-                            res.json(this.slack_response(response.text))
+                            res.json(this.slack_response(response))
                         } else {
                             this.user_not_found(res)
                         }

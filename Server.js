@@ -370,7 +370,7 @@ class Server {
                 if(last_check.check_in && last_check.project === project_name){
                     return {
                         success: true,
-                        text: "You are already checked in."
+                        text: "You are already checked in." + (project_name ? " Project: " + project_name : "")
                     }
                 }
                 await this.insert_check(user.id, true, project_name, type)

@@ -615,7 +615,6 @@ class Server {
             }
             //Add the user to joints
             await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
-            var project = this.get_project_from_id(project_id)
             return {
                 success: true,
                 text: "Added " + user_to_add.name + " to " + project.name + "!"
@@ -687,13 +686,13 @@ class Server {
             this.log("Project deleted by: " + user.username)
             return {
                 success: true, 
-                text: "Project deleted by: " + user.username
+                text: "Project deleted by: "  + user.username
             }
         } else {
-            this.log("Permission denied on delete project, " + user.username)
+            this.log("Permission denied, project is owned by " + project.owner)
             return {
                 success: false, 
-                text: "Permission denied on delete project, " + user.username
+                text: "Permission denied, project is owned by " + project.owner
             }
         }
     }

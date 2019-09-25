@@ -615,9 +615,10 @@ class Server {
             }
             //Add the user to joints
             await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
+            var project = this.get_project_from_id(project_id)
             return {
                 success: true,
-                text: "Added " + user_to_add.name + "!"
+                text: "Added " + user_to_add.name + " to " + project.name + "!"
             }
         }
         return {

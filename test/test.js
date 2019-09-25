@@ -37,6 +37,12 @@ describe("MYSQL connection and prep", () => {
 
             await server.db.query("UPDATE users SET slack_id = ? WHERE id = ?", [test_slack_id, user.user.id])
         })
+        it("Try to create user that already exists", async () => {
+            var user = await server.create_user(test_username, "test_password", test_full_name)
+            assert.equal(user.success, false)
+
+
+        })
     })
 })
 
@@ -88,6 +94,12 @@ describe("Check in / out testing", () => {
         var user = await server.get_user_from_username(test_username)
         var success = await server.create_project(test_project, user)
         assert.equal(success.success, true)
+    })
+
+    it("Create project when project already exist " + test_project, async () => {
+        var user = await server.get_user_from_username(test_username)
+        var success = await server.create_project(test_project, user)
+        assert.equal(success.success, false)
     })
 
     it("Test if the user is the owner or joined", async () => {

@@ -3,9 +3,10 @@ block head
     link(rel="stylesheet", href="css/dashboard.css")
 block header 
     span(id="time") --:--
-    div(id="seconds-bar")
+    div(id="seconds-bar-container")
+        div(id="seconds-bar")
 block sidebar
-    span(id="add-new-project" title="Create new project") +
+    span(id="add-new-project" title="Create new project" onclick="new_project()") +
 block content
     span(hidden id="slack-sign-token") #{token}
     div(id="logged-in-as")

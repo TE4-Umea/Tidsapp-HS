@@ -8,9 +8,18 @@
     font-family: 'Ubuntu';
 }
 
-#seconds-bar{
+#seconds-bar-container{
     position: absolute;
     left: 60px;
+    height: 3px;
+    width: 100px;
+    background: rgb(204, 204, 204);
+    border-radius: 20px;
+    border-radius: 100px;
+}
+
+#seconds-bar{
+    position: absolute;
     height: 3px;
     border-radius: 20px;
     width: 0px;

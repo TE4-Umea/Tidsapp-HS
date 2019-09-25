@@ -683,11 +683,15 @@ class Server {
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
         if (project.owner === user_id) {
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
-            this.log("Project deleted by: " + user.username)
-            return true
+            return {
+                success: true, 
+                text: "Project deleted by: " + user.username
+            }
         } else {
-            this.log("Permission denied on delete project, " + user.username)
-            return false
+            return {
+                success: false, 
+                text: "Permission denied on delete project, " + user.username
+            }
         }
     }
 

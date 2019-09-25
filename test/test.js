@@ -196,7 +196,7 @@ describe("Delete user and cleanup", () => {
     it("Delete project", async () => {
         var user = await server.get_user_from_username(test_username)
         var success = await server.delete_project(test_project, user.id)
-        assert.equal(success, true)
+        assert.equal(success.success, true)
         project = await server.get_project(test_project)
         assert.equal(project, undefined)
     })

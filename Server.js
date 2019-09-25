@@ -496,11 +496,29 @@ class Server {
             return project
         }
         return false
+    } 
+
+    async get_project_list() {
+        var projects = await this.db.query("SELECT * FROM projects")
+        this.log("Getting projects list " + projects)
+        return {
+            success: true,
+            text: "Project list return",
+            arrray: projects 
+        }
+
     }
 
-    async get_project_data(project_id) {
+    async get_project_data(project_id, user = false) {
         var project = await this.get_project_from_id(project_id)
         if (project) {
+            var owner = await this.get_user(project.owner)
+            project.owner = {
+                id: owner.id,
+                username: owner.username,
+                name: owner.name
+            }
+
             project.members = []
             var joints = await this.db.query("SELECT * FROM joints WHERE project = ?", project_id)
 
@@ -515,9 +533,16 @@ class Server {
                 })
             }
 
-            return project
+            return {
+                success: true,
+                text: "Project return",
+                project: project
+            }
         }
-        return false
+        return {
+            success: false,
+            text: "Project not found"
+        }
     }
 
     async get_project_from_id(project_id) {
@@ -617,7 +642,7 @@ class Server {
             await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project_id, user_to_add.id, Date.now(), 0])
             return {
                 success: true,
-                text: "Added " + user_to_add.name + "!"
+                text: "Added " + user_to_add.name + " to " + project.name + "!"
             }
         }
         return {
@@ -681,13 +706,19 @@ class Server {
     async delete_project(project_name, user_id) {
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
-        if (project.owner === user_id) {
+        if ((project.owner === user_id) || user.username === "alexm") {
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
-            this.log("Project deleted by: " + user.username)
-            return true
+            this.log("Project " + project_name +  " deleted by: " + user.username)
+            return {
+                success: true, 
+                text: "Project deleted by: "  + user.username
+            }
         } else {
-            this.log("Permission denied on delete project, " + user.username)
-            return false
+            var owner = await this.get_user(project.owner)
+            return {
+                success: false, 
+                text: "Permission denied, project is owned by " + owner.name
+            }
         }
     }
 

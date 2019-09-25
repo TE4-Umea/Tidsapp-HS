@@ -159,7 +159,7 @@ class Server {
         }) */
 
         /* socket.on("sign_slack", async info => { */
-        /* for (var sign of this.slack_sign_users) {
+        /* for (var sign of this.            _sign_users) {
             if (sign.token === info.sign_token) {
                 var user = await this.get_user_from_token(info.token)
                 if (user) {

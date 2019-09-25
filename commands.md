@@ -1,9 +1,9 @@
-    Usage:
+Usage:
 /command <required> [optional]
 
 Commands:
 
-/hscheckin [project name]
+/hscheckin [project]
     Checking in to presence, if project name is specified you check in to the project.
 
 /hsprojects
@@ -13,14 +13,14 @@ Commands:
 /hscheckout
     Check out of project and presence.
 
-/hsnew <name>
+/hsnew <project>
     Creates a new project with the name provided.
 
 /hsdelete <project>
     NOT FINISHED
     Delete the project specified.
 
-/hsproject <projectname>
+/hsproject <project>
     NOT FINISHED
     Get information about the project, how many hours you have worked  
     (today, this week, all time).

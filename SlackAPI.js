@@ -166,7 +166,7 @@
                             var inputs = req.body.text.split(" ")
                             var project_to_delete = inputs[0]
                             var response = await server.delete_project(project_to_delete, user.id)
-                            res.json(this.SlackJSON.SlackResponse(response))
+                            res.json(this.slack_response(response))
                         } else {
                             this.user_not_found(res)
                         }

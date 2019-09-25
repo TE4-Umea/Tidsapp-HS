@@ -1,18 +1,27 @@
-function check_usersname(el){
+var login_mode = false
+
+function check_usersname(el) {
     el.value = el.value.replace(/[^a-z0-9_]+|\s+/gmi, "")
-    if(el.value.length < 3) {
+    if (el.value.length < 3) {
         update_login_page(true, true)
         return
     }
-    socket.emit("username_taken", el.value)
+
+    axios.post("/api/user", {
+        username: el.value
+    }).then(res => {
+        update_login_page(res.data.taken)
+    })
+    /* socket.emit("username_taken", el.value) */
 }
 
-socket.on("username_taken", taken => {
+/* socket.on("username_taken", taken => {
     update_login_page(taken)
-})
+}) */
 
 
-function update_login_page(username_taken, disabled = false){
+function update_login_page(username_taken, disabled = false) {
+    login_mode = username_taken
     document.getElementById("name").style.display = username_taken ? "none" : "block"
     var button = document.getElementById("login-button")
     button.disabled = disabled
@@ -20,20 +29,50 @@ function update_login_page(username_taken, disabled = false){
     button.innerText = disabled ? "sign up / log in" : (username_taken ? "log in" : "Sign up")
 }
 
-socket.on("login_err", msg => {
+function error(msg) {
     var error_box = document.getElementById("error-message")
     error_box.innerText = msg
     error_box.style.display = "block"
-})
+}
 
-function login(){
-    socket.emit("login", {
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value,
-        name: document.getElementById("name").value
-    })
+function success(token){
+    localStorage.setItem("token", token)
+    location.href = "/dashboard"
+}
+
+function login() {
+    var username = document.getElementById("username").value
+    var password = document.getElementById("password").value
+    var name = document.getElementById("name").value
+    if (login_mode) {
+        axios.post("/api/login", {
+            username,
+            password
+        }).then(res => {
+            var data = res.data
+            if (data.success) {
+                success(data.token)
+            } else {
+                error(data.text)
+            }
+        })
+    } else {
+        axios.post("/api/signup", {
+            username,
+            password,
+            name
+        }).then(res => {
+            var data = res.data
+            if(data.success){
+                success(data.token)
+            } else {
+                errror(data.text)
+            }
+        })
+    }
+
 }
 
 document.addEventListener("keypress", e => {
-    if(e.key == "Enter") login()
+    if (e.key == "Enter") login()
 })

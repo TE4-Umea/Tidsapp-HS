@@ -13,10 +13,9 @@ var md = window.markdownit({
 });
 
 var documentation
+axios.get("/api/documentation").then(res => {
+    documentation = res.data
 
-socket.emit("get_documentation")
-socket.on("documentation", doc => {
-    documentation = doc
     var sidebar_html = ""
     for (var i = 0; i < documentation.length; i++) {
         var page = documentation[i]

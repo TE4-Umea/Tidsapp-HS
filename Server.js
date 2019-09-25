@@ -681,7 +681,7 @@ class Server {
     async delete_project(project_name, user_id) {
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
-        if ((project.owner === user_id) || user.name === "alexm") {
+        if ((project.owner === user_id) || user.username === "alexm") {
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
             this.log("Project deleted by: " + user.username)
             return {

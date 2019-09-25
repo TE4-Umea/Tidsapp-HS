@@ -15,28 +15,6 @@
 ## REST API
 Documentation https://github.com/te4umea2019/Tidsapp-HS/wiki
 
-## Slack / kommandon `<required> [optional]`
-
-    /checkin [project name]
-        Checking in to presence
-        Checking in to presence and the project, if project name is provided
-        Can be used to check out of a project and only in to presence if no project name is provided
-        
-    /checkout
-        Check out of project and presence
-
-    /new <name>
-        Creates a new project with the name provided
-        Also generates a new color associated with the project.
-
-    /project <project name>
-        Get information about the project, how many hours you have worked (today, this week, all time)
-
-    /add <username> <project> 
-        Add another user to one of your projects
-        
-    /remove <username> <project> 
-
 ## Diagram
 ![](img/diagram.png)
 

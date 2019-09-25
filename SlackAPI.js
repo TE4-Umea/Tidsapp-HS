@@ -78,8 +78,7 @@
                         if (user) {
                             var project = req.body.text ? req.body.text : ""
                             var response = await server.check_in(user.id, true, project, "slack")
-
-                            res.json(this.SlackJSON.SlackResponse(response.text, [this.SlackJSON.SlackAttachments(response.project ? "Project: " + response.project : (response.success ? "Attendance" : "Checkout /hshelp for more info"), response.success ? this.SUCCESS : this.FAIL)]))
+                            res.json(this.slack_response(response))
                         } else {
                             this.user_not_found(res)
                         }

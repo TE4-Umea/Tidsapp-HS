@@ -33,6 +33,7 @@ setInterval(() => {
 on_login = () => {
     if (me.slack_id) document.getElementById("slack-button").remove()
     update_checked_in_status(me.checked_in)
+    document.getElementById("avatar").src = me.avatar ? me.avatar : "img/avatar.png"
     document.getElementById("logged-in-as").innerText = "Logged in as " + me.name + " (" + me.username + ")"
 }
 

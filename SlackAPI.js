@@ -42,7 +42,7 @@
                                         /* Check if the user is already signed up */
                                         var slack_taken = await server.db.query_one("SELECT * FROM users WHERE slack_id = ?", data.user.id)
                                         if(slack_taken){
-                                            res.send("This slack account is already linked to another user. Please delete that account first or ask an administrator for help.")
+                                            res.send("This slack account is already linked to another user. Please   that account first or ask an administrator for help.")
                                             return
                                         }
                                         
@@ -156,6 +156,33 @@
                 app.post("/api/slack/help", async (req, res) => {
                     var response = this.SlackJSON.SlackResponse("Happy Surfers Time App Help Menu", [this.SlackJSON.SlackAttachments(server.fs.readFileSync("commands.md", "utf8"))])
                     res.json(response)
+                })
+
+                app.post("/api/slack/delete", async (req, res) => {
+                    var success = server.verify_slack_request(req)
+                    if (success) {
+                        var user = await server.get_user_from_slack(req)
+                        if (user) {
+                            var project_to_delete = req.body.text
+                            var response = await server.delete_project(project_to_delete, user.id)
+                            res.json(this.slack_response(response))
+                        } else {
+                            this.user_not_found(res)
+                        }
+                    }
+                })
+                app.post("/api/slack/project", async (req, res) => {
+                    var success = server.verify_slack_request(req)
+                    if (success) {
+                        var user = await server.get_user_from_slack(req)
+                        if (user) {
+                            var response = server.get_project_list()
+                            res.json(this.slack_response(response))
+                            this.SlackJSON.SlackResponse(response.array)
+                        } else {
+                            this.user_not_found(res) 
+                        }
+                    }
                 })
             }
 

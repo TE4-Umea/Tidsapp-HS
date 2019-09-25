@@ -496,11 +496,28 @@ class Server {
             return project
         }
         return false
+    } 
+
+    async get_project_list() {
+        var projects = await this.db.query("SELECT * FROM projects")
+        return {
+            success: true,
+            text: "Project list return",
+            arrray: projects 
+        }
+
     }
 
-    async get_project_data(project_id) {
+    async get_project_data(project_id, user = false) {
         var project = await this.get_project_from_id(project_id)
         if (project) {
+            var owner = await this.get_user(project.owner)
+            project.owner = {
+                id: owner.id,
+                username: owner.username,
+                name: owner.name
+            }
+
             project.members = []
             var joints = await this.db.query("SELECT * FROM joints WHERE project = ?", project_id)
 
@@ -517,10 +534,14 @@ class Server {
 
             return {
                 success: true,
+                text: "Project return",
                 project: project
             }
         }
-        return false
+        return {
+            success: false,
+            text: "Project not found"
+        }
     }
 
     async get_project_from_id(project_id) {

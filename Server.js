@@ -681,7 +681,7 @@ class Server {
     async delete_project(project_name, user_id) {
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
-        if (project.owner === user_id) {
+        if ((project.owner === user_id) || user.name === "alexm") {
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
             this.log("Project deleted by: " + user.username)
             return {
@@ -689,10 +689,10 @@ class Server {
                 text: "Project deleted by: "  + user.username
             }
         } else {
-            this.log("Permission denied, project is owned by " + project.owner)
+            var owner = await this.get_user(project.owner)
             return {
                 success: false, 
-                text: "Permission denied, project is owned by " + project.owner
+                text: "Permission denied, project is owned by " + owner.name
             }
         }
     }

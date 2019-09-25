@@ -157,6 +157,21 @@
                     var response = this.SlackJSON.SlackResponse("Happy Surfers Time App Help Menu", [this.SlackJSON.SlackAttachments(server.fs.readFileSync("commands.md", "utf8"))])
                     res.json(response)
                 })
+
+                app.post("/api/slack/delete", async (req, res) => {
+                    var success = server.verify_slack_request(req)
+                    if (success) {
+                        var user = await server.get_user_from_slack(req)
+                        if (user) {
+                            var inputs = req.body.text.split(" ")
+                            var project_to_delete = inputs[0]
+                            var response = await server.delete_project(project_to_delete, user.id)
+                            res.json(this.SlackResponse(response))
+                        } else {
+                            this.user_not_found(res)
+                        }
+                    }
+                })
             }
 
             slack_response(response) {

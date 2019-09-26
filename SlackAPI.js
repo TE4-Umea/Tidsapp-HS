@@ -191,8 +191,11 @@
                                 server.log("Getting project list " + project_to_info.name)
                                 response = await server.get_project_list()
                             } else {
+                                
                                 server.log("Getting project info for: " + project_to_info.name)
                                 response = await server.get_project_data(project_to_info.id)
+                                var project = response.project.members.username + " " + response.project.members.name + " " + response.project.members.work + " " + response.project.members.owner
+                                response.text = "Project info for " + project_to_info.name + " " + response
                             }
                             res.json(this.slack_response(response))
                         } else {

@@ -126,7 +126,7 @@
     height: 150px;
     user-select: none;
     pointer-events: none;
-    fill: url(#gradient) #fff;
+    
 }
 
 .project-name {
@@ -138,9 +138,11 @@
     top: 15px;
     text-align: right;
     right: 15px;
-    background: -webkit-linear-gradient(0deg, rgb(134, 134, 134), rgb(94, 94, 94));
+    color: #757575;
+    transition: color .2s;
+    /* background: -webkit-linear-gradient(0deg, rgb(134, 134, 134), rgb(94, 94, 94));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: transparent; */
 }
 
 /* Check in button on projects*/
@@ -156,9 +158,10 @@
 }
 
 .project-timeline {
-    height: 50px;
-    width: 200px;
+    /* height: 50px;
+    width: 200px; */
     position: absolute;
     right: 15px;
     top: 50px;
+    /* background: rgb(41, 41, 41); */
 }

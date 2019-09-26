@@ -546,7 +546,8 @@ class Server {
                 to_add = to_add.slice(to_add.indexOf('"')+1, -2)
             }
             current_project = this.get_project(to_add)
-            project_list += to_add + " owner: " + current_project.owner +  "\n"
+            project_owner = this.get_user(current_project.owner)
+            project_list += to_add + " owner: " + project_owner +  "\n"
         }
         this.log("Getting projects list " + project_list)
         return {

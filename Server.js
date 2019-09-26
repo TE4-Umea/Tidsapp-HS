@@ -579,7 +579,6 @@ class Server {
                     owner: user.id == project.owner
                 })
             }
-            var members = project.members
 
             return {
                 success: true,

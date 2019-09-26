@@ -196,7 +196,8 @@
                                 response = await server.get_project_data(project_to_info.id)
                                 var list_members = response.project.members
                                 var members = ""
-                                server.log(list_members.lenght)
+                                //TODO: fix members lenght, currently undefined
+                                server.log(list_members.lenght  + " " + list_members[i].name)
                                 for (var i = 0; list_members.lenght; i++) {
                                     members += list_members[i].name + " Time: " + list_members[i].work + "\n"
                                     server.log("BEST TEST" + i + members)

@@ -194,8 +194,15 @@
                                 
                                 server.log("Getting project info for: " + project_to_info.name)
                                 response = await server.get_project_data(project_to_info.id)
-                                var project = response.project.members[0] + " " + response.project.owner.username
-                                response.text = "Project info for " + project_to_info.name + " " + project
+                                var list_members = response.project.members
+                                var members = ""
+                                server.log(list_members.lenght)
+                                for (var i = 0; list_members.lenght; i++) {
+                                    members += list_members[i].name + " Time: " + list_members[i].work + "\n"
+                                    server.log("BEST TEST" + i + members)
+                                }
+                                var output = "Owner: " + response.project.owner.name + "\n Members: " + members
+                                response.text = "Project info for " + project_to_info.name + ":\n" + output
                             }
                             res.json(this.slack_response(response))
                         } else {

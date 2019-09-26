@@ -568,10 +568,10 @@ class Server {
 
             project.members = []
             var joints = await this.db.query("SELECT * FROM joints WHERE project = ?", project_id)
-
+            
             for (var joint of joints) {
                 var user = await this.get_user(joint.user)
-
+                
                 project.members.push({
                     username: user.username,
                     name: user.name,
@@ -579,6 +579,7 @@ class Server {
                     owner: user.id == project.owner
                 })
             }
+            var members = project.members
 
             return {
                 success: true,

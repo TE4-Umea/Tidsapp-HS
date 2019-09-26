@@ -34,5 +34,5 @@ if(token){
 
 function logout(){
     localStorage.removeItem("token")
-    location.href = "/"
+    location.href = "/login"
 }

@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `checks` (
   `date` bigint(20) DEFAULT NULL COMMENT 'Date of the project',
   `type` text COMMENT 'Check in type (web, card, TOP SECRET)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=504 DEFAULT CHARSET=latin1;
 
 -- Dataexport var bortvalt.
 
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `joints` (
   `work` bigint(20) DEFAULT NULL COMMENT 'Work done in ms (1 hour of work = 3600000)',
   `date` bigint(20) DEFAULT NULL COMMENT 'Date of joining the project',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Dataexport var bortvalt.
 
@@ -50,8 +50,10 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID  of the project',
   `name` text COMMENT 'Name of the project',
   `owner` int(11) DEFAULT NULL,
+  `color_top` text,
+  `color_bot` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Dataexport var bortvalt.
 
@@ -62,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `tokens` (
   `user` int(11) DEFAULT NULL COMMENT 'ID of the user',
   `token` text COMMENT 'Token',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=134 DEFAULT CHARSET=latin1;
 
 -- Dataexport var bortvalt.
 
@@ -81,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `slack_id` text,
   `slack_domain` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=latin1;
 
 -- Dataexport var bortvalt.
 

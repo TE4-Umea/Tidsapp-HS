@@ -198,6 +198,7 @@
                                 var members = ""
                                 for (var i = 0; list_members.lenght; i++) {
                                     members += list_members[i].name + " Time: " + list_members[i].work + "\n"
+                                    server.log("BEST TEST" + i + members)
                                 }
                                 var output = "Owner: " + response.project.owner.name + "\n Members: " + members
                                 response.text = "Project info for " + project_to_info.name + ":\n" + output

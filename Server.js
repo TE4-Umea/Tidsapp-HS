@@ -529,18 +529,20 @@ class Server {
 
     async get_project_list() {
         var projects = await this.db.query("SELECT name FROM projects")
-        var project_List = "Test List \n"
+        var project_list = "Test List \n"
         var list_string = JSON.stringify(projects)
         var list = list_string.split(",")
         var list_lenght = list.length
+        var to_add = ""
         for (var i = 0; i < list_lenght; i++) {
             this.log( i + " Adding element to list " + list[i])
-            project_List.concat(list[i] + "\n")
+            to_add = list[i]
+            project_list.concat(to_add + "\n")
         }
-        this.log("Getting projects list " + project_List)
+        this.log("Getting projects list " + project_list)
         return {
             success: true,
-            text: "Returning project list " + project_List
+            text: "Returning project list " + project_list
         }
     }
 

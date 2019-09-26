@@ -528,14 +528,13 @@ class Server {
     }
 
     async get_project_list() {
-        var projects = await this.db.query("SELECT * FROM projects")
-        this.log("Getting projects list " + JSON.stringify(projects))
+        var projects = await this.db.query("SELECT name FROM projects")
+        var list = JSON.stringify(projects)
+        this.log("Getting projects list " + list)
         return {
             success: true,
-            text: "Project list return",
-            arrray: projects
+            text: "Returning project list " + list
         }
-
     }
 
     async get_project_data(project_id, user = false) {
@@ -625,7 +624,6 @@ class Server {
      * @param {*} user 
      */
     async add_user_to_project(user_to_add, project_id, user) {
-
         if (!user_to_add) {
             return {
                 success: false,
@@ -773,6 +771,7 @@ class Server {
         var success = this.verify_slack_request(req)
         if (success) {
             var body = req.body
+            this.log("Test 2 " + body)
             var slack_id = body.user_id
             var user = await this.get_user_from_slack_id(slack_id)
             if (user) {

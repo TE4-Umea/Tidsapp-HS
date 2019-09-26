@@ -537,7 +537,7 @@ class Server {
         for (var i = 0; i < list_lenght; i++) {
             this.log( i + " Adding element to list " + list[i])
             to_add = list[i]
-            project_list.concat(to_add + "\n")
+            project_list.concat(list[i])
         }
         this.log("Getting projects list " + project_list)
         return {

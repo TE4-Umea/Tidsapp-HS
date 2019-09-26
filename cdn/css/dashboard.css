@@ -85,15 +85,15 @@
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 }
 
-#avatar:hover{
+#avatar:hover {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
-#avatar:active{
+#avatar:active {
     border-color: var(--dark-blu);
 }
 
-#projects{
+#projects {
     /* background: rgb(236, 236, 236); */
     width: 280px;
     left: 10px;
@@ -101,7 +101,7 @@
     position: absolute;
 }
 
-.project{
+.project {
     position: relative;
     width: 100%;
     height: 150px;
@@ -114,12 +114,12 @@
     margin-bottom: 20px;
 }
 
-.project:hover{
+.project:hover {
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.15);
 }
 
 
-.wipe{
+.wipe {
     position: absolute;
     bottom: 0px;
     left: 0px;
@@ -129,19 +129,22 @@
     fill: url(#gradient) #fff;
 }
 
-.project-name{
+.project-name {
     font-size: 30px;
     font-family: 'Ubuntu';
     position: absolute;
-    color: #ff2072;
+    /* color: #ff2072; */
     position: absolute;
     top: 15px;
     text-align: right;
     right: 15px;
+    background: -webkit-linear-gradient(0deg, rgb(134, 134, 134), rgb(94, 94, 94));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /* Check in button on projects*/
-.project-button{
+.project-button {
     height: 30px;
     width: 95px;
     font-size: 10px;
@@ -152,7 +155,7 @@
     border-color: rgb(37, 37, 37) !important;
 }
 
-.project-timeline{
+.project-timeline {
     height: 50px;
     width: 200px;
     position: absolute;

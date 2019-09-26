@@ -529,11 +529,20 @@ class Server {
 
     async get_project_list() {
         var projects = await this.db.query("SELECT name FROM projects")
-        var list = JSON.stringify(projects)
-        this.log("Getting projects list " + list)
+        var project_list = "Test List \n"
+        var list_string = JSON.stringify(projects)
+        var list = list_string.split(",")
+        var list_lenght = list.length
+        var to_add = ""
+        for (var i = 0; i < list_lenght; i++) {
+            this.log( i + " Adding element to list " + list[i])
+            to_add = list[i] + "\n"
+            project_list += to_add
+        }
+        this.log("Getting projects list " + project_list)
         return {
             success: true,
-            text: "Returning project list " + list
+            text: "Returning project list " + project_list
         }
     }
 
@@ -678,6 +687,13 @@ class Server {
         }
     }
 
+    async get_slack_id_from_text(user) {
+        var slack_id = user.substring(2, 11)
+        user = await this.get_user_from_slack_id(slack_id)
+        return user
+
+    }
+
     /**
      * Remove user from project
      * @param {User} user_to_remove User to remove from project (can't be owner, but won't crash)
@@ -733,8 +749,9 @@ class Server {
     async delete_project(project_name, user_id) {
         var user = await this.get_user(user_id)
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
-        if ((project.owner === user_id) || user.username === "alexm") {
+        if ((project.owner === user_id) || user.admin) {
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
+            await this.db.query("DELETE FROM joints WHERE project = ?", project.id)
             this.log("Project " + project_name + " deleted by: " + user.username)
             return {
                 success: true,
@@ -771,7 +788,6 @@ class Server {
         var success = this.verify_slack_request(req)
         if (success) {
             var body = req.body
-            this.log("Test 2 " + body)
             var slack_id = body.user_id
             var user = await this.get_user_from_slack_id(slack_id)
             if (user) {

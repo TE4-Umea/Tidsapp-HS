@@ -186,9 +186,11 @@
                             var project_to_info = req.body.text
                             var response = null
                             project_to_info = server.get_project(project_to_info)
-                            if (project_to_info == null) {
+                            if (project_to_info == "") {
+                                server.log("Getting project list " + project_to_info.name)
                                 response = await server.get_project_list()
                             } else {
+                                server.log("Getting project info for: " + project_to_info.name)
                                 response = await server.get_project_data(project_to_info.id)
                             }
                             res.json(this.slack_response(response))

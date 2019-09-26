@@ -549,7 +549,7 @@ class Server {
             current_project = await this.get_project(to_add)
             this.log("Project current " + current_project)
             project_owner = await this.get_user(current_project.owner)
-            project_list += to_add + ", " + project_owner +  "\n"
+            project_list += to_add + ", " + project_owner.username  + " aka " + project_owner.name +  "\n"
         }
         this.log("Getting projects list " + project_list)
         return {

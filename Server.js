@@ -628,7 +628,7 @@ class Server {
 
         await this.db.query("INSERT INTO projects (name, owner) VALUES (?, ?)", [project_name, user.id])
         var project = await this.get_project(project_name)
-        await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project.id, user.id, Date.now(), 0])
+        await this.db.query("INSERT INTO joints (project, user, date, work, color_top, color_bot) VALUES (?, ?, ?, ?, ?, ?)", [project.id, user.id, Date.now(), 0, "#f5314b", "#f53176"])
 
         return {
             success: true,

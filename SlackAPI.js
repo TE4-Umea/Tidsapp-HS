@@ -183,11 +183,11 @@
                     if (success) {
                         var user = await server.get_user_from_slack(req)
                         if (user) {
-                            var project_to_info = req.body.text
+                            var input = req.body.text
                             server.log("INPUT: " + project_to_info)
                             var response = null
                             project_to_info = server.get_project(project_to_info)
-                            if (project_to_info == undefined) {
+                            if (input == "") {
                                 server.log("Getting project list " + project_to_info.name)
                                 response = await server.get_project_list()
                             } else {

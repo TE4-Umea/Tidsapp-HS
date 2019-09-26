@@ -1,16 +1,25 @@
-#title{
+#title {
     text-align: right;
     font-size: 40px;
     top: 28px;
 }
 
-#time{
+#time {
     font-family: 'Ubuntu';
 }
 
-#seconds-bar{
+#seconds-bar-container {
     position: absolute;
-    left: 60px;
+    left: 62px;
+    height: 3px;
+    width: 100px;
+    background: rgb(204, 204, 204);
+    border-radius: 20px;
+    border-radius: 100px;
+}
+
+#seconds-bar {
+    position: absolute;
     height: 3px;
     border-radius: 20px;
     width: 0px;
@@ -18,14 +27,14 @@
     background: var(--blu);
 }
 
-#slack-button{
+#slack-button {
     border: none;
     position: absolute;
     bottom: 30px;
     left: 30px;
 }
 
-#check-in-button{
+#check-in-button {
     position: absolute;
     right: 30px;
     bottom: 30px;
@@ -34,7 +43,7 @@
     height: 45px;
 }
 
-#log-out-button{
+#log-out-button {
     position: absolute;
     right: 260px;
     bottom: 30px;
@@ -43,7 +52,7 @@
     height: 45px;
 }
 
-#add-new-project{
+#add-new-project {
     color: var(--blu);
     width: 30px;
     height: 30px;
@@ -60,6 +69,26 @@
     bottom: 15px;
 }
 
-#logged-in-as{
+#logged-in-as {
     margin: 30px;
+}
+
+#avatar {
+    height: 50px;
+    border-radius: 100px;
+    border: solid 2px var(--blu);
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    cursor: pointer;
+    transition: all .1s;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+#avatar:hover{
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+#avatar:active{
+    border-color: var(--dark-blu);
 }

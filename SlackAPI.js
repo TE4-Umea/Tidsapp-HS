@@ -178,7 +178,7 @@
                             var response = await server.get_project_list()
                             res.json(this.slack_response(response))
                         } else {
-                            this.user_not_found(res) 
+                            this.user_not_found(res)
                         }
                     }
                 })

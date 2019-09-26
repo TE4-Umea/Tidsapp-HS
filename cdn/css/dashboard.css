@@ -156,9 +156,10 @@
 }
 
 .project-timeline {
-    height: 50px;
-    width: 200px;
+    /* height: 50px;
+    width: 200px; */
     position: absolute;
     right: 15px;
     top: 50px;
+    /* background: rgb(41, 41, 41); */
 }

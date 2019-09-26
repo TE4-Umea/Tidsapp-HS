@@ -441,6 +441,7 @@ class Server {
                 // User is not owner of the project, download project form database
                 let project = await this.get_project_from_id(joint.project)
                 project.work = joint.work
+                project.activity = [5, 3, 7, 9, 3]
                 user.projects.push(project)
             }
             return user

@@ -199,7 +199,7 @@
                                 for (var i = 0; list_members.lenght; i++) {
                                     members += list_members[i].name + " Time: " + list_members[i].work + "\n"
                                 }
-                                var output = "Owner: " + response.project.owner.name + "\n Members: "
+                                var output = "Owner: " + response.project.owner.name + "\n Members: " + members
                                 response.text = "Project info for " + project_to_info.name + ":\n" + output
                             }
                             res.json(this.slack_response(response))

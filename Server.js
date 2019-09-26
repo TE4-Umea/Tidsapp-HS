@@ -538,8 +538,8 @@ class Server {
             this.log( i + " Adding element to list " + list[i])
             to_add = list[i]
             to_add = to_add.split(":")[1]
-            to_add.substr(to_add.indexOf('"'), to_add.indexOf('"'))
-            project_list += to_add
+            to_add = to_add.substr(to_add.indexOf('"'), to_add.indexOf('"'))
+            project_list += to_add + "\n"
         }
         this.log("Getting projects list " + project_list)
         return {

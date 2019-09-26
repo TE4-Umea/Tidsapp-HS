@@ -70,16 +70,19 @@ document.addEventListener("mousemove", e => {
                 }
             }
         }
-
+        
         if (hovering) {
+            var hovering_found = false
             for (var pro of document.getElementsByClassName("project")) {
                 if (me.checked_in_project != pro.getAttribute("project-name") && hover != pro) {
                     light_up_project(pro, false, false)
-                    hovering = false
+                    hovering_found = true
                     pro.setAttribute("hover", false)
                 }
             }
+            if(!hovering_found) hovering = false
         }
+        console.log(hovering)
     }
 })
 

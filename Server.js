@@ -685,6 +685,14 @@ class Server {
         }
     }
 
+    async get_slack_id_from_text(user_to_add) {
+        this.log("Getting @ in slack " + user_to_add.substring(2, 11))
+        var slack_id = user_to_add.substring(2, 11)
+        user_to_add = await this.get_user_from_slack_id(slack_id)
+        return user_to_add
+
+    }
+
     /**
      * Remove user from project
      * @param {User} user_to_remove User to remove from project (can't be owner, but won't crash)

@@ -125,9 +125,7 @@
                             var inputs = req.body.text.split(" ")
                             var user_to_add = inputs[0]
                             if (user_to_add.startsWith("<@")) {
-                                server.log("Getting @ in slack " + user_to_add.substring(2, 11))
-                                var slack_id = user_to_add.substring(2, 11)
-                                user_to_add = await server.get_user_from_slack_id(slack_id)
+                                user_to_add = await server.get_slack_id_from_text(user_to_add)
                             } else {
                                 user_to_add = await server.get_user_from_username(user_to_add)
                             }

@@ -626,7 +626,21 @@ class Server {
             }
         }
 
-        await this.db.query("INSERT INTO projects (name, owner, color_top, color_bot) VALUES (?, ?, ?, ?)", [project_name, user.id, "#f5314b", "#f53176"])
+        var user_joints = await this.db.query("SELECT * FROM joints WHERE user = ?", user.id)
+        var gradients = JSON.parse(this.fs.readFileSync("gradients.json", "utf8"))
+        for(var joint of user_joints){
+            var project = await this.get_project_from_id(joint.project)
+            for(var i = 0; i < gradients.length; i++){
+                if(gradients[i][0] == project.color_top){
+                    gradients.splice(i, 1)
+                }
+            }
+        }
+
+        if(gradients.length == 0) gradients = JSON.parse(this.fs.readFileSync("gradients.json", "utf8"))
+        var gradiant = gradients[Math.floor(Math.random() * gradients.length)]
+
+        await this.db.query("INSERT INTO projects (name, owner, color_top, color_bot) VALUES (?, ?, ?, ?)", [project_name, user.id, gradiant[0], gradiant[1]])
         var project = await this.get_project(project_name)
         await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project.id, user.id, Date.now(), 0])
 

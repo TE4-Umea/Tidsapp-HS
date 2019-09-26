@@ -36,12 +36,20 @@ on_login = () => {
     document.getElementById("avatar").src = me.avatar ? me.avatar : "img/avatar.png"
     document.getElementById("logged-in-as").innerText = "Logged in as " + me.name + " (" + me.username + ")"
 
+    insert_projects()    
+}
+
+function insert_projects(){
     var projects = ""
     for (var project of me.projects) {
-        projects += `<div class="project" hover="false" project-name="${project.name}"><span class="project-name">${project.name.toUpperCase()}</span><canvas height="50" width="200" class="project-timeline"></canvas><button class="project-button mdc-button mdc-button--outlined" onclick="check_in_project('${project.name}')">${me.checked_in_project == project.name ? "check out" : "check in"}</button><svg version="1.1" class="wipe" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve"> <defs> <linearGradient id="gradient" x2="0.35" y2="1"><stop offset="0%" id="${project.name}-stop-0" stop-color="#b5b5b5"></stop> <stop offset="100%" id="${project.name}-stop-1" stop-color="#4a4a4a"></stop> </linearGradient> </defs> <path class="st0" d="M-14.9-64.8c0,0-40.3,578.2,578.2,578.2s568.6,0,568.6,0l1.9,327l-1242.7,13.4l-47.9-993.4L-14.9-64.8z"></path> </svg></div>`
+        projects += `<div class="project" hover="false" project-name="${project.name}"><span class="project-name">${project.name.toUpperCase()}</span><canvas height="50" width="200" class="project-timeline"></canvas><button class="project-button mdc-button mdc-button--outlined" onclick="check_in_project('${project.name}')">${me.checked_in_project == project.name ? "check out" : "check in"}</button><svg version="1.1" class="wipe" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve"> <defs> <linearGradient id="${project.name}-gradient" x2="0.35" y2="1"><stop offset="0%" id="${project.name}-stop-0" stop-color="#b5b5b5"></stop> <stop offset="100%" id="${project.name}-stop-1" stop-color="#4a4a4a"></stop> </linearGradient> </defs> <path class="st0" d="M-14.9-64.8c0,0-40.3,578.2,578.2,578.2s568.6,0,568.6,0l1.9,327l-1242.7,13.4l-47.9-993.4L-14.9-64.8z"></path> </svg></div>`
     }
 
     document.getElementById("projects").innerHTML = projects
+    for(el of document.getElementsByClassName("project")){
+        light_up_project(el, false, false)
+    }
+        
     update_projects(me.checked_in, me.checked_in_project)
 }
 
@@ -63,10 +71,10 @@ document.addEventListener("mousemove", e => {
             }
         }
 
-        if(hovering){
+        if (hovering) {
             for (var pro of document.getElementsByClassName("project")) {
                 if (me.checked_in_project != pro.getAttribute("project-name") && hover != pro) {
-                    light_up_project(pro, false)
+                    light_up_project(pro, false, false)
                     hovering = false
                     pro.setAttribute("hover", false)
                 }
@@ -81,11 +89,13 @@ function check_in() {
     }).then(res => {
         var data = res.data
         notice(data.text, data.success)
+        if (!data.checked_in) me.checked_in_project = ""
+        update_projects(data.checked_in)
         update_checked_in_status(data.checked_in)
     })
 }
 
-function render_canvas(canvas, project, progress = 1) {
+function render_canvas(canvas, project, progress = 0) {
     var ctx = canvas.getContext("2d")
     var width = canvas.width
     var height = canvas.height
@@ -151,28 +161,35 @@ function render_canvas(canvas, project, progress = 1) {
     }
 }
 
-function light_up_project(el, light_up = true) {
+function light_up_project(el, light_up = true, animate = true) {
     var project_name = el.getAttribute("project-name")
     var project = get_project(project_name)
 
-    var gradient = [light_up ? project.color_top : "#b5b5b5", light_up ? project.color_bot : "#4a4a4a"]
+    var gradient = [light_up ? project.color_top : "#b5b5b5", light_up ? project.color_bot : "#757575"]
+    el.children[3].style.fill = "url(#" + project.name + "-gradient)"
     document.getElementById(project.name + "-stop-0").setAttribute("stop-color", gradient[0])
     document.getElementById(project.name + "-stop-1").setAttribute("stop-color", gradient[1])
     var text = el.children[0]
-    text.style.background = '-webkit-linear-gradient(0deg, ' + gradient[0] + ', ' + gradient[1] + ')'
-    text.style['-webkit-background-clip'] = 'text'
-    text.style['-webkit-text-fill-color'] = 'transparent'
 
-    var speed = .2
-    var progress = light_up ? 0 : 1
-    var interval = setInterval(() => {
-        if (progress > 1 || progress < 0) {
-            clearInterval(interval)
-            return
-        }
-        render_canvas(el.children[1], project, progress)
-        progress += light_up ? speed : -speed
-    }, 25)
+    text.style.color = gradient[1]
+    /* background = '-webkit-linear-gradient(0deg, ' +  + ', ' + gradient[1] + ')' */
+    /* text.style['-webkit-background-clip'] = 'text'
+    text.style['-webkit-text-fill-color'] = 'transparent' */
+
+    if (animate) {
+        var speed = .2
+        var progress = light_up ? 0 : 1
+        var interval = setInterval(() => {
+            if (progress > 1 || progress < 0) {
+                clearInterval(interval)
+                return
+            }
+            render_canvas(el.children[1], project, progress)
+            progress += light_up ? speed : -speed
+        }, 25)
+    } else {
+        render_canvas(el.children[1], project, light_up ? 1 : 0)
+    }
 }
 
 

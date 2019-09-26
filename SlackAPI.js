@@ -124,7 +124,7 @@
                         if (user) {
                             var inputs = req.body.text.split(" ")
                             var user_to_add = inputs[0]
-                            server.log("Trying to add user from slack: " + req.body.text)
+                            server.log("Trying to add user from slack: " + req.body)
                             user_to_add = await server.get_user_from_username(user_to_add)
                             var project_name = inputs[1]
                             var project = await server.get_project(project_name)

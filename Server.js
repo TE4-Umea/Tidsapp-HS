@@ -534,7 +534,7 @@ class Server {
         var list = list_string.split(",")
         var list_lenght = list.length
         var to_add = ""
-        var current_project
+        var current_project = null
         var project_owner = ""
         for (var i = 0; i < list_lenght; i++) {
             this.log( i + " Adding element to list " + list[i])

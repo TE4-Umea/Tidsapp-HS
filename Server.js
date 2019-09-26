@@ -517,10 +517,11 @@ class Server {
 
     async get_project_list() {
         var projects = await this.db.query("SELECT name FROM projects")
-        this.log("Getting projects list " + JSON.stringify(projects))
+        var list = JSON.stringify(projects)
+        this.log("Getting projects list " + list)
         return {
             success: true,
-            text: "Returning project list"
+            text: "Returning project list " + list
         }
 
     }

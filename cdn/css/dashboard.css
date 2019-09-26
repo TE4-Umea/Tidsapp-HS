@@ -126,7 +126,7 @@
     height: 150px;
     user-select: none;
     pointer-events: none;
-    /* fill: url(#gradient) #fff; */
+    
 }
 
 .project-name {
@@ -139,6 +139,7 @@
     text-align: right;
     right: 15px;
     color: #757575;
+    transition: color .2s;
     /* background: -webkit-linear-gradient(0deg, rgb(134, 134, 134), rgb(94, 94, 94));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent; */

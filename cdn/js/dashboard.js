@@ -36,20 +36,20 @@ on_login = () => {
     document.getElementById("avatar").src = me.avatar ? me.avatar : "img/avatar.png"
     document.getElementById("logged-in-as").innerText = "Logged in as " + me.name + " (" + me.username + ")"
 
-    insert_projects()    
+    insert_projects()
 }
 
-function insert_projects(){
+function insert_projects() {
     var projects = ""
     for (var project of me.projects) {
         projects += `<div class="project" hover="false" project-name="${project.name}"><span class="project-name">${project.name.toUpperCase()}</span><canvas height="50" width="200" class="project-timeline"></canvas><button class="project-button mdc-button mdc-button--outlined" onclick="check_in_project('${project.name}')">${me.checked_in_project == project.name ? "check out" : "check in"}</button><svg version="1.1" class="wipe" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve"> <defs> <linearGradient id="${project.name}-gradient" x2="0.35" y2="1"><stop offset="0%" id="${project.name}-stop-0" stop-color="#b5b5b5"></stop> <stop offset="100%" id="${project.name}-stop-1" stop-color="#4a4a4a"></stop> </linearGradient> </defs> <path class="st0" d="M-14.9-64.8c0,0-40.3,578.2,578.2,578.2s568.6,0,568.6,0l1.9,327l-1242.7,13.4l-47.9-993.4L-14.9-64.8z"></path> </svg></div>`
     }
 
     document.getElementById("projects").innerHTML = projects
-    for(el of document.getElementsByClassName("project")){
+    for (el of document.getElementsByClassName("project")) {
         light_up_project(el, false, false)
     }
-        
+
     update_projects(me.checked_in, me.checked_in_project)
 }
 
@@ -70,7 +70,7 @@ document.addEventListener("mousemove", e => {
                 }
             }
         }
-        
+
         if (hovering) {
             var hovering_found = false
             for (var pro of document.getElementsByClassName("project")) {
@@ -80,7 +80,7 @@ document.addEventListener("mousemove", e => {
                     pro.setAttribute("hover", false)
                 }
             }
-            if(!hovering_found) hovering = false
+            if (!hovering_found) hovering = false
         }
         console.log(hovering)
     }
@@ -105,13 +105,15 @@ function render_canvas(canvas, project, progress = 0) {
     var margin = 10 // px
     var max = -1
     var min = 0
-    var dot_size = 5
+    var dot_size = 4
     ctx.lineWidth = 3
     var spacing = ((canvas.width - margin * 2) / (project.activity.length - 1))
 
-    for (var day of project.activity) {
-        if (day > max) max = day
-        /* if (day < min) min = day */
+    for (var pro of me.projects) {
+        for (var day of pro.activity) {
+            if (day > max) max = day
+            /* if (day < min) min = day */
+        }
     }
 
     var difference = max - min
@@ -189,7 +191,7 @@ function light_up_project(el, light_up = true, animate = true) {
             }
             render_canvas(el.children[1], project, progress)
             progress += light_up ? speed : -speed
-        }, 25)
+        }, 30)
     } else {
         render_canvas(el.children[1], project, light_up ? 1 : 0)
     }

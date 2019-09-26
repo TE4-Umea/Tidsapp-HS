@@ -531,7 +531,7 @@ class Server {
         var projects = await this.db.query("SELECT name FROM projects")
         var project_List = "Test List \n"
         var list_string = JSON.stringify(projects)
-        var list = list_string.split(" ")
+        var list = list_string.split(",")
         var list_lenght = list.length
         for (var i = 0; i < list_lenght; i++) {
             this.log( i + " Adding element to list " + list[i])
@@ -686,7 +686,6 @@ class Server {
     }
 
     async get_slack_id_from_text(user) {
-        this.log("Getting @ in slack " + user.substring(2, 11))
         var slack_id = user.substring(2, 11)
         user = await this.get_user_from_slack_id(slack_id)
         return user

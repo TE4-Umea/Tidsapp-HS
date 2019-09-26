@@ -537,7 +537,6 @@ class Server {
         var current_project = null
         var project_owner = ""
         for (var i = 0; i < list_lenght; i++) {
-            this.log( i + " Adding element to list " + list[i])
             to_add = list[i]
             to_add = to_add.split(":")[1]
             if(i == list.length-1) {
@@ -545,11 +544,9 @@ class Server {
             } else {
                 to_add = to_add.slice(to_add.indexOf('"')+1, -2)
             }
-            this.log("Project name " + to_add)
             current_project = await this.get_project(to_add)
-            this.log("Project current " + current_project)
             project_owner = await this.get_user(current_project.owner)
-            project_list += to_add + ", " + project_owner.username  + " aka " + project_owner.name +  "\n"
+            project_list += to_add + ", " + project_owner.name +  "\n"
         }
         this.log("Getting projects list " + project_list)
         return {

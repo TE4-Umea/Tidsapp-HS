@@ -529,11 +529,16 @@ class Server {
 
     async get_project_list() {
         var projects = await this.db.query("SELECT name FROM projects")
+        var projectList = "\n"
         var list = JSON.stringify(projects).split(" ")
-        this.log("Getting projects list " + list)
+        var list_lenght = list.length
+        for (var i = 0; i < list_lenght; i++) {
+            projectList.concat(list[i] + "\n")
+        }
+        this.log("Getting projects list " + projectList)
         return {
             success: true,
-            text: "Returning project list " + list
+            text: "Returning project list " + projectList
         }
     }
 
@@ -771,7 +776,6 @@ class Server {
         var success = this.verify_slack_request(req)
         if (success) {
             var body = req.body
-            this.log("Test 2 " + body)
             var slack_id = body.user_id
             var user = await this.get_user_from_slack_id(slack_id)
             if (user) {

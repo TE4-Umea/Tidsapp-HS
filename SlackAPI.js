@@ -194,7 +194,7 @@
                                 
                                 server.log("Getting project info for: " + project_to_info.name)
                                 response = await server.get_project_data(project_to_info.id)
-                                var project = response.project.members + " " + response.project.owner.username
+                                var project = response.project.members[0] + " " + response.project.owner.username
                                 response.text = "Project info for " + project_to_info.name + " " + project
                             }
                             res.json(this.slack_response(response))

@@ -343,6 +343,8 @@ class Server {
     async check_in(user_id, check_in = null, project_name = null, type = "unknown") {
         var user = await this.get_user(user_id)
         if (user) {
+            var last_check = await this.get_last_check(user.id)
+
             if (project_name != null && project_name != "" && project_name != undefined) {
                 var project = await this.get_project(project_name)
                 if (project) {
@@ -353,6 +355,7 @@ class Server {
                             text: "User is not apart of this project."
                         }
                     }
+                    project_name = project.name
                 } else {
                     return {
                         success: false,
@@ -364,16 +367,27 @@ class Server {
             }
 
             if (check_in === true) {
+                if(last_check.check_in && last_check.project === project_name){
+                    return {
+                        success: true,
+                        text: "You are already checked in." + (project_name ? " Project: " + project_name : "")
+                    }
+                }
                 await this.insert_check(user.id, true, project_name, type)
                 return {
                     success: true,
                     checked_in: true,
-                    text: "You are now checked in.",
-                    project: project_name
+                    text: "You are now checked in." + (project_name ? " Project: " + project_name : "")
                 }
             }
 
             if (check_in === false) {
+                if(!last_check.check_in){
+                    return {
+                        success: true,
+                        text: "You are already checked out."
+                    }
+                }
                 await this.insert_check(user.id, false, project_name, type)
                 return {
                     success: true,
@@ -383,15 +397,15 @@ class Server {
                 }
             }
 
-            var last_check = await this.get_last_check(user.id)
+            
 
             if (check_in === null) {
                 // Toggle checkin
-                var checked_in = await this.insert_check(user.id, !last_check.check_in, project_name, type)
+                await this.insert_check(user.id, !last_check.check_in, project_name, type)
                 return {
                     success: true,
                     checked_in: !last_check.check_in,
-                    text: "You are now checked " + (!last_check.check_in ? "in." : "out."),
+                    text: "You are now checked " + (!last_check.check_in ? "in." : "out.")  + (project_name ? " Project: " + project_name : ""),
                     project: project_name
                 }
             }
@@ -459,10 +473,13 @@ class Server {
      */
     async insert_check(user_id, check_in, project = null, type) {
         var user = await this.get_user(user_id)
-        if (!check_in) project = ""
-        if (!project) project = ""
-        await this.db.query("INSERT INTO checks (user, check_in, project, date, type) VALUES (?, ?, ?, ?, ?)", [user_id, check_in, project, Date.now(), type])
-        this.log(user.name + " checked " + (check_in ? "in" : "out") + " via " + type)
+        if(user){
+            if (!check_in) project = ""
+            if (!project) project = ""
+            await this.db.query("INSERT INTO checks (user, check_in, project, date, type) VALUES (?, ?, ?, ?, ?)", [user_id, check_in, project, Date.now(), type])
+            this.log(user.name + " checked " + (check_in ? "in" : "out") + " via " + type)
+            return check_in
+        }
     }
     /**
      * Check if a user is checked in
@@ -500,7 +517,7 @@ class Server {
 
     async get_project_list() {
         var projects = await this.db.query("SELECT * FROM projects")
-        this.log("Getting projects list " + projects)
+        this.log("Getting projects list " + JSON.stringify(projects))
         return {
             success: true,
             text: "Project list return",

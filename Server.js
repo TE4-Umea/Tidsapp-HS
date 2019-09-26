@@ -529,7 +529,7 @@ class Server {
 
     async get_project_list() {
         var projects = await this.db.query("SELECT name FROM projects")
-        var project_list = "Projects: \n"
+        var project_list = "Project name, owner \n"
         var list_string = JSON.stringify(projects)
         var list = list_string.split(",")
         var list_lenght = list.length
@@ -547,7 +547,7 @@ class Server {
             }
             current_project = this.get_project(to_add)
             project_owner = this.get_user(current_project.owner)
-            project_list += to_add + " owner: " + project_owner +  "\n"
+            project_list += to_add + ", " + project_owner +  "\n"
         }
         this.log("Getting projects list " + project_list)
         return {

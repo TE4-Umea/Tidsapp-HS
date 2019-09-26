@@ -685,11 +685,11 @@ class Server {
         }
     }
 
-    async get_slack_id_from_text(user_to_add) {
-        this.log("Getting @ in slack " + user_to_add.substring(2, 11))
-        var slack_id = user_to_add.substring(2, 11)
-        user_to_add = await this.get_user_from_slack_id(slack_id)
-        return user_to_add
+    async get_slack_id_from_text(user) {
+        this.log("Getting @ in slack " + user.substring(2, 11))
+        var slack_id = user.substring(2, 11)
+        user = await this.get_user_from_slack_id(slack_id)
+        return user
 
     }
 

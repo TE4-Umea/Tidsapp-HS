@@ -538,10 +538,10 @@ class Server {
             this.log( i + " Adding element to list " + list[i])
             to_add = list[i]
             to_add = to_add.split(":")[1]
-            if(i == list.length) {
-                to_add = to_add.substr(to_add.indexOf('"'), -3)
+            if(i == list.length-1) {
+                to_add = to_add.slice(to_add.indexOf('"')+1, -3)
             } else {
-                to_add = to_add.substr(to_add.indexOf('"'), -2)
+                to_add = to_add.slice(to_add.indexOf('"')+1, -2)
             }
             project_list += to_add + "\n"
         }

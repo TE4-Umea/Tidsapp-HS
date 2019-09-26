@@ -186,7 +186,7 @@
                             var input = req.body.text
                             server.log("INPUT: " + input)
                             var response = null
-                            var project_to_info = await server.get_project(project_to_info)
+                            var project_to_info = await server.get_project(input)
                             if (input == "") {
                                 server.log("Getting project list " + project_to_info.name)
                                 response = await server.get_project_list()

@@ -612,7 +612,7 @@ class Server {
      * @param {*} user 
      */
     async add_user_to_project(user_to_add, project_id, user) {
-
+        this.log("Trying to add user: " + user_to_add)
         if (!user_to_add) {
             return {
                 success: false,

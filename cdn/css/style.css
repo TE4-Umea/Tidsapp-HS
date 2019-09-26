@@ -102,3 +102,42 @@ a{
 a:hover{
     color: rgb(87, 87, 87);
 }
+
+.notice{
+    display: block;
+    width: auto;
+    height: 30px;
+    position: relative;
+    float: right;
+    text-align: left;
+    border-radius: 5px;
+    margin: 5px;
+    top: -100px;
+    transition: all .25s;
+    opacity: 1;
+}
+
+.success{
+    background: rgb(82, 196, 76);
+}
+
+.error{
+    background: rgb(255, 19, 70);
+}
+
+.notice-text{
+    color: white;
+    position: relative;
+    margin: 10px;
+    top: 5px;
+}
+
+#notices{
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: block;
+    visibility: visible;
+}

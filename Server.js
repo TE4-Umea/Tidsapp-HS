@@ -367,7 +367,7 @@ class Server {
             }
 
             if (check_in === true) {
-                if(last_check.check_in && last_check.project === project_name){
+                if (last_check.check_in && last_check.project === project_name) {
                     return {
                         success: true,
                         text: "You are already checked in." + (project_name ? " Project: " + project_name : "")
@@ -382,7 +382,7 @@ class Server {
             }
 
             if (check_in === false) {
-                if(!last_check.check_in){
+                if (!last_check.check_in) {
                     return {
                         success: true,
                         text: "You are already checked out."
@@ -397,15 +397,13 @@ class Server {
                 }
             }
 
-            
-
             if (check_in === null) {
                 // Toggle checkin
                 await this.insert_check(user.id, !last_check.check_in, project_name, type)
                 return {
                     success: true,
                     checked_in: !last_check.check_in,
-                    text: "You are now checked " + (!last_check.check_in ? "in." : "out.")  + (project_name ? " Project: " + project_name : ""),
+                    text: "You are now checked " + (!last_check.check_in ? "in." : "out.") + (project_name ? " Project: " + project_name : ""),
                     project: project_name
                 }
             }
@@ -433,17 +431,13 @@ class Server {
             delete user.access_token
             delete user.password
             user.checked_in = await this.is_checked_in(user.id)
-            user.projects = await this.db.query("SELECT * FROM projects WHERE owner = ?", user.id)
+            var last_check = await this.get_last_check(user.id)
+            user.checked_in_project = last_check.project
+
+            user.projects = []
             var joints = await this.db.query("SELECT * FROM joints WHERE user = ?", user.id)
 
             for (var joint of joints) {
-                for (let project of user.projects) {
-                    if (joint.project == project.id && project.owner == user.id) {
-                        // User is the owner of this project
-                        project.time = joint.work
-                        break
-                    }
-                }
                 // User is not owner of the project, download project form database
                 let project = await this.get_project_from_id(joint.project)
                 project.work = joint.work
@@ -451,6 +445,12 @@ class Server {
             }
             return user
         }
+    }
+
+    format_time(ms) {
+        var hours = Math.floor(ms / 1000 / 60 / 60)
+        var minutes = Math.floor((ms / 1000 / 60) - (hours * 60))
+        return (hours ? hours + "h " : "") +  minutes + "m"
     }
 
     async is_joined_in_project(user_id, project_id) {
@@ -473,7 +473,19 @@ class Server {
      */
     async insert_check(user_id, check_in, project = null, type) {
         var user = await this.get_user(user_id)
-        if(user){
+        var last_check = await this.get_last_check(user_id)
+        if (user) {
+            var time_of_checkout = Date.now() - last_check.date
+            if (!check_in && last_check.project != "") {
+                var project = await this.get_project(last_check.project)
+                if (project) {
+                    var joint = await this.db.query_one("SELECT * FROM joints WHERE user = ? AND project = ?", [user.id, project.id])
+                    if (joint) {
+                        await this.db.query("UPDATE joints SET work = ? WHERE id = ?", [time_of_checkout, joint.id])
+                        console.log("Updated time")
+                    }
+                }
+            }
             if (!check_in) project = ""
             if (!project) project = ""
             await this.db.query("INSERT INTO checks (user, check_in, project, date, type) VALUES (?, ?, ?, ?, ?)", [user_id, check_in, project, Date.now(), type])
@@ -513,7 +525,7 @@ class Server {
             return project
         }
         return false
-    } 
+    }
 
     async get_project_list() {
         var projects = await this.db.query("SELECT * FROM projects")
@@ -521,7 +533,7 @@ class Server {
         return {
             success: true,
             text: "Project list return",
-            arrray: projects 
+            arrray: projects
         }
 
     }
@@ -675,7 +687,7 @@ class Server {
      * @param {User} user User that requests the action
      */
     async remove_user_from_project(user_to_remove, project_id, user) {
-        if(!user_to_remove || !project_id || !user){
+        if (!user_to_remove || !project_id || !user) {
             return {
                 success: false,
                 text: "Missing attirbutes"
@@ -725,15 +737,15 @@ class Server {
         var project = await this.db.query_one("SELECT * FROM projects WHERE name = ?", project_name)
         if ((project.owner === user_id) || user.username === "alexm") {
             await this.db.query("DELETE FROM projects WHERE id = ?", project.id)
-            this.log("Project " + project_name +  " deleted by: " + user.username)
+            this.log("Project " + project_name + " deleted by: " + user.username)
             return {
-                success: true, 
-                text: "Project deleted by: "  + user.username
+                success: true,
+                text: "Project deleted by: " + user.username
             }
         } else {
             var owner = await this.get_user(project.owner)
             return {
-                success: false, 
+                success: false,
                 text: "Permission denied, project is owned by " + owner.name
             }
         }

@@ -520,8 +520,7 @@ class Server {
         this.log("Getting projects list " + JSON.stringify(projects))
         return {
             success: true,
-            text: "Returning project list",
-            projects: projects
+            text: "Returning project list"
         }
 
     }

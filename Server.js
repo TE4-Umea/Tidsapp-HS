@@ -534,6 +534,8 @@ class Server {
         var list = list_string.split(",")
         var list_lenght = list.length
         var to_add = ""
+        var current_project
+        var project_owner = ""
         for (var i = 0; i < list_lenght; i++) {
             this.log( i + " Adding element to list " + list[i])
             to_add = list[i]
@@ -543,7 +545,8 @@ class Server {
             } else {
                 to_add = to_add.slice(to_add.indexOf('"')+1, -2)
             }
-            project_list += to_add + "\n"
+            current_project = this.get_project(to_add)
+            project_list += to_add + " owner: " + current_project.owner +  "\n"
         }
         this.log("Getting projects list " + project_list)
         return {

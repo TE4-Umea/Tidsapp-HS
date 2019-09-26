@@ -105,7 +105,11 @@
                         if (user) {
                             var inputs = req.body.text.split(" ")
                             var user_to_remove = inputs[0]
-                            user_to_remove = await server.get_user_from_username(user_to_remove)
+                            if (user_to_remove.startsWith("<@")) {
+                                user_to_remove = await server.get_slack_id_from_text(user_to_remove)
+                            } else {
+                                user_to_remove = await server.get_user_from_username(user_to_remove)
+                            }
                             var project_name = inputs[1]
                             var project = await server.get_project(project_name)
                             var response = await server.remove_user_from_project(user_to_remove, project.id, user)
@@ -124,7 +128,11 @@
                         if (user) {
                             var inputs = req.body.text.split(" ")
                             var user_to_add = inputs[0]
-                            user_to_add = await server.get_user_from_username(user_to_add)
+                            if (user_to_add.startsWith("<@")) {
+                                user_to_add = await server.get_slack_id_from_text(user_to_add)
+                            } else {
+                                user_to_add = await server.get_user_from_username(user_to_add)
+                            }
                             var project_name = inputs[1]
                             var project = await server.get_project(project_name)
 
@@ -178,7 +186,7 @@
                             var response = await server.get_project_list()
                             res.json(this.slack_response(response))
                         } else {
-                            this.user_not_found(res) 
+                            this.user_not_found(res)
                         }
                     }
                 })

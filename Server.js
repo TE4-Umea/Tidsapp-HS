@@ -441,6 +441,7 @@ class Server {
                 // User is not owner of the project, download project form database
                 let project = await this.get_project_from_id(joint.project)
                 project.work = joint.work
+                project.activity = [5, 3, 7, 9, 3]
                 user.projects.push(project)
             }
             return user
@@ -625,7 +626,7 @@ class Server {
             }
         }
 
-        await this.db.query("INSERT INTO projects (name, owner) VALUES (?, ?)", [project_name, user.id])
+        await this.db.query("INSERT INTO projects (name, owner, color_top, color_bot) VALUES (?, ?, ?, ?)", [project_name, user.id, "#f5314b", "#f53176"])
         var project = await this.get_project(project_name)
         await this.db.query("INSERT INTO joints (project, user, date, work) VALUES (?, ?, ?, ?)", [project.id, user.id, Date.now(), 0])
 

@@ -176,7 +176,7 @@
                         var user = await server.get_user_from_slack(req)
                         if (user) {
                             var response = server.get_project_list()
-                            this.SlackJSON.SlackResponse(response.list)
+                            res.json(this.slack_response(response))
                         } else {
                             this.user_not_found(res) 
                         }

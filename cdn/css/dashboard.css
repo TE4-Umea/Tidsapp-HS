@@ -92,3 +92,70 @@
 #avatar:active{
     border-color: var(--dark-blu);
 }
+
+#projects{
+    /* background: rgb(236, 236, 236); */
+    width: 280px;
+    left: 10px;
+    height: calc(100vh - 190px);
+    position: absolute;
+}
+
+.project{
+    position: relative;
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    background: rgb(255, 255, 255);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.075);
+    cursor: pointer;
+    overflow: hidden;
+    user-select: none;
+    margin-bottom: 20px;
+}
+
+.project:hover{
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.15);
+}
+
+
+.wipe{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    height: 150px;
+    user-select: none;
+    pointer-events: none;
+    fill: url(#gradient) #fff;
+}
+
+.project-name{
+    font-size: 30px;
+    font-family: 'Ubuntu';
+    position: absolute;
+    color: #ff2072;
+    position: absolute;
+    top: 15px;
+    text-align: right;
+    right: 15px;
+}
+
+/* Check in button on projects*/
+.project-button{
+    height: 30px;
+    width: 95px;
+    font-size: 10px;
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    color: rgb(27, 27, 27) !important;
+    border-color: rgb(37, 37, 37) !important;
+}
+
+.project-timeline{
+    height: 50px;
+    width: 200px;
+    position: absolute;
+    right: 15px;
+    top: 50px;
+}

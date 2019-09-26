@@ -11,30 +11,11 @@ class API {
         var user = await this.server.get_user_from_token(token)
         if (user) {
             var result = await this.server.check_in(user.id, check_in, project, "api")
-            if (result.success) {
-                if (project === null) {
-                    res.json({
-                        success: true,
-                        checked_in: result.checked_in,
-                        text: "Checked in: " + user.name
-                    })
-                } else if (project != null) {
-                    res.json({
-                        success: true,
-                        checked_in: result.checked_in,
-                        text: "Checked in " + user.name + " on Project: " + project
-                    })
-                }
-            } else {
-                res.json({
-                    success: false,
-                    text: result.text
-                })
-            }
+            res.json(result)
         } else {
             res.json({
                 success: false,
-                text: "Please register an account and link it before using slash commands https://hs.ygstr.com"
+                text: "Invalid token"
             })
         }
     }
@@ -45,12 +26,12 @@ class API {
      * @param {*} req 
      * @param {*} res 
      */
-    async new_project(req, res){
+    async new_project(req, res) {
         var token = req.body.token
         var project_name = req.body.project
 
         var user = await this.server.get_user_from_token(token)
-        if(user){
+        if (user) {
             var response = await this.server.create_project(project_name, user)
             res.json(response)
         } else {
@@ -80,7 +61,7 @@ class API {
 
         var user_to_remove = await this.server.get_user_from_username(username)
         var user = await this.server.get_user_from_token(token)
-        
+
         var result = await this.server.remove_user_from_project(user_to_remove, project_name, user)
         res.json(result)
     }
@@ -166,7 +147,7 @@ class API {
         var username = req.body.username
         var password = req.body.password
 
-        if(!username || !password){
+        if (!username || !password) {
             res.json({
                 success: false,
                 text: "Missing parameters"
@@ -198,10 +179,10 @@ class API {
         var password = req.body.password
         var name = req.body.name
 
-        if(!(username && password && name)){
+        if (!(username && password && name)) {
             res.json({
                 success: false,
-                text: "Missing parameters:" + (!username ? " username" : "") + (!password ? " password" : "") + (!name ? " name" : "") 
+                text: "Missing parameters:" + (!username ? " username" : "") + (!password ? " password" : "") + (!name ? " name" : "")
             })
             return
         }
@@ -319,9 +300,9 @@ class API {
         var user = await this.server.get_user_from_token(pack.token)
         if (user.admin) {
             delete pack.token
-            try{
+            try {
                 this.server.fs.unlinkSync("documentation/" + pack.old_title.split(" ").join("_") + ".json")
-            } catch(__){}
+            } catch (__) {}
             delete pack.old_title
 
             if (pack.title.length == 0) {

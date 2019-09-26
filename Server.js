@@ -759,6 +759,7 @@ class Server {
         var success = this.verify_slack_request(req)
         if (success) {
             var body = req.body
+            this.log("Test 2 " + body)
             var slack_id = body.user_id
             var user = await this.get_user_from_slack_id(slack_id)
             if (user) {

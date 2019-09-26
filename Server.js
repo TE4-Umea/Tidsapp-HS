@@ -547,6 +547,7 @@ class Server {
             }
             this.log("Project name " + to_add)
             current_project = this.get_project(to_add)
+            this.log("Project current " + current_project)
             project_owner = this.get_user(current_project.owner)
             project_list += to_add + ", " + project_owner +  "\n"
         }

@@ -366,6 +366,9 @@ class Server {
                 project = ""
             }
 
+            // Allow toggle check ins if force checkin is not specified
+            if (check_in === null) check_in = !last_check.check_in
+
             if (check_in === true) {
                 if (last_check.check_in && last_check.project === project_name) {
                     return {
@@ -392,22 +395,11 @@ class Server {
                 return {
                     success: true,
                     checked_in: false,
-                    text: "You are now checked out.",
+                    text: `You are now checked out, ${this.format_time(Date.now() - last_check.date)}.`,
                     project: project_name
                 }
             }
-
-            if (check_in === null) {
-                // Toggle checkin
-                await this.insert_check(user.id, !last_check.check_in, project_name, type)
-                return {
-                    success: true,
-                    checked_in: !last_check.check_in,
-                    text: "You are now checked " + (!last_check.check_in ? "in." : "out.") + (project_name ? " Project: " + project_name : ""),
-                    project: project_name
-                }
-            }
-
+            
         } else {
             return {
                 success: false,
@@ -451,7 +443,7 @@ class Server {
     format_time(ms) {
         var hours = Math.floor(ms / 1000 / 60 / 60)
         var minutes = Math.floor((ms / 1000 / 60) - (hours * 60))
-        return (hours ? hours + "h " : "") +  minutes + "m"
+        return (hours ? hours + "h " : "") + minutes + "m"
     }
 
     async is_joined_in_project(user_id, project_id) {
@@ -540,14 +532,14 @@ class Server {
         for (var i = 0; i < list_lenght; i++) {
             to_add = list[i]
             to_add = to_add.split(":")[1]
-            if(i == list.length-1) {
-                to_add = to_add.slice(to_add.indexOf('"')+1, -3)
+            if (i == list.length - 1) {
+                to_add = to_add.slice(to_add.indexOf('"') + 1, -3)
             } else {
-                to_add = to_add.slice(to_add.indexOf('"')+1, -2)
+                to_add = to_add.slice(to_add.indexOf('"') + 1, -2)
             }
             current_project = await this.get_project(to_add)
             project_owner = await this.get_user(current_project.owner)
-            project_list += to_add + ", " + project_owner.name +  "\n"
+            project_list += to_add + ", " + project_owner.name + "\n"
         }
         this.log("Getting projects list " + project_list)
         return {
@@ -568,10 +560,10 @@ class Server {
 
             project.members = []
             var joints = await this.db.query("SELECT * FROM joints WHERE project = ?", project_id)
-            
+
             for (var joint of joints) {
                 var user = await this.get_user(joint.user)
-                
+
                 project.members.push({
                     username: user.username,
                     name: user.name,
@@ -579,7 +571,6 @@ class Server {
                     owner: user.id == project.owner
                 })
             }
-            var members = project.members
 
             return {
                 success: true,
@@ -629,16 +620,16 @@ class Server {
 
         var user_joints = await this.db.query("SELECT * FROM joints WHERE user = ?", user.id)
         var gradients = JSON.parse(this.fs.readFileSync("gradients.json", "utf8"))
-        for(var joint of user_joints){
+        for (var joint of user_joints) {
             var project = await this.get_project_from_id(joint.project)
-            for(var i = 0; i < gradients.length; i++){
-                if(gradients[i][0] == project.color_top){
+            for (var i = 0; i < gradients.length; i++) {
+                if (gradients[i][0] == project.color_top) {
                     gradients.splice(i, 1)
                 }
             }
         }
 
-        if(gradients.length == 0) gradients = JSON.parse(this.fs.readFileSync("gradients.json", "utf8"))
+        if (gradients.length == 0) gradients = JSON.parse(this.fs.readFileSync("gradients.json", "utf8"))
         var gradiant = gradients[Math.floor(Math.random() * gradients.length)]
 
         await this.db.query("INSERT INTO projects (name, owner, color_top, color_bot) VALUES (?, ?, ?, ?)", [project_name, user.id, gradiant[0], gradiant[1]])

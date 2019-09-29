@@ -392,7 +392,7 @@ class Server {
                 return {
                     success: true,
                     checked_in: false,
-                    text: "You are now checked out.",
+                    text: `You are now checked out, ${this.format_time(Date.now() - last_check.date)}`,
                     project: project_name
                 }
             }

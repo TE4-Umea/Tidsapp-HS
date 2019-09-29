@@ -392,7 +392,7 @@ class Server {
                 return {
                     success: true,
                     checked_in: false,
-                    text: `You are now checked out, ${this.format_time(Date.now() - last_check.date)}`,
+                    text: `You are now checked out, ${this.format_time(Date.now() - last_check.date)}.`,
                     project: project_name
                 }
             }
@@ -403,7 +403,7 @@ class Server {
                 return {
                     success: true,
                     checked_in: !last_check.check_in,
-                    text: "You are now checked " + (!last_check.check_in ? "in." : "out.") + (project_name ? " Project: " + project_name : ""),
+                    text: "You are now checked " + (!last_check.check_in ? "in." : "out, " + this.format_time(Date.now() - last_check.date) + ".") + (project_name ? " Project: " + project_name : ""),
                     project: project_name
                 }
             }

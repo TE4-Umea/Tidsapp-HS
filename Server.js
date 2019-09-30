@@ -7,6 +7,7 @@ class Server {
      */
     constructor() {
 
+        // If the program is running in test mode (npm test)
         this.isInTest = typeof global.it === 'function'
 
         this.md5 = require("md5")
@@ -24,12 +25,17 @@ class Server {
         this.API = require("./API")
         this.API = new this.API(this)
 
-        this.online_users = []
+        /* Array of users ready to be linked to slack, cleared on restart. */
         this.slack_sign_users = []
 
+        // Database async handler
         var Database = require("./Database")
 
 
+        /**
+         * Configuration template. When adding new standards / properties
+         * to the config, add them here.
+         */
         this.config = undefined
         this.config_templete = {
             // Port of the webserver and REST API
@@ -52,6 +58,11 @@ class Server {
             database: "time",
         }
 
+        /**
+         * Load or create config file.
+         * If any property is missing it will be added.
+         * NOTE: If the config is corrupt or invalid, it will be overwritten.
+         */
         try {
             this.config = JSON.parse(this.fs.readFileSync("config.json"))
             var updated = false
@@ -69,6 +80,7 @@ class Server {
             this.config = this.config_templete
         }
 
+        // Load documentation pages from /documentation
         this.load_documentation()
         this.port = this.config.port
 
@@ -99,7 +111,7 @@ class Server {
         this.app.set('view engine', 'pug')
 
 
-        /* REST API */
+        /* REST API routes */
         this.app.post("/api/checkin", async (req, res) => {
             this.API.checkin(req, res)
         })
@@ -148,124 +160,14 @@ class Server {
             this.API.document(req, res)
         })
 
-
-
-        /* SOCKET IO */
-        /* this.io.on("connection", socket => { */
-
-        /* socket.on("disconnect", () => {
-            // Remove this connection from online users
-            this.online_users.splice(this.online_users.indexOf(socket.id), 1)
-        }) */
-
-        /* socket.on("sign_slack", async info => { */
-        /* for (var sign of this.slack_sign_users) {
-            if (sign.token === info.sign_token) {
-                var user = await this.get_user_from_token(info.token)
-                if (user) {
-                    // Fill users slack information
-                    await this.db.query("UPDATE users SET email = ?, slack_id = ?, slack_domain = ?, access_token = ?, avatar = ?, name = ? WHERE id = ?", [sign.email, sign.slack_id, sign.slack_domain, sign.access_token, sign.avatar, sign.name, user.id])
-                    socket.emit("redir", "dashboard")
-                }
-            }
-        } */
-        /*  }) */
-
-        /* socket.on("login_with_token", async token => {
-            var user = await this.get_user_from_token(token)
-            if (user) {
-                this.online_users[socket.id] = user.id
-                var user_data = await this.get_user_data(user.id)
-                socket.emit("login", user_data)
-            } else {
-                socket.emit("invalid_token")
-            }
-        }) */
-
-        /* socket.on("login", async info => {
-
-            var user = await this.get_user_from_username(info.username)
-            if (user) {
-                // Sign in
-                user = await this.get_user_from_username_and_password(info.username, info.password)
-                if (user) {
-                    var token = await this.generate_token(user.username)
-                    if (token) {
-                        socket.emit("token", token)
-                    }
-                } else {
-                    socket.emit("login_err", "Wrong password")
-                    return
-                }
-            } else {
-                // Sign up
-                if (info.username.replace(/[^a-z0-9_]+|\s+/gmi, "") !== info.username) {
-                    socket.emit("login_err", "Username contains illigal characters")
-                    return
-                }
-                if (info.username.length < 3) {
-                    socket.emit("login_err", "Username has to be at least three characters long")
-                    return
-                }
-                if (info.username.length > 20) {
-                    socket.emit("login_err", "Username cannot exceed 20 characters")
-                    return
-                }
-                if (info.name.indexOf(" ") == -1) {
-                    socket.emit("login_err", "Please provide a full name, ex. Michael Stevens")
-                    return
-                }
-                if (info.password == "") {
-                    socket.emit("login_err", "Please enter a password")
-                    return
-                }
-                var user = await this.create_user(info.username, info.password, info.name)
-                if (user) {
-                    var token = await this.generate_token(user.username)
-                    socket.emit("token", token)
-                } else {
-                    socket.emit("login_err", "Something went wrong when creating your account. Please notify administrators.")
-                }
-
-            }
-        }) */
-
-        /* socket.on("get_documentation", () => {
-            socket.emit("documentation", this.documentation)
-        }) */
-
-        /* socket.on("username_taken", async username => {
-            var user = await this.get_user_from_username(username)
-            if (user) socket.emit("username_taken", true)
-            else socket.emit("username_taken", false)
-        }) */
-
-        /* socket.on("upload_documentation", pack => {
-            if (pack.token === this.config.admin_token) {
-                delete pack.token
-                if (pack.title.length == 0) {
-                    socket.emit("err", "Don't forget the title")
-                    return
-                }
-                try {
-                    this.fs.writeFileSync("documentation/" + pack.title.split(" ").join("_") + ".json", JSON.stringify(pack))
-                    socket.emit("err", "Success!")
-                    this.load_documentation()
-                } catch (e) {
-                    this.log(e)
-                    console.log(e)
-                    socket.emit("err", "Error writing fail, check the title. Make sure there are no weird characters in it.")
-                }
-            } else {
-                socket.emit("err", "Wrong token")
-            }
-        }) */
-        /*      }) */
-
-        /* WEBHOOK */
+        /**
+         * Github WEBHOOK 
+         * Change config:branch to false if you wish to disable the webhook.
+         * The webhook does not confirm that it comes from github, so it's important to disable it for release.
+         * TODO: Verify webhook request is from Github
+         */
         this.app.post("/webhook", async (req, res) => {
-            this.log("Restarting because of webhook")
-            require("child_process").exec("git pull origin " + this.config.branch)
+            if(this.config.branch) require("child_process").exec("git pull origin " + this.config.branch)
         })
 
 
@@ -280,20 +182,34 @@ class Server {
      * @param {*} message 
      */
     log(message) {
+        // Dont display messages if it's in a test
         if (this.isInTest) return
+        // Create timestamp
         var date = new Date()
+        // Display message with timestamp
         console.log(`[${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}] ${message}`)
     }
 
 
+    /**
+     * This function runs when everything has been loaded.
+     */
     on_loaded() {
         this.log(`Happy Surfer's TimeTracker has started on port: ${this.port}`)
     }
 
+    /**
+     * Create a new unique hash that can be used as a token 
+     * (currently used in user tokens, config tokens and slack-sign-tokens)
+     */
     hash() {
         return this.crypto.randomBytes(20).toString('hex').toUpperCase()
     }
 
+    /**
+     * Loads and sorts all documentation pages from /documentations. Parse them as JSON and compile them into
+     * this.documentation
+     */
     load_documentation() {
         this.documentation = []
         this.unsorted_documentation = []
@@ -333,16 +249,17 @@ class Server {
 
 
     /**
-     * 
-     * @param {*} user_id 
-     * @param {*} check_in 
-     * @param {*} project_name 
-     * @param {*} type 
+     * Check in or out a user, with or without a project.
+     * @param {Int} user_id ID of the user being checked in or out
+     * @param {Boolean} check_in Force check_in or check_out (default: undefined, toggle-check-in)
+     * @param {String} project_name Name of the project (optional)
+     * @param {String} type Type of check in (web, slack, terminal, card)
      * @returns Success, if the check in/out was successfull
      */
     async check_in(user_id, check_in = null, project_name = null, type = "unknown") {
         var user = await this.get_user(user_id)
         if (user) {
+            // Get last check in
             var last_check = await this.get_last_check(user.id)
 
             if (project_name != null && project_name != "" && project_name != undefined) {
@@ -370,12 +287,20 @@ class Server {
             if (check_in === null) check_in = !last_check.check_in
 
             if (check_in === true) {
+                // Check if this is a redundant check in (same project and already checked in)
                 if (last_check.check_in && last_check.project === project_name) {
                     return {
                         success: true,
                         text: "You are already checked in." + (project_name ? " Project: " + project_name : "")
                     }
                 }
+
+                // If users last check was a check in, this will check them out before checking them in.
+                if(last_check.check_in){
+                    this.check_in(user_id, false, null, type)
+                }
+                
+                // Insert the check in
                 await this.insert_check(user.id, true, project_name, type)
                 return {
                     success: true,
@@ -384,18 +309,21 @@ class Server {
                 }
             }
 
+            // Check out user
             if (check_in === false) {
+                // Check if the user is already checked out
                 if (!last_check.check_in) {
                     return {
                         success: true,
                         text: "You are already checked out."
                     }
                 }
+                // Insert checkout
                 await this.insert_check(user.id, false, project_name, type)
                 return {
                     success: true,
                     checked_in: false,
-                    text: `You are now checked out, ${this.format_time(Date.now() - last_check.date)}.`,
+                    text: `You are now checked out, ${this.format_time(Date.now() - last_check.date)}${project_name ? " (" + project_name + ")" : ""}.`,
                     project: project_name
                 }
             }
@@ -425,6 +353,7 @@ class Server {
             user.checked_in = await this.is_checked_in(user.id)
             var last_check = await this.get_last_check(user.id)
             user.checked_in_project = last_check.project
+            user.checked_in_time = Date.now() - last_check.date
 
             user.projects = []
             var joints = await this.db.query("SELECT * FROM joints WHERE user = ?", user.id)

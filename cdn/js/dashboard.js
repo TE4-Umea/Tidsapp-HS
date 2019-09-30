@@ -42,7 +42,7 @@ on_login = () => {
 function insert_projects() {
     var projects = ""
     for (var project of me.projects) {
-        projects += `<div class="project" hover="false" project-name="${project.name}"><span class="project-name">${project.name.toUpperCase()}</span><canvas height="50" width="200" class="project-timeline"></canvas><button class="project-button mdc-button mdc-button--outlined" onclick="check_in_project('${project.name}')">${me.checked_in_project == project.name ? "check out" : "check in"}</button><svg version="1.1" class="wipe" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve"> <defs> <linearGradient id="${project.name}-gradient" x2="0.35" y2="1"><stop offset="0%" id="${project.name}-stop-0" stop-color="#b5b5b5"></stop> <stop offset="100%" id="${project.name}-stop-1" stop-color="#4a4a4a"></stop> </linearGradient> </defs> <path class="st0" d="M-14.9-64.8c0,0-40.3,578.2,578.2,578.2s568.6,0,568.6,0l1.9,327l-1242.7,13.4l-47.9-993.4L-14.9-64.8z"></path> </svg></div>`
+        projects += `<div class="project" hover="false" project-name="${project.name}"><span class="project-name">${project.name.toUpperCase()}</span><canvas height="50" width="200" class="project-timeline"></canvas><button class="project-button mdc-button mdc-button--outlined" onclick="check_in_project('${project.name}')">${me.checked_in_project == project.name ? get_button_text() : "check in"}</button><svg version="1.1" class="wipe" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve"> <defs> <linearGradient id="${project.name}-gradient" x2="0.35" y2="1"><stop offset="0%" id="${project.name}-stop-0" stop-color="#b5b5b5"></stop> <stop offset="100%" id="${project.name}-stop-1" stop-color="#4a4a4a"></stop> </linearGradient> </defs> <path class="st0" d="M-14.9-64.8c0,0-40.3,578.2,578.2,578.2s568.6,0,568.6,0l1.9,327l-1242.7,13.4l-47.9-993.4L-14.9-64.8z"></path> </svg></div>`
     }
 
     document.getElementById("projects").innerHTML = projects
@@ -75,14 +75,13 @@ document.addEventListener("mousemove", e => {
             var hovering_found = false
             for (var pro of document.getElementsByClassName("project")) {
                 if (me.checked_in_project != pro.getAttribute("project-name") && hover != pro) {
-                    light_up_project(pro, false, false)
                     hovering_found = true
                     pro.setAttribute("hover", false)
+                    light_up_project(pro, false, false)
                 }
             }
             if (!hovering_found) hovering = false
         }
-        console.log(hovering)
     }
 })
 
@@ -91,6 +90,7 @@ function check_in() {
         token: token
     }).then(res => {
         var data = res.data
+        me.checked_in = data.checked_in
         notice(data.text, data.success)
         if (!data.checked_in) me.checked_in_project = ""
         update_projects(data.checked_in)
@@ -112,7 +112,6 @@ function render_canvas(canvas, project, progress = 0) {
     for (var pro of me.projects) {
         for (var day of pro.activity) {
             if (day > max) max = day
-            /* if (day < min) min = day */
         }
     }
 
@@ -177,19 +176,18 @@ function light_up_project(el, light_up = true, animate = true) {
     var text = el.children[0]
 
     text.style.color = gradient[1]
-    /* background = '-webkit-linear-gradient(0deg, ' +  + ', ' + gradient[1] + ')' */
-    /* text.style['-webkit-background-clip'] = 'text'
-    text.style['-webkit-text-fill-color'] = 'transparent' */
 
     if (animate) {
         var speed = .2
         var progress = light_up ? 0 : 1
         var interval = setInterval(() => {
+
             if (progress > 1 || progress < 0) {
                 clearInterval(interval)
                 return
             }
             render_canvas(el.children[1], project, progress)
+
             progress += light_up ? speed : -speed
         }, 30)
     } else {
@@ -232,11 +230,14 @@ function update_projects(checked_in, project_name) {
         if (el.getAttribute("project-name") == me.checked_in_project) {
             light_up_project(el)
         }
-        if (el.getAttribute("project-name") == project_name) {
-            el.children[2].innerText = checked_in ? "check out" : "check in"
+        if (el.getAttribute("project-name") != project_name) {
+            light_up_project(el, false, false)
+            el.children[2].innerText = "Check in"
         } else {
-            el.children[2].innerText = "check in"
+            el.children[2].innerText = get_button_text()
         }
+
+        
     }
     update_checked_in_status(checked_in)
 }
@@ -246,12 +247,22 @@ function update_checked_in_status(checked_in) {
     if (checked_in) {
         check_in_button.classList.add("mdc-button--outlined")
         check_in_button.classList.remove("mdc-button--raised")
-        check_in_button.innerText = "check out"
     } else {
         check_in_button.classList.remove("mdc-button--outlined")
         check_in_button.classList.add("mdc-button--raised")
-        check_in_button.innerText = "check in"
     }
+
+    check_in_button.innerText = get_button_text()
+}
+
+function get_button_text() {
+    return me.checked_in ? "CHECK OUT (" + format_time(me.checked_in_time) + ")" : "CHECK IN"
+}
+
+function format_time(ms) {
+    var hours = Math.floor(ms / 1000 / 60 / 60)
+    var minutes = Math.floor((ms / 1000 / 60) - (hours * 60))
+    return (hours ? hours + "h " : "") + minutes + "m"
 }
 
 function new_project() {

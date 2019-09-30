@@ -11,6 +11,16 @@ body {
     
 }
 
+
+*::-webkit-scrollbar {
+    width: 3px;
+    background: rgb(204, 204, 204);
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--blu);
+}
+
 *{
     /* font-family: 'Ubuntu', sans-serif; */
     font-family: 'Roboto', sans-serif;
@@ -19,7 +29,6 @@ body {
 #side-bar{
     height: calc(100vh - 30px);
     max-height: 700px;
-
     width: 300px;
     display: inline-block;
     position: relative;
@@ -141,3 +150,4 @@ a:hover{
     display: block;
     visibility: visible;
 }
+

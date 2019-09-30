@@ -1,3 +1,7 @@
+/**
+ * Async database model for mysql in node
+ */
+
 class Database {
 
     constructor(config){

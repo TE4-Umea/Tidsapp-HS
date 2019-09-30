@@ -18,7 +18,7 @@ var sec_bar = document.getElementById("seconds-bar")
 function update_clock() {
     var time = new Date()
     time_el.innerText = force_length(time.getHours()) + ":" + force_length(time.getMinutes())
-    sec_bar.style.width = (((time.getSeconds() + (time.getMilliseconds() / 1000)) / 60) * 100) + "px"
+    sec_bar.style.width = (((time.getSeconds() + (time.getMilliseconds() / 1000)) / 60) * 101) + "px"
 }
 
 function force_length(val) {
@@ -53,6 +53,18 @@ function insert_projects() {
     update_projects(me.checked_in, me.checked_in_project)
 }
 
+function reload_dash(){
+    axios.post("/api/profile", {
+        token
+    }).then(res => {
+        var data = res.data
+        if (data.success) {
+            me = data.profile
+            insert_projects()
+        }
+    })
+}
+
 
 var hovering = false
 document.addEventListener("mousemove", e => {
@@ -73,16 +85,23 @@ document.addEventListener("mousemove", e => {
 
         if (hovering) {
             var hovering_found = false
-            for (var pro of document.getElementsByClassName("project")) {
-                if (me.checked_in_project != pro.getAttribute("project-name") && hover != pro) {
+            for (var el of document.getElementsByClassName("project")) {
+                if (me.checked_in_project != el.getAttribute("project-name") && hover != el) {
                     hovering_found = true
-                    pro.setAttribute("hover", false)
-                    light_up_project(pro, false, false)
+                    el.setAttribute("hover", false)
+                    light_up_project(el, false, false)
+                } else {
+                    hovering_found = true
                 }
             }
-            if (!hovering_found) hovering = false
+            if (!hovering_found) {
+                /* if(interval) clearInterval(interval) */
+                hovering = false
+            }
         }
     }
+
+
 })
 
 function check_in() {
@@ -91,6 +110,7 @@ function check_in() {
     }).then(res => {
         var data = res.data
         me.checked_in = data.checked_in
+        me.checked_in_time = 0
         notice(data.text, data.success)
         if (!data.checked_in) me.checked_in_project = ""
         update_projects(data.checked_in)
@@ -165,7 +185,9 @@ function render_canvas(canvas, project, progress = 0) {
     }
 }
 
+
 function light_up_project(el, light_up = true, animate = true) {
+
     var project_name = el.getAttribute("project-name")
     var project = get_project(project_name)
 
@@ -181,22 +203,17 @@ function light_up_project(el, light_up = true, animate = true) {
         var speed = .2
         var progress = light_up ? 0 : 1
         var interval = setInterval(() => {
-
             if (progress > 1 || progress < 0) {
                 clearInterval(interval)
                 return
             }
             render_canvas(el.children[1], project, progress)
-
             progress += light_up ? speed : -speed
         }, 30)
     } else {
         render_canvas(el.children[1], project, light_up ? 1 : 0)
     }
 }
-
-
-
 
 
 function get_project(project_name) {
@@ -215,12 +232,13 @@ function check_in_project(project_name) {
         project: project_name
     }).then(res => {
         var data = res.data
+        notice(data.text, data.success)
         if (data.success) {
+            if (check_in) me.checked_in_time = 0
             me.checked_in_project = check_in ? project_name : ""
             me.checked_in = check_in
             update_projects(check_in, project_name)
         }
-        notice(data.text, data.success)
     })
 }
 
@@ -236,12 +254,11 @@ function update_projects(checked_in, project_name) {
         } else {
             el.children[2].innerText = get_button_text()
         }
-
-        
     }
     update_checked_in_status(checked_in)
 }
 
+/* Updates the main button status */
 function update_checked_in_status(checked_in) {
     var check_in_button = document.getElementById("check-in-button")
     if (checked_in) {
@@ -274,6 +291,7 @@ function new_project() {
         }).then(res => {
             var data = res.data
             notice(data.text, data.success)
+            reload_dash()
         })
     }
 }

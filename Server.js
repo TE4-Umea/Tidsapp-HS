@@ -336,30 +336,41 @@ class Server {
         }
     }
 
+    /* Get user login info from token */
     async login_user_with_token(token) {
+        // Get user from token
         var user = await this.get_user_from_token(token)
         if (user) {
+            // Get user data
             var data = await this.get_user_data(user.id)
             return data
         }
         return false
     }
 
+    /**
+     * Get data from
+     */
     async get_user_data(user_id) {
         var user = await this.get_user(user_id)
         if (user) {
+            // Delete private information (user data is only sent to the authenticated user, but password and access token is not needed and
+            // would be unnecessary to not hide)
             delete user.access_token
             delete user.password
-            user.checked_in = await this.is_checked_in(user.id)
+
             var last_check = await this.get_last_check(user.id)
+
+            // Add new uncashed properties
+            user.checked_in = await this.is_checked_in(user.id)
             user.checked_in_project = last_check.project
             user.checked_in_time = Date.now() - last_check.date
 
             user.projects = []
             var joints = await this.db.query("SELECT * FROM joints WHERE user = ?", user.id)
 
+            // Load and compile projects the user has joined.
             for (var joint of joints) {
-                // User is not owner of the project, download project form database
                 let project = await this.get_project_from_id(joint.project)
                 project.work = joint.work
                 project.activity = [Math.random(), Math.random(), Math.random(), Math.random(), Math.random()]
@@ -369,6 +380,7 @@ class Server {
         }
     }
 
+    /* Reformat time from ms to hours and minutes (string friendly) */
     format_time(ms) {
         var hours = Math.floor(ms / 1000 / 60 / 60)
         var minutes = Math.floor((ms / 1000 / 60) - (hours * 60))

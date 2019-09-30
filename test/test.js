@@ -180,13 +180,11 @@ describe("Projects", () => {
         await server.add_user_to_project(user2, project.id, user1)
     })
 
-    
-
     it("Get project data and members", async () => {
         var project = await server.get_project(test_project)
         var project_data = await server.get_project_data(project.id)
         assert.notEqual(project_data, undefined)
-        assert.notEqual(project_data.members[0].name, undefined)
+        assert.notEqual(project_data.project.members[0].name, undefined)
     })
 
 })

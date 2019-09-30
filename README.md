@@ -13,7 +13,7 @@
 5. Run tests and make sure everything checks out ```npm test```
 
 ## REST API Documentation
-Native docs https://hs.ygstr.com/
+Native docs https://hs.ygstr.com/docs
 
 Wiki docs https://github.com/te4umea2019/Tidsapp-HS/wiki
 
